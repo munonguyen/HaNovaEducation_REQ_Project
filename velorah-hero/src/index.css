@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-cream font-sans antialiased selection:bg-highlight/30;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-white tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(10, 15, 30, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(90, 107, 156, 0.3); /* Soft indigo border */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-button-primary {
+    background: rgba(244, 196, 124, 0.15); /* Orange-Yellow base */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(244, 196, 124, 0.4);
+    box-shadow: 0 4px 20px rgba(244, 196, 124, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  .glass-button-primary:hover {
+    background: rgba(244, 196, 124, 0.25);
+    box-shadow: 0 6px 24px rgba(244, 196, 124, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-button-secondary {
+    background: rgba(90, 107, 156, 0.15); /* Indigo base */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(90, 107, 156, 0.4);
+    box-shadow: 0 4px 20px rgba(90, 107, 156, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  .glass-button-secondary:hover {
+    background: rgba(90, 107, 156, 0.25);
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    0% { box-shadow: 0 0 10px rgba(244, 196, 124, 0.2); }
+    100% { box-shadow: 0 0 25px rgba(244, 196, 124, 0.6); }
+  }
+
+  @keyframes fade-rise {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-rise { animation: fade-rise 0.8s ease-out both; }
+  .animate-fade-rise-delay { animation: fade-rise 0.8s ease-out 0.2s both; }
+  .animate-fade-rise-delay-2 { animation: fade-rise 0.8s ease-out 0.4s both; }
+
+  /* HANOVA PREMIUM GALAXY BACKGROUND */
+  @keyframes orbit {
+    0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+  }
+
+  @keyframes slowly-drift {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: -1500px 1000px, -800px -600px, 1000px 800px; }
+  }
+
+  .bg-stars {
+    /* 1. Deep Space Void with Cosmic Glows */
+    background: 
+      radial-gradient(circle at 15% 50%, rgba(90, 107, 156, 0.15), transparent 40%), /* Indigo Nebula */
+      radial-gradient(circle at 85% 30%, rgba(212, 163, 91, 0.1), transparent 45%),   /* Amber Glow */
+      radial-gradient(circle at 50% 100%, rgba(6, 8, 19, 1), transparent 70%),       /* Dark Navy base */
+      #020205; /* Ultimate dark void */
+    background-size: cover;
+    background-attachment: fixed;
+    position: relative;
+    z-index: 0;
+  }
+
+  .bg-stars::before {
+    content: "";
+    position: fixed;
+    top: -50%; left: -50%; right: -50%; bottom: -50%;
+    z-index: -3;
+    pointer-events: none;
+    /* 2. Pristine 3-Layer Starfield (Sharp Vector/Dot Data) */
+    background-image: 
+      radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 0),
+      radial-gradient(1.5px 1.5px at 30% 40%, rgba(255, 255, 255, 1) 1.5px, transparent 0),
+      radial-gradient(2px 2px at 80% 10%, rgba(212, 163, 91, 0.8) 2px, transparent 0),
+      radial-gradient(1px 1px at 50% 80%, rgba(150, 180, 255, 0.7) 1px, transparent 0),
+      radial-gradient(1.5px 1.5px at 90% 70%, rgba(255, 255, 255, 0.9) 1.5px, transparent 0),
+      radial-gradient(2.5px 2.5px at 20% 90%, rgba(255, 255, 255, 0.6) 2px, transparent 0),
+      url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='1' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='250' cy='150' r='1.5' fill='rgba(255,255,255,0.5)'/%3E%3Ccircle cx='150' cy='300' r='0.5' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='350' cy='350' r='1' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E");
+    background-size: 350px 350px, 450px 450px, 500px 500px, 200px 200px, 300px 300px, 600px 600px, 400px 400px;
+    animation: slowly-drift 180s linear infinite;
+  }
+
+  .bg-stars::after {
+    /* 3. Celestial Orbs (Moving Light Points mimicking Satellites) */
+    content: "";
+    position: fixed;
+    top: 30%; left: 40%;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,163,91,0.08) 0%, transparent 60%);
+    z-index: -2;
+    pointer-events: none;
+    animation: orbit 35s infinite linear;
+  }
+}
+
+
