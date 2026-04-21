@@ -66,24 +66,48 @@
   .animate-fade-rise-delay-2 { animation: fade-rise 0.8s ease-out 0.4s both; }
 
   /* HANOVA PREMIUM GALAXY BACKGROUND */
-  @keyframes orbit {
-    0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
-    100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+  @keyframes slowly-drift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-20px, -15px); }
   }
 
-  @keyframes slowly-drift {
-    0% { background-position: 0 0, 0 0, 0 0; }
-    100% { background-position: -1500px 1000px, -800px -600px, 1000px 800px; }
+  @keyframes twinkle-bright {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* ═══ SHOOTING STAR ═══ */
+  @keyframes shooting-star {
+    0% {
+      transform: translateX(0) translateY(0) rotate(-35deg);
+      opacity: 1;
+      width: 0;
+    }
+    15% {
+      opacity: 1;
+      width: 80px;
+    }
+    60% {
+      opacity: 0.6;
+      width: 120px;
+    }
+    100% {
+      transform: translateX(400px) translateY(280px) rotate(-35deg);
+      opacity: 0;
+      width: 0;
+    }
   }
 
   .bg-stars {
-    /* 1. Deep Space Void with Cosmic Glows */
+    /* Deep Space with vivid Nebula glow zones */
     background: 
-      radial-gradient(circle at 15% 50%, rgba(90, 107, 156, 0.15), transparent 40%), /* Indigo Nebula */
-      radial-gradient(circle at 85% 30%, rgba(212, 163, 91, 0.1), transparent 45%),   /* Amber Glow */
-      radial-gradient(circle at 50% 100%, rgba(6, 8, 19, 1), transparent 70%),       /* Dark Navy base */
-      #020205; /* Ultimate dark void */
-    background-size: cover;
+      radial-gradient(ellipse at 15% 30%, rgba(59, 130, 246, 0.12), transparent 50%),    /* Blue Nebula L */
+      radial-gradient(ellipse at 85% 50%, rgba(139, 92, 246, 0.10), transparent 50%),    /* Purple Nebula R */
+      radial-gradient(ellipse at 50% 80%, rgba(20, 184, 166, 0.06), transparent 45%),    /* Teal glow bottom */
+      radial-gradient(ellipse at 60% 10%, rgba(245, 158, 11, 0.06), transparent 40%),    /* Amber glow top */
+      radial-gradient(ellipse at 30% 70%, rgba(236, 72, 153, 0.04), transparent 40%),    /* Pink hint */
+      #03030a;
+    background-size: 100% 100%;
     background-attachment: fixed;
     position: relative;
     z-index: 0;
@@ -92,33 +116,81 @@
   .bg-stars::before {
     content: "";
     position: fixed;
-    top: -50%; left: -50%; right: -50%; bottom: -50%;
+    top: -50px; left: -50px; right: -50px; bottom: -50px;
     z-index: -3;
     pointer-events: none;
-    /* 2. Pristine 3-Layer Starfield (Sharp Vector/Dot Data) */
+    /* Multi-layer starfield — crisp white dots at varying densities */
     background-image: 
-      radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 0),
-      radial-gradient(1.5px 1.5px at 30% 40%, rgba(255, 255, 255, 1) 1.5px, transparent 0),
-      radial-gradient(2px 2px at 80% 10%, rgba(212, 163, 91, 0.8) 2px, transparent 0),
-      radial-gradient(1px 1px at 50% 80%, rgba(150, 180, 255, 0.7) 1px, transparent 0),
-      radial-gradient(1.5px 1.5px at 90% 70%, rgba(255, 255, 255, 0.9) 1.5px, transparent 0),
-      radial-gradient(2.5px 2.5px at 20% 90%, rgba(255, 255, 255, 0.6) 2px, transparent 0),
-      url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='1' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='250' cy='150' r='1.5' fill='rgba(255,255,255,0.5)'/%3E%3Ccircle cx='150' cy='300' r='0.5' fill='rgba(255,255,255,0.2)'/%3E%3Ccircle cx='350' cy='350' r='1' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E");
-    background-size: 350px 350px, 450px 450px, 500px 500px, 200px 200px, 300px 300px, 600px 600px, 400px 400px;
-    animation: slowly-drift 180s linear infinite;
+      radial-gradient(1.2px 1.2px at 8% 15%, rgba(255,255,255,0.95) 1px, transparent 0),
+      radial-gradient(1.5px 1.5px at 25% 35%, rgba(200,220,255,1) 1.5px, transparent 0),
+      radial-gradient(1px 1px at 45% 72%, rgba(255,255,255,0.7) 1px, transparent 0),
+      radial-gradient(2px 2px at 62% 18%, rgba(255,240,210,1) 2px, transparent 0),
+      radial-gradient(1px 1px at 78% 55%, rgba(255,255,255,0.85) 1px, transparent 0),
+      radial-gradient(1.5px 1.5px at 92% 80%, rgba(200,210,255,0.9) 1.5px, transparent 0),
+      radial-gradient(1px 1px at 55% 45%, rgba(255,255,255,0.6) 1px, transparent 0),
+      radial-gradient(1.5px 1.5px at 35% 90%, rgba(255,255,255,0.8) 1.5px, transparent 0);
+    background-size: 280px 280px, 380px 380px, 320px 320px, 500px 500px, 420px 420px, 340px 340px, 260px 260px, 460px 460px;
+    animation: slowly-drift 120s ease-in-out infinite alternate;
   }
 
   .bg-stars::after {
-    /* 3. Celestial Orbs (Moving Light Points mimicking Satellites) */
+    /* Bright accent stars that twinkle */
     content: "";
     position: fixed;
-    top: 30%; left: 40%;
-    width: 250px; height: 250px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(212,163,91,0.08) 0%, transparent 60%);
+    top: -50px; left: -50px; right: -50px; bottom: -50px;
     z-index: -2;
     pointer-events: none;
-    animation: orbit 35s infinite linear;
+    background-image: 
+      radial-gradient(2px 2px at 12% 68%, rgba(255,255,255,1) 2px, transparent 0),
+      radial-gradient(2.5px 2.5px at 72% 22%, rgba(255,240,200,1) 2.5px, transparent 0),
+      radial-gradient(2px 2px at 48% 48%, rgba(200,220,255,1) 2px, transparent 0),
+      radial-gradient(1.5px 1.5px at 88% 82%, rgba(255,255,255,0.9) 1.5px, transparent 0);
+    background-size: 550px 550px, 750px 750px, 650px 650px, 480px 480px;
+    animation: slowly-drift 160s ease-in-out infinite alternate-reverse, twinkle-bright 5s ease-in-out infinite alternate;
+  }
+
+  /* ═══ SHOOTING STARS CONTAINER ═══ */
+  .shooting-stars {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .shooting-stars span {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.3), transparent);
+    border-radius: 999px;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.6));
+    animation: shooting-star 3s ease-in-out infinite;
+  }
+
+  .shooting-stars span:nth-child(1) {
+    top: 8%; left: 15%;
+    animation-delay: 0s;
+    animation-duration: 2.8s;
+  }
+  .shooting-stars span:nth-child(2) {
+    top: 22%; left: 55%;
+    animation-delay: 4s;
+    animation-duration: 3.2s;
+  }
+  .shooting-stars span:nth-child(3) {
+    top: 45%; left: 30%;
+    animation-delay: 7s;
+    animation-duration: 2.5s;
+  }
+  .shooting-stars span:nth-child(4) {
+    top: 12%; left: 75%;
+    animation-delay: 11s;
+    animation-duration: 3.5s;
+  }
+  .shooting-stars span:nth-child(5) {
+    top: 60%; left: 10%;
+    animation-delay: 15s;
+    animation-duration: 2.6s;
   }
 }
 

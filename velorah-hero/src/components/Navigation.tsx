@@ -12,41 +12,47 @@ const links = [
   { path: '/profile', label: 'Profile' },
 ];
 
-/* ═══ LOGO: Clean monochrome diamond — white on transparent ═══ */
+/* ═══ LOGO: The HaNova Hexagon (Bespoke Brand Mark) ═══ 
+   A hexagon represents structure and logic.
+   The inner monogram elegantly combines H and N.
+*/
 function LogoMark({ size, glow }: { size: number; glow?: boolean }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" style={{ display: 'block' }}>
       <defs>
         {glow && (
-          <filter id="intro-glow">
-            <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <filter id="nova-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
           </filter>
         )}
       </defs>
 
-      {/* Outer glow during intro */}
+      {/* Intro Glow */}
       {glow && (
-        <rect x="11" y="11" width="26" height="26" rx="2.5" transform="rotate(45 24 24)"
-          stroke="white" strokeWidth="1" opacity="0.2" filter="url(#intro-glow)" />
+        <path d="M24 6 L40 15.5 L40 32.5 L24 42 L8 32.5 L8 15.5 Z" 
+          fill="rgba(255,255,255,0.05)" stroke="white" strokeWidth="1.5" opacity="0.25" filter="url(#nova-glow)" />
       )}
 
-      {/* Diamond outline */}
-      <rect x="12" y="12" width="24" height="24" rx="2.5" transform="rotate(45 24 24)"
-        fill="none" stroke="white" strokeWidth="1.5" />
+      {/* Outer Hexagon Frame */}
+      <path d="M24 8 L38 16.5 L38 31.5 L24 40 L10 31.5 L10 16.5 Z" 
+        stroke="white" strokeWidth="1.2" />
+      
+      {/* Inner Accent Hexagon (creates an architectural depth) */}
+      <path d="M24 13 L33 18.5 L33 29.5 L24 35 L15 29.5 L15 18.5 Z" 
+        stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" fill="rgba(255,255,255,0.03)" />
 
-      {/* Inner diamond (smaller, subtle fill) */}
-      <rect x="17" y="17" width="14" height="14" rx="1.5" transform="rotate(45 24 24)"
-        fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
-
-      {/* H letterform — clean serif */}
-      <text x="24" y="28" textAnchor="middle" fill="white" fontFamily="serif" fontSize="16" fontWeight="500" letterSpacing="0.5">
-        H
-      </text>
-
-      {/* Small star accent (top) */}
-      <circle cx="24" cy="8.5" r="1.2" fill="white" opacity="0.7" />
-      <line x1="24" y1="6" x2="24" y2="11" stroke="white" strokeWidth="0.3" opacity="0.3" />
+      {/* Monogram 'H' + 'N' embedded */}
+      {/* Left Pillar */}
+      <path d="M19 18 L19 30" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Right Pillar */}
+      <path d="M29 18 L29 30" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+      {/* Crossbar (H) */}
+      <path d="M19 24 L29 24" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+      
+      {/* Nova Star Accent (Top point) */}
+      <circle cx="24" cy="4" r="1.5" fill="white" opacity="0.8" />
+      <path d="M24 1 L24 7" stroke="white" strokeWidth="0.5" opacity="0.4" />
     </svg>
   );
 }
@@ -120,7 +126,7 @@ export default function Navigation() {
           transform: isIntro ? 'translateY(-50%)' : 'none',
           willChange: 'top, bottom, transform',
           transition: `top 1.4s ${E}, bottom 0.6s ${E}, transform 1.4s ${E}`,
-          pointerEvents: isPill ? 'auto' : 'none',
+          pointerEvents: 'none',
         }}
       >
         {/* Container */}
@@ -149,6 +155,7 @@ export default function Navigation() {
               `border-color 0.6s ${E}`, `box-shadow 0.7s ${E}`,
             ].join(', '),
             overflow: 'hidden',
+            pointerEvents: isPill ? 'auto' : 'none',
           }}
         >
           {/* ── HEADER ── */}
@@ -212,24 +219,59 @@ export default function Navigation() {
             transition: `max-height 0.6s ${E}, opacity 0.45s ${E} ${isOpen ? '0.1s' : '0s'}`,
             overflow: 'hidden',
           }}>
-            {links.map((link, i) => (
+            {[
+              { ...links[0], num: '01', desc: 'Overview & latest updates' },
+              { ...links[1], num: '02', desc: 'Browse the mentor roster' },
+              { ...links[2], num: '03', desc: 'Your current learning trajectory' },
+              { ...links[3], num: '04', desc: 'System & messaging alerts' },
+              { ...links[4], num: '05', desc: 'Preferences & account settings' },
+            ].map((link, i) => (
               <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="group block" style={{
                 opacity: isOpen ? 1 : 0, transform: isOpen ? 'translateY(0)' : 'translateY(14px)',
                 transition: `opacity 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(links.length - 1 - i) * 0.03}s`}, transform 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(links.length - 1 - i) * 0.03}s`}`,
               }}>
-                <div className="py-[13px] px-4 rounded-xl transition-colors duration-300 group-hover:bg-white/[0.05]">
-                  <span className={`text-[24px] font-serif tracking-wide transition-colors duration-300 ${
-                    activeTab === link.path ? 'text-white' : 'text-white/40 group-hover:text-white'
-                  }`}>{link.label}</span>
+                <div className={`py-[14px] px-3 rounded-[14px] transition-all duration-300 flex items-center gap-4 ${
+                  activeTab === link.path 
+                    ? 'bg-white/[0.04]' 
+                    : 'hover:bg-white/[0.03]'
+                }`}>
+                  {/* Active indicator */}
+                  <div className={`w-1 h-10 rounded-full flex-shrink-0 transition-colors duration-500 ${
+                      activeTab === link.path ? 'bg-gradient-to-b from-blue-400 to-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.6)]' : 'bg-white/[0.05]'
+                  }`} />
+                  
+                  <span className={`text-[10px] uppercase font-bold tracking-widest flex-shrink-0 w-6 transition-colors duration-300 ${
+                    activeTab === link.path ? 'text-white' : 'text-white/20 group-hover:text-white/50'
+                  }`}>{link.num}</span>
+
+                  <div className="flex-1 min-w-0 pr-4">
+                    <span className={`text-xl font-serif tracking-wide block transition-colors duration-300 ${
+                      activeTab === link.path ? 'text-white' : 'text-white/40 group-hover:text-white/80'
+                    }`}>{link.label}</span>
+                    <span className={`text-[11px] font-medium block mt-1 transition-colors duration-300 ${
+                      activeTab === link.path ? 'text-white/50' : 'text-white/20 group-hover:text-white/40'
+                    }`}>{link.desc}</span>
+                  </div>
+                  {/* Arrow */}
+                  <svg className={`w-4 h-4 flex-shrink-0 transition-all duration-300 ${
+                    activeTab === link.path ? 'text-white/30' : 'text-white/10 group-hover:text-white/30 group-hover:translate-x-0.5'
+                  }`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
                 </div>
               </Link>
             ))}
-            <div className="mt-4 pt-5 flex justify-between items-center px-3" style={{
+
+            {/* Footer */}
+            <div className="mt-5 pt-5 flex justify-between items-center px-4" style={{
               borderTop: '1px solid rgba(255,255,255,0.05)',
               opacity: isOpen ? 1 : 0, transition: `opacity 0.3s ${E} ${isOpen ? '0.5s' : '0s'}`,
             }}>
-              <span className="text-[9px] text-white/25 uppercase tracking-[0.15em]">Sanctuary</span>
-              <a href="#" className="text-[9px] text-white/25 hover:text-white/50 uppercase tracking-widest transition-colors">About</a>
+              <span className="text-[9px] text-white/20 uppercase tracking-[0.15em] bg-white/[0.04] px-3 py-1.5 rounded-full">v1.0 Beta</span>
+              <div className="flex gap-3">
+                <a href="#" className="text-[9px] text-white/25 hover:text-white/50 uppercase tracking-widest transition-colors">About</a>
+                <a href="#" className="text-[9px] text-white/25 hover:text-white/50 uppercase tracking-widest transition-colors">Help</a>
+              </div>
             </div>
           </div>
         </div>

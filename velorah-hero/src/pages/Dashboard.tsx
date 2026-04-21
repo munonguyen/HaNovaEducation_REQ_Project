@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
-import { Calendar as CalendarIcon, Video, FileText, ChevronRight, Clock, CheckCircle } from 'lucide-react';
+import { Video, FileText, ChevronRight, Clock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -15,7 +17,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } }
 };
 
 export default function Dashboard() {
@@ -31,7 +33,7 @@ export default function Dashboard() {
       <motion.div 
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1, ease }}
         className="max-w-3xl"
       >
         <p className="text-moonlight-gray font-medium tracking-wide uppercase text-sm mb-4">Your Sanctuary</p>
@@ -45,7 +47,7 @@ export default function Dashboard() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1, delay: 0.2, ease }}
         className="w-full relative"
       >
         <div className="absolute -inset-1 bg-gradient-to-r from-muted-amber/20 to-indigo/20 rounded-[34px] blur-lg opacity-40"></div>
