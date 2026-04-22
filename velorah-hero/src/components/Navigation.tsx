@@ -222,9 +222,10 @@ export default function Navigation() {
             {[
               { ...links[0], num: '01', desc: 'Overview & latest updates' },
               { ...links[1], num: '02', desc: 'Browse the mentor roster' },
-              { ...links[2], num: '03', desc: 'Your current learning trajectory' },
-              { ...links[3], num: '04', desc: 'System & messaging alerts' },
-              { ...links[4], num: '05', desc: 'Preferences & account settings' },
+              { ...links[2], num: '03', desc: 'Your weekly timetable & sessions' },
+              { ...links[3], num: '04', desc: 'Track your learning milestones' },
+              { ...links[4], num: '05', desc: 'System & messaging alerts' },
+              { ...links[5], num: '06', desc: 'Preferences & account settings' },
             ].map((link, i) => (
               <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="group block" style={{
                 opacity: isOpen ? 1 : 0, transform: isOpen ? 'translateY(0)' : 'translateY(14px)',

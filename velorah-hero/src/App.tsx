@@ -8,6 +8,8 @@ import Tutors from './pages/Tutors';
 import TutorProfile from './pages/TutorProfile';
 import Dashboard from './pages/Dashboard';
 import Schedule from './pages/Schedule';
+import Notifications from './pages/Notifications';
+import Profile from './pages/Profile';
 
 export default function App() {
   const location = useLocation();
@@ -45,6 +47,8 @@ export default function App() {
               <Route path="/tutors/:id" element={<TutorProfile />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/schedule" element={<Schedule />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={
                 <div className="w-full flex items-center justify-center min-h-[50vh]">
                   <div className="glass-panel px-10 py-16 rounded-3xl text-center max-w-lg bg-soft-charcoal/40 border-moonlight-gray/20">

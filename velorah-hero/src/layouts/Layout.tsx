@@ -11,8 +11,12 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const isInternal = location.pathname !== '/';
 
-  // Initialize Lenis Smooth Scroll
+  // Initialize Lenis Smooth Scroll — disabled on fixed-layout pages
   useEffect(() => {
+    // Schedule and Notifications use fixed-viewport layouts with internal scroll
+    const fixedPages = ['/schedule', '/notifications'];
+    if (fixedPages.includes(location.pathname)) return;
+
     const lenis = new Lenis({
       duration: 0.8, // Faster, lighter feel
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -33,7 +37,7 @@ export default function Layout({ children }: LayoutProps) {
     return () => {
       lenis.destroy();
     };
-  }, []);
+  }, [location.pathname]);
 
   return (
     <div className="relative min-h-screen overflow-hidden font-sans text-cream" style={{ background: 'transparent' }}>
