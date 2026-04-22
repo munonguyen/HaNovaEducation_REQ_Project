@@ -47,15 +47,16 @@ const STAR_COLORS = [
 
 function createStars(w: number, h: number): Star[] {
   const stars: Star[] = [];
-  const count = (w * h) / 2400;
+  // Reduced density: /3500 instead of /2400 — visually similar, ~30% fewer draws
+  const count = Math.min(Math.floor((w * h) / 3500), 280);
   for (let i = 0; i < count; i++) {
     const layer = Math.random() < 0.55 ? 0 : Math.random() < 0.65 ? 1 : 2;
     stars.push({
       x: Math.random() * w,
       y: Math.random() * h,
-      radius: [0.5, 0.9, 1.6][layer] + Math.random() * 0.3,
+      radius: [0.5, 0.9, 1.5][layer] + Math.random() * 0.25,
       baseAlpha: [0.3, 0.55, 0.85][layer] + Math.random() * 0.15,
-      twinkleSpeed: 0.4 + Math.random() * 2,
+      twinkleSpeed: 0.4 + Math.random() * 1.6,
       twinklePhase: Math.random() * Math.PI * 2,
       color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
       layer,
@@ -105,18 +106,19 @@ export default function StarfieldCanvas() {
   const resize = useCallback(() => {
     const c = canvasRef.current;
     if (!c) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Cap DPR at 1.5 to halve pixel count on Retina screens
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const w = window.innerWidth;
     const h = window.innerHeight;
     c.width = w * dpr;
     c.height = h * dpr;
     c.style.width = `${w}px`;
     c.style.height = `${h}px`;
-    const ctx = c.getContext('2d');
+    const ctx = c.getContext('2d', { willReadFrequently: false });
     if (ctx) ctx.scale(dpr, dpr);
     starsRef.current = createStars(w, h);
-    // Seed some particles
-    particlesRef.current = Array.from({ length: 30 }, () => spawnParticle(w, h));
+    // Fewer particles — 15 is visually sufficient
+    particlesRef.current = Array.from({ length: 15 }, () => spawnParticle(w, h));
   }, []);
 
   useEffect(() => {
@@ -175,19 +177,21 @@ export default function StarfieldCanvas() {
       }
     }
 
-    /* ─── CONSTELLATIONS ─── */
+    /* ─── CONSTELLATIONS — capped at 3 connections per star ─── */
     function drawConstellations(t: number) {
       const bright = starsRef.current.filter(s => s.layer === 2);
-      const maxDist = 120;
+      const maxDist = 110;
       ctx.lineWidth = 0.4;
       const lineAlpha = 0.04 + Math.sin(t * 0.5) * 0.015;
 
       for (let i = 0; i < bright.length; i++) {
-        for (let j = i + 1; j < bright.length; j++) {
+        let connections = 0;
+        for (let j = i + 1; j < bright.length && connections < 3; j++) {
           const dx = bright[i].x - bright[j].x;
           const dy = bright[i].y - bright[j].y;
           const d = Math.sqrt(dx * dx + dy * dy);
           if (d < maxDist) {
+            connections++;
             const fade = 1 - d / maxDist;
             ctx.beginPath();
             ctx.moveTo(bright[i].x, bright[i].y);
