@@ -1,6 +1,8 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import overviewVideo from '../assets/videos/hanova_overview.mp4';
+import showcaseVideo from '../assets/videos/showcase-video.mp4';
 
 const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -29,7 +31,7 @@ export default function Home() {
             transition={{ duration: 20, ease: 'linear' }}
             autoPlay loop muted playsInline
             className="w-full h-full object-cover"
-            src="/hanova_overview.mp4"
+            src={overviewVideo}
           />
           {/* Subtle bottom gradient for content transition */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#020205]/80" />
@@ -244,7 +246,7 @@ export default function Home() {
           className="w-full max-w-6xl mx-auto px-6 overflow-hidden rounded-[32px] md:rounded-[48px] shadow-[0_30px_100px_rgba(0,0,0,0.8)] border border-white/10"
         >
           <div className="relative aspect-video w-full group">
-            <video autoPlay loop muted playsInline className="w-full h-full object-cover" src="/showcase-video.mp4" />
+            <video autoPlay loop muted playsInline className="w-full h-full object-cover" src={showcaseVideo} />
             
             {/* Cinematic Gradients to blend into the site */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#020205] via-[#020205]/20 to-transparent pointer-events-none" />
@@ -612,7 +614,7 @@ export default function Home() {
             <div className="absolute inset-x-0 bottom-0 h-1/3 z-10 bg-gradient-to-t from-[#020205] to-transparent pointer-events-none" />
             
             {/* Thematic Educational Video */}
-            <video autoPlay loop muted playsInline className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-[3s] ease-out brightness-110 saturate-[1.1]" src="/showcase-video.mp4" />
+            <video autoPlay loop muted playsInline className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-[3s] ease-out brightness-110 saturate-[1.1]" src={showcaseVideo} />
             
             <div className="absolute top-6 right-6 z-20 flex px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 items-center justify-center gap-2">
                <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />

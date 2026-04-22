@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import Layout from './layouts/Layout';
+import Layout from './layout/Layout';
 import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import Tutors from './pages/Tutors';

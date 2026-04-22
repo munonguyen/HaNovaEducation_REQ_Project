@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Calendar, MessageSquare, BookOpen, AlertCircle, Check, CheckCircle2, Video, Clock, Award, UserPlus, Zap, ChevronRight } from 'lucide-react';
+import { Bell, Calendar, MessageSquare, BookOpen, AlertCircle, Check, CheckCircle2, Video, Clock, Award, Zap, ChevronRight } from 'lucide-react';
 
 const categories = [
   { id: 'all', label: 'All', icon: Bell },

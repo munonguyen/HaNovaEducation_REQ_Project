@@ -1,16 +1,12 @@
 import { type ReactNode, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-  Award,
   Calendar as CalendarIcon,
   ChevronLeft,
   CheckCircle2,
   Clock3,
-  FileCheck2,
   GraduationCap,
-  MessageSquareQuote,
-  ShieldCheck,
   Target,
   TrendingUp,
   UserCheck,
@@ -18,13 +14,9 @@ import {
   MapPin,
   Globe2,
   Zap,
-  Lightbulb,
-  Network,
-  MonitorPlay,
-  Quote,
 } from 'lucide-react';
 import BookingModal from '../components/BookingModal';
-import { getTutorById, tutorAvatars, tutorCovers } from '../data/tutors';
+import { getTutorById, tutorAvatars, tutorCovers } from '../services/tutors';
 
 const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -32,22 +24,11 @@ export default function TutorProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'experience' | 'proof'>('overview');
   const tutor = getTutorById(id);
 
-  const totalSlotsPerWeek = useMemo(
-    () => tutor.weeklyAvailability.reduce((sum, day) => sum + day.slots.length, 0),
-    [tutor.weeklyAvailability]
-  );
   const studentSatisfaction = useMemo(() => `${Math.min(99, 84 + Math.round(tutor.rating * 2))}%`, [tutor.rating]);
   const avatar = tutorAvatars[tutor.id] ?? tutorAvatars['1'];
   const coverImage = tutorCovers[tutor.id] ?? tutorCovers['1'];
-
-  const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'proof', label: 'Student Proof' },
-  ];
 
   return (
     <motion.div
@@ -360,38 +341,5 @@ function StatCard({ label, value, sub, icon, colorName }: { label: string; value
            </div>
         </div>
      </div>
-  );
-}
-
-function SectionHeader({ title, subtitle, icon }: { title: string; subtitle: string; icon: ReactNode }) {
-  return (
-    <div className="flex items-start md:items-center gap-5">
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] border border-white/10 bg-white/[0.04]">
-        {icon}
-      </div>
-      <div>
-        <h3 className="text-2xl font-serif text-white mb-1.5">{title}</h3>
-        <p className="text-sm font-medium tracking-wide text-white/50">{subtitle}</p>
-      </div>
-    </div>
-  );
-}
-
-function Panel({ title, subtitle, icon, children }: { title: string; subtitle: string; icon: ReactNode; children: ReactNode }) {
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.65, ease }}
-      className="relative overflow-hidden rounded-[36px] border border-white/[0.06] bg-[#0A0D18] group hover:border-white/[0.1] transition-colors duration-500"
-    >
-       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-       <div className="p-8 md:p-10">
-          <SectionHeader title={title} subtitle={subtitle} icon={icon} />
-          <div className="mt-8">
-            {children}
-          </div>
-       </div>
-    </motion.section>
   );
 }

@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
   Search,
-  Filter,
   Users,
   Sparkles,
   AlertTriangle,
@@ -17,7 +16,6 @@ import {
   Eye,
   EyeOff,
   Settings2,
-  ChevronDown,
   MapPin,
   DoorOpen,
   BookOpen
@@ -82,6 +80,11 @@ const mySessions = [
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const startH = 7;
 const endH = 22;
+type ScheduleTab = 'All' | 'Active' | 'Completed';
+type Tutor = (typeof myTutors)[number];
+type Session = (typeof mySessions)[number];
+type SessionWithTutor = Session & { tutor: Tutor };
+const scheduleTabs: ScheduleTab[] = ['All', 'Active', 'Completed'];
 
 /* ═══════════════════════════════════════════════
    COMPONENT
@@ -89,13 +92,13 @@ const endH = 22;
 export default function Schedule() {
   const [selectedTutor, setSelectedTutor] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'All' | 'Active' | 'Completed'>('All');
+  const [activeTab, setActiveTab] = useState<ScheduleTab>('All');
   
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
   const [themeMode, setThemeMode] = useState<'glass' | 'solid' | 'neon'>('glass');
   
-  const [hoveredSession, setHoveredSession] = useState<any | null>(null);
-  const [selectedModalSession, setSelectedModalSession] = useState<any | null>(null);
+  const [hoveredSession, setHoveredSession] = useState<SessionWithTutor | null>(null);
+  const [selectedModalSession, setSelectedModalSession] = useState<SessionWithTutor | null>(null);
 
   // Customization state
   const [pxPerHour, setPxPerHour] = useState(90);
@@ -135,11 +138,10 @@ export default function Schedule() {
   const upcomingCount = displaySessions.filter(s => s.status !== 'Cancelled').length;
   const hasConflict = false;
   
-  const handleSlotClick = (session: any) => {
+  const handleSlotClick = (session: SessionWithTutor) => {
     setSelectedModalSession(session);
   };
 
-  const selectedTutorObj = selectedTutor ? myTutors.find(t => t.id === selectedTutor) : null;
   const offDays = selectedTutor ? mockTutorOffDays[selectedTutor] || [] : [];
 
   const toggleDay = (idx: number) => {
@@ -208,10 +210,10 @@ export default function Schedule() {
 
             {/* Tab filter */}
             <div className="flex items-center gap-1 p-1 bg-white/[0.03] rounded-full mb-4">
-               {['All', 'Active', 'Completed'].map(tab => (
+               {scheduleTabs.map(tab => (
                   <button 
                     key={tab}
-                    onClick={() => setActiveTab(tab as any)}
+                    onClick={() => setActiveTab(tab)}
                     className={`flex-1 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full transition-all duration-300 z-10 ${
                       activeTab === tab ? 'text-black glass-button-primary shadow-lg' : 'text-white/40 hover:text-white/80'
                     }`}

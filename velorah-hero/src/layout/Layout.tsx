@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Lenis from '@studio-freight/lenis';
+import type { LenisOptions } from '@studio-freight/lenis';
 import StarfieldCanvas from '../components/StarfieldCanvas';
+import backgroundVideo from '../assets/videos/background-video.mp4';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,16 +19,17 @@ export default function Layout({ children }: LayoutProps) {
     const fixedPages = ['/schedule'];
     if (fixedPages.includes(location.pathname)) return;
 
-    const lenis = new Lenis({
+    const lenisOptions: LenisOptions = {
       duration: 0.8, // Faster, lighter feel
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical', 
-      gestureDirection: 'vertical',
-      smooth: true,
-      mouseMultiplier: 1.2, // Slightly more responsive
-      smoothTouch: false,
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.2, // Slightly more responsive
+      syncTouch: false,
       touchMultiplier: 2,
-    } as any);
+    };
+    const lenis = new Lenis(lenisOptions);
 
     function raf(time: number) {
       lenis.raf(time);
@@ -54,7 +57,7 @@ export default function Layout({ children }: LayoutProps) {
           className={`w-full h-full object-cover transition-all duration-1000 ${
             isInternal ? 'opacity-10 blur-3xl scale-110' : 'opacity-0' 
           }`}
-          src="/background-video.mp4"
+          src={backgroundVideo}
         />
       </div>
 

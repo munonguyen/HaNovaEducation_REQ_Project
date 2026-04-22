@@ -12,7 +12,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import BookingModal from '../components/BookingModal';
-import { tutorAvatars, tutors, type TutorRecord } from '../data/tutors';
+import { tutorAvatars, tutors, type TutorRecord } from '../services/tutors';
 
 const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -400,7 +400,7 @@ export default function Tutors() {
                 <button
                   onClick={() => {
                     setSearchTerm('');
-                    setSubjectFilter('All Subjects');
+                    setSubjectFilters([]);
                     setAvailabilityFilter('Any Availability');
                     setPriceFilter('Any Budget');
                     setLanguageFilter('Any Language');
@@ -620,4 +620,3 @@ function MultiSelectDropdown({ label, values, options, onChange }: { label: stri
     </div>
   )
 }
-

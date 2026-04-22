@@ -8,8 +8,6 @@ import {
   Clock,
   AlertTriangle,
   ChevronDown,
-  ChevronRight,
-  MapPin,
   FileText,
   Video,
   Link2,
@@ -19,11 +17,9 @@ import {
   Target,
   Flame,
   ArrowRight,
-  Bell,
   X,
   Flag,
   TrendingUp,
-  Users,
   GraduationCap,
   BarChart2,
   Play,
@@ -126,15 +122,15 @@ const phases = [
 ══════════════════════════════════════ */
 const statusConfig = {
   Completed: { color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20', dot: 'bg-emerald-400', line: 'bg-emerald-500/30' },
-  Ongoing:   { color: 'text-blue-400',    bg: 'bg-blue-500/10 border-blue-500/20',    dot: 'bg-blue-400',    line: 'bg-blue-500/30' },
-  Upcoming:  { color: 'text-white/40',    bg: 'bg-white/5 border-white/10',          dot: 'bg-white/20',    line: 'bg-white/10' },
-  Missed:    { color: 'text-red-400',     bg: 'bg-red-500/10 border-red-500/20',     dot: 'bg-red-400',     line: 'bg-red-500/20' },
+  Ongoing: { color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20', dot: 'bg-blue-400', line: 'bg-blue-500/30' },
+  Upcoming: { color: 'text-white/40', bg: 'bg-white/5 border-white/10', dot: 'bg-white/20', line: 'bg-white/10' },
+  Missed: { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20', dot: 'bg-red-400', line: 'bg-red-500/20' },
 };
 
 const priorityConfig = {
-  High:   'text-red-400 border-red-400/30 bg-red-400/5',
+  High: 'text-red-400 border-red-400/30 bg-red-400/5',
   Medium: 'text-amber-400 border-amber-400/30 bg-amber-400/5',
-  Low:    'text-white/40 border-white/10 bg-white/[0.02]',
+  Low: 'text-white/40 border-white/10 bg-white/[0.02]',
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -161,7 +157,6 @@ export default function StudyPlan() {
   const [taskFilter, setTaskFilter] = useState<'All' | 'Pending' | 'Completed'>('All');
   const [taskStatuses, setTaskStatuses] = useState<Record<string, string>>({});
   const [dismissedReminders, setDismissedReminders] = useState<string[]>([]);
-  const [reviewingSession, setReviewingSession] = useState<string | null>(null);
   const [starRating, setStarRating] = useState<Record<string, number>>({});
 
   const togglePhase = (id: string) => {
@@ -205,7 +200,7 @@ export default function StudyPlan() {
             className="flex flex-col sm:flex-row gap-2 mb-6"
           >
             {activeReminders.map(r => {
-              const Icon = r.Icon || r.icon;
+              const Icon = r.icon;
               const colorMap: Record<string, string> = {
                 blue: 'border-blue-500/20 bg-blue-500/5 text-blue-300',
                 amber: 'border-amber-500/20 bg-amber-500/5 text-amber-300',
@@ -218,7 +213,7 @@ export default function StudyPlan() {
                   className={`flex-1 flex items-center justify-between gap-3 px-4 py-3 rounded-[14px] border ${colorMap[r.color]} backdrop-blur-sm`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Bell size={13} />
+                    <Icon size={13} />
                     <span className="text-[12px] font-medium">{r.message}</span>
                   </div>
                   <button
@@ -242,7 +237,7 @@ export default function StudyPlan() {
         <div className="glass-panel rounded-[28px] p-7 mb-5 relative overflow-hidden">
           {/* Ambient glow */}
           <div className="absolute top-0 right-0 w-[400px] h-[200px] bg-[radial-gradient(ellipse,rgba(99,102,241,0.12),transparent)] pointer-events-none" />
-          
+
           <div className="flex flex-col lg:flex-row lg:items-center gap-6">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
@@ -364,8 +359,8 @@ export default function StudyPlan() {
                             {phase.status === 'Completed'
                               ? <CheckCircle2 size={18} className="text-emerald-400" />
                               : phase.status === 'Ongoing'
-                              ? <div className="w-3 h-3 rounded-full bg-blue-400 animate-pulse" />
-                              : <Circle size={16} className="text-white/20" />
+                                ? <div className="w-3 h-3 rounded-full bg-blue-400 animate-pulse" />
+                                : <Circle size={16} className="text-white/20" />
                             }
                           </div>
                           {/* Connector to next */}
@@ -492,7 +487,7 @@ export default function StudyPlan() {
                                                     <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold mb-2">Your Rating</p>
                                                     {session.studentReview || starRating[session.id] ? (
                                                       <div className="flex gap-1">
-                                                        {[1,2,3,4,5].map(s => (
+                                                        {[1, 2, 3, 4, 5].map(s => (
                                                           <Star key={s} size={16}
                                                             className={s <= (starRating[session.id] || session.studentReview || 0) ? 'text-amber-400 fill-amber-400' : 'text-white/20'}
                                                           />
@@ -500,7 +495,7 @@ export default function StudyPlan() {
                                                       </div>
                                                     ) : (
                                                       <div className="flex items-center gap-1">
-                                                        {[1,2,3,4,5].map(s => (
+                                                        {[1, 2, 3, 4, 5].map(s => (
                                                           <button key={s} onClick={() => setStarRating(prev => ({ ...prev, [session.id]: s }))}
                                                             className="hover:scale-125 transition-transform"
                                                           >
@@ -639,7 +634,7 @@ export default function StudyPlan() {
             <div>
               <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold mb-3">Daily Sessions (Last 7 Days)</p>
               <div className="flex items-end justify-between gap-1 h-14">
-                {['M','T','W','T','F','S','S'].map((d, i) => {
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => {
                   const max = Math.max(...studyPlan.weeklyData);
                   const h = studyPlan.weeklyData[i];
                   const heightPct = max > 0 ? (h / max) * 100 : 0;

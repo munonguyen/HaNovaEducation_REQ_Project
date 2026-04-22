@@ -1,6 +1,27 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, CreditCard, Shield, Edit2, Bookmark, ChevronRight, Globe, Moon, Volume2, Bell, CheckCircle2, LogOut, Camera, Mail, Phone, MapPin } from 'lucide-react';
+import { User, CreditCard, Shield, Edit2, Bookmark, ChevronRight, Globe, Moon, Bell, CheckCircle2, LogOut, Camera, Mail, Phone, MapPin } from 'lucide-react';
+
+function ToggleSwitch({ enabled, onClick }: { enabled: boolean; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 ${
+        enabled
+          ? 'bg-blue-500/30 border border-blue-500/50 shadow-[0_0_12px_rgba(59,130,246,0.3)]'
+          : 'bg-white/5 border border-white/10'
+      }`}
+    >
+      <motion.div
+        animate={{ x: enabled ? 24 : 2 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        className={`absolute top-1 w-4 h-4 rounded-full transition-colors ${
+          enabled ? 'bg-blue-400' : 'bg-white/30'
+        }`}
+      />
+    </button>
+  );
+}
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('personal');
@@ -21,25 +42,6 @@ export default function Profile() {
     { id: 'billing', label: 'Billing & Plans', icon: CreditCard, desc: 'Subscription & payment' },
     { id: 'security', label: 'Security', icon: Shield, desc: 'Password & 2FA' },
   ];
-
-  const ToggleSwitch = ({ enabled, onClick }: { enabled: boolean; onClick: () => void }) => (
-    <button 
-      onClick={onClick}
-      className={`w-12 h-6 rounded-full relative transition-all duration-300 shrink-0 ${
-        enabled 
-          ? 'bg-blue-500/30 border border-blue-500/50 shadow-[0_0_12px_rgba(59,130,246,0.3)]' 
-          : 'bg-white/5 border border-white/10'
-      }`}
-    >
-      <motion.div 
-        animate={{ x: enabled ? 24 : 2 }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className={`absolute top-1 w-4 h-4 rounded-full transition-colors ${
-          enabled ? 'bg-blue-400' : 'bg-white/30'
-        }`}
-      />
-    </button>
-  );
 
   return (
     <motion.div 

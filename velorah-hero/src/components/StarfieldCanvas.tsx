@@ -97,7 +97,7 @@ export default function StarfieldCanvas() {
   const starsRef = useRef<Star[]>([]);
   const shootRef = useRef<ShootingStar[]>([]);
   const particlesRef = useRef<Particle[]>([]);
-  const nextShootRef = useRef(1.5 + Math.random() * 3);
+  const nextShootRef = useRef(2.5);
   const timerRef = useRef(0);
   const animRef = useRef(0);
   const lastRef = useRef(0);

@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Landmark,
   Smartphone,
-  Star,
   Info,
   ChevronDown,
   AlertCircle,
@@ -111,24 +110,30 @@ export default function BookingModal({
 
   // Timer logic for Step 3
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (step === 3 && isOpen) {
       timer = setInterval(() => {
         setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
     }
-    return () => clearInterval(timer);
+    return () => {
+      if (timer) clearInterval(timer);
+    };
   }, [step, isOpen]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+
+    const resetTimer = window.setTimeout(() => {
       setStep(1);
       setSelectedPlan('single');
       setPolicyAgreed(false);
       setPolicyExpanded(false);
       setTimeLeft(600);
       setSelectedPayment('vnpay');
-    }
+    }, 0);
+
+    return () => window.clearTimeout(resetTimer);
   }, [isOpen]);
 
   const plans = {
