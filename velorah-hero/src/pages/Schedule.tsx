@@ -18,6 +18,9 @@ import {
   EyeOff,
   Settings2,
   ChevronDown,
+  MapPin,
+  DoorOpen,
+  BookOpen
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -62,18 +65,18 @@ const mockTutorOffDays: Record<string, string[]> = {
 };
 
 const mySessions = [
-  { id: 's1', tutorId: '1', title: 'Quantum Mechanics Review', type: 'Session', durationMinutes: 60, dayIndex: 0, startHour: 8, status: 'Confirmed', note: 'Review Chapter 3 before class.', isUpdated: false },
-  { id: 's2', tutorId: '2', title: 'Syntax Analysis', type: 'Monthly', durationMinutes: 90, dayIndex: 2, startHour: 14, status: 'Rescheduled', note: 'No preparation note', isUpdated: true },
-  { id: 's3', tutorId: '1', title: 'Thermodynamics Lab', type: 'Course', durationMinutes: 120, dayIndex: 4, startHour: 10, status: 'Cancelled', note: '', isUpdated: false },
-  { id: 's4', tutorId: '2', title: 'Phonetics Practice', type: 'Monthly', durationMinutes: 60, dayIndex: 3, startHour: 15, status: 'Confirmed', note: 'Read the handout on IPA', isUpdated: false },
-  { id: 's5', tutorId: '3', title: 'Data Structures Intro', type: 'Course', durationMinutes: 120, dayIndex: 0, startHour: 13, status: 'Confirmed', note: 'Setup dev environment', isUpdated: false },
-  { id: 's6', tutorId: '1', title: 'Relativity Seminar', type: 'Session', durationMinutes: 60, dayIndex: 1, startHour: 9, status: 'Confirmed', note: 'Bring notes on Einstein', isUpdated: false },
-  { id: 's7', tutorId: '2', title: 'Morphology Deep Dive', type: 'Monthly', durationMinutes: 90, dayIndex: 1, startHour: 16, status: 'Confirmed', note: '', isUpdated: false },
-  { id: 's8', tutorId: '3', title: 'Algorithm Complexity', type: 'Course', durationMinutes: 90, dayIndex: 3, startHour: 11, status: 'Confirmed', note: 'Review Big O notation', isUpdated: true },
-  { id: 's9', tutorId: '1', title: 'Electromagnetism', type: 'Session', durationMinutes: 60, dayIndex: 5, startHour: 10, status: 'Rescheduled', note: '', isUpdated: true },
-  { id: 's10', tutorId: '2', title: 'Semantics Tutorial', type: 'Session', durationMinutes: 60, dayIndex: 6, startHour: 14, status: 'Confirmed', note: '', isUpdated: false },
-  { id: 's11', tutorId: '1', title: 'Advanced Quantum Physics', type: 'Course', durationMinutes: 120, dayIndex: 2, startHour: 19, status: 'Confirmed', note: 'Prepare for late night lab discussion', isUpdated: true },
-  { id: 's12', tutorId: '3', title: 'AI Ethics', type: 'Session', durationMinutes: 90, dayIndex: 4, startHour: 20, status: 'Confirmed', note: 'Reading assignment on AI safety', isUpdated: false }
+  { id: 's1', tutorId: '1', title: 'Quantum Mechanics Review', type: 'Session', durationMinutes: 60, dayIndex: 0, startHour: 8, status: 'Confirmed', note: 'Review Chapter 3 before class.', isUpdated: false, location: 'Academic Plaza', room: 'A1-204', materials: 'Formula Sheet v2, Lab Goggles' },
+  { id: 's2', tutorId: '2', title: 'Syntax Analysis', type: 'Monthly', durationMinutes: 90, dayIndex: 2, startHour: 14, status: 'Rescheduled', note: 'No preparation note', isUpdated: true, location: 'Language Hub', room: 'B3-102', materials: 'IPA Chart, Syntax Workbook' },
+  { id: 's3', tutorId: '1', title: 'Thermodynamics Lab', type: 'Course', durationMinutes: 120, dayIndex: 4, startHour: 10, status: 'Cancelled', note: '', isUpdated: false, location: 'Science Wing', room: 'Lab 4', materials: 'None' },
+  { id: 's4', tutorId: '2', title: 'Phonetics Practice', type: 'Monthly', durationMinutes: 60, dayIndex: 3, startHour: 15, status: 'Confirmed', note: 'Read the handout on IPA', isUpdated: false, location: 'Digital Studio', room: 'Studio B', materials: 'Microphone, Handout 3' },
+  { id: 's5', tutorId: '3', title: 'Data Structures Intro', type: 'Course', durationMinutes: 120, dayIndex: 0, startHour: 13, status: 'Confirmed', note: 'Setup dev environment', isUpdated: false, location: 'Tech Tower', room: 'Lounge 1', materials: 'VS Code, Git installed' },
+  { id: 's6', tutorId: '1', title: 'Relativity Seminar', type: 'Session', durationMinutes: 60, dayIndex: 1, startHour: 9, status: 'Confirmed', note: 'Bring notes on Einstein', isUpdated: false, location: 'Academic Plaza', room: 'A1-405', materials: 'Field Journal' },
+  { id: 's7', tutorId: '2', title: 'Morphology Deep Dive', type: 'Monthly', durationMinutes: 90, dayIndex: 1, startHour: 16, status: 'Confirmed', note: '', isUpdated: false, location: 'Language Hub', room: 'B3-105', materials: 'Textbook' },
+  { id: 's8', tutorId: '3', title: 'Algorithm Complexity', type: 'Course', durationMinutes: 90, dayIndex: 3, startHour: 11, status: 'Confirmed', note: 'Review Big O notation', isUpdated: true, location: 'Tech Tower', room: 'Room 202', materials: 'Graph Paper' },
+  { id: 's9', tutorId: '1', title: 'Electromagnetism', type: 'Session', durationMinutes: 60, dayIndex: 5, startHour: 10, status: 'Rescheduled', note: '', isUpdated: true, location: 'Science Wing', room: 'Hall 1', materials: 'Calculator' },
+  { id: 's10', tutorId: '2', title: 'Semantics Tutorial', type: 'Session', durationMinutes: 60, dayIndex: 6, startHour: 14, status: 'Confirmed', note: '', isUpdated: false, location: 'Virtual', room: 'Zoom ID: 882-192', materials: 'Internet connection' },
+  { id: 's11', tutorId: '1', title: 'Advanced Quantum Physics', type: 'Course', durationMinutes: 120, dayIndex: 2, startHour: 19, status: 'Confirmed', note: 'Prepare for late night lab discussion', isUpdated: true, location: 'Science Wing', room: 'Lab 2', materials: 'Dark-room goggles' },
+  { id: 's12', tutorId: '3', title: 'AI Ethics', type: 'Session', durationMinutes: 90, dayIndex: 4, startHour: 20, status: 'Confirmed', note: 'Reading assignment on AI safety', isUpdated: false, location: 'Innovation Lab', room: 'Glass Hub', materials: 'iPad/Laptop' }
 ];
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -147,7 +150,7 @@ export default function Schedule() {
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
-      className="fixed inset-0 pt-[90px] pb-4 px-4 lg:px-10 text-white font-sans flex flex-col z-10"
+      className="fixed inset-0 pt-[90px] pb-12 px-4 lg:px-10 text-white font-sans flex flex-col z-10"
     >
       
       {/* ══ COMPACT HEADER ══ */}
@@ -568,8 +571,20 @@ export default function Schedule() {
                               </span>
                            </div>
                            <h4 className="font-serif text-base text-white mb-0.5">{hoveredSession.title}</h4>
-                           <p className="text-xs text-white/50 mb-4">{hoveredSession.tutor.name} • {hoveredSession.tutor.subject}</p>
+                           <p className="text-xs text-white/50 mb-3">{hoveredSession.tutor.name}</p>
                            
+                           {/* Location & Room */}
+                           <div className="flex flex-col gap-1.5 mb-4">
+                              <div className="flex items-center gap-1.5 grayscale opacity-60">
+                                 <MapPin size={10} />
+                                 <span className="text-[10px] uppercase tracking-wider">{hoveredSession.location}</span>
+                              </div>
+                              <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 w-max">
+                                 <DoorOpen size={12} className="text-indigo-400" />
+                                 <span className="text-[11px] font-bold text-white tracking-tight">Room {hoveredSession.room}</span>
+                              </div>
+                           </div>
+
                            <div className="grid grid-cols-2 gap-2 mb-4">
                               <div>
                                 <p className="text-[9px] text-white/30 uppercase tracking-widest mb-0.5">Time</p>
@@ -583,15 +598,27 @@ export default function Schedule() {
                               </div>
                            </div>
                            
-                           {hoveredSession.note && (
-                              <div className="rounded-[12px] bg-white/[0.03] border border-white/5 p-3">
-                                 <div className="flex items-center gap-1.5 mb-1 text-white/70">
-                                    <FileText size={11} className="text-amber-400" />
-                                    <span className="text-[9px] uppercase tracking-widest font-bold">Prep Note</span>
+                           <div className="space-y-2.5">
+                              {hoveredSession.note && (
+                                 <div className="rounded-[12px] bg-white/[0.03] border border-white/5 p-2.5">
+                                    <div className="flex items-center gap-1.5 mb-1 text-white/70">
+                                       <FileText size={10} className="text-amber-400" />
+                                       <span className="text-[9px] uppercase tracking-widest font-bold">Prep Note</span>
+                                    </div>
+                                    <p className="text-[10px] leading-relaxed text-white/50 italic">"{hoveredSession.note}"</p>
                                  </div>
-                                 <p className="text-[11px] leading-relaxed text-white/50 italic">"{hoveredSession.note}"</p>
-                              </div>
-                           )}
+                              )}
+
+                              {hoveredSession.materials && (
+                                 <div className="rounded-[12px] bg-white/[0.03] border border-white/5 p-2.5">
+                                    <div className="flex items-center gap-1.5 mb-1 text-white/70">
+                                       <BookOpen size={10} className="text-purple-400" />
+                                       <span className="text-[9px] uppercase tracking-widest font-bold">Materials</span>
+                                    </div>
+                                    <p className="text-[10px] leading-relaxed text-white/50">{hoveredSession.materials}</p>
+                                 </div>
+                              )}
+                           </div>
                         </div>
                      </motion.div>
                   )}
@@ -630,23 +657,70 @@ export default function Schedule() {
                    <p className="text-sm text-white/50">With {selectedModalSession.tutor.name}</p>
                 </div>
                 
-                <div className="p-7 space-y-5">
+                <div className="p-7 space-y-6">
                    <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-[16px] bg-white/[0.02] border border-white/5 p-3.5">
-                         <span className="block text-[9px] uppercase font-bold tracking-[0.2em] text-white/30 mb-1.5">When</span>
-                         <span className="block text-sm font-medium text-white/90">
-                           {daysOfWeek[selectedModalSession.dayIndex]}, {selectedModalSession.startHour.toString().padStart(2,'0')}:00
+                      <div className="rounded-[16px] bg-white/[0.02] border border-white/5 p-4 flex flex-col justify-between">
+                         <span className="block text-[9px] uppercase font-bold tracking-[0.2em] text-white/30 mb-2">When</span>
+                         <div className="flex items-center gap-2">
+                            <Clock size={15} className="text-blue-400" />
+                            <span className="text-sm font-medium text-white/90">
+                              {daysOfWeek[selectedModalSession.dayIndex]}, {selectedModalSession.startHour.toString().padStart(2,'0')}:00
+                            </span>
+                         </div>
+                      </div>
+                      <div className="rounded-[16px] bg-indigo-500/10 border border-indigo-500/20 p-4 flex flex-col justify-between shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                         <span className="block text-[9px] uppercase font-bold tracking-[0.2em] text-indigo-300/60 mb-2">Room Number</span>
+                         <div className="flex items-center gap-2">
+                            <DoorOpen size={18} className="text-indigo-400" />
+                            <span className="text-xl font-bold text-white tracking-tighter">
+                               {selectedModalSession.room}
+                            </span>
+                         </div>
+                      </div>
+                   </div>
+
+                   <div className="rounded-[16px] bg-white/[0.02] border border-white/5 p-4">
+                      <span className="block text-[9px] uppercase font-bold tracking-[0.2em] text-white/30 mb-2">Location</span>
+                      <div className="flex items-center gap-2">
+                         <MapPin size={14} className="text-emerald-400" />
+                         <span className="text-sm font-medium text-white/80">
+                            {selectedModalSession.location}
                          </span>
                       </div>
-                      <div className="rounded-[16px] bg-white/[0.02] border border-white/5 p-3.5">
-                         <span className="block text-[9px] uppercase font-bold tracking-[0.2em] text-white/30 mb-1.5">Type</span>
-                         <span className="block text-sm font-medium text-white/90">{selectedModalSession.type}</span>
-                      </div>
+                   </div>
+
+                   <div className="space-y-4">
+                      {selectedModalSession.note && (
+                         <div className="rounded-[18px] bg-amber-500/5 border border-amber-500/10 p-4">
+                            <h5 className="text-[10px] uppercase font-bold tracking-widest text-amber-500/60 mb-2 flex items-center gap-2">
+                               <FileText size={13} /> Preparation Notes
+                            </h5>
+                            <p className="text-[13px] text-white/70 leading-relaxed italic">
+                               "{selectedModalSession.note}"
+                            </p>
+                         </div>
+                      )}
+
+                      {selectedModalSession.materials && (
+                         <div className="rounded-[18px] bg-purple-500/5 border border-purple-500/10 p-4">
+                            <h5 className="text-[10px] uppercase font-bold tracking-widest text-purple-400/60 mb-2 flex items-center gap-2">
+                               <BookOpen size={13} /> Required Materials
+                            </h5>
+                            <ul className="text-[13px] text-white/70 space-y-1">
+                               {selectedModalSession.materials.split(',').map((item: string, i: number) => (
+                                  <li key={i} className="flex items-center gap-2">
+                                     <div className="w-1 h-1 rounded-full bg-purple-500" />
+                                     {item.trim()}
+                                  </li>
+                               ))}
+                            </ul>
+                         </div>
+                      )}
                    </div>
 
                    <div className="rounded-[16px] bg-black/40 border border-white/5 p-4">
                       <h5 className="text-[10px] uppercase font-bold tracking-widest text-white/60 mb-1.5 flex items-center gap-2">
-                        <AlertTriangle size={12} className="text-amber-500" /> Important
+                        <AlertTriangle size={12} className="text-amber-500" /> Policy
                       </h5>
                       <p className="text-[12px] text-white/40 leading-relaxed">
                          Rescheduling must occur at least 12 hours prior. Cancellations within 12 hours are non-refundable.
