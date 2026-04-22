@@ -13,8 +13,8 @@ export default function Layout({ children }: LayoutProps) {
 
   // Initialize Lenis Smooth Scroll — disabled on fixed-layout pages
   useEffect(() => {
-    // Schedule and Notifications use fixed-viewport layouts with internal scroll
-    const fixedPages = ['/schedule', '/notifications'];
+    // Schedule uses fixed-viewport layout with internal scroll
+    const fixedPages = ['/schedule'];
     if (fixedPages.includes(location.pathname)) return;
 
     const lenis = new Lenis({
