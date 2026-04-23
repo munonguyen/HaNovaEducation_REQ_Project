@@ -1,95 +1,192 @@
-import React from 'react';
-import { Users, User, MoreVertical, Brain, Calendar, MessageSquare, Plus } from 'lucide-react';
+import { useState } from 'react';
+import {
+  BookOpenCheck,
+  CalendarDays,
+  FileText,
+  MessageSquare,
+  Plus,
+  TrendingUp,
+  UserPlus,
+  UsersRound,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const Students: React.FC = () => {
-  const students = [
-    { name: 'Alexander Sterling', activeLessons: 4, studyPlan: 'Quantum Foundations', lastActive: '2 hours ago' },
-    { name: 'Sophia Chen', activeLessons: 2, studyPlan: 'Linear Algebra', lastActive: 'Yesterday' },
-    { name: 'Julian Thorne', activeLessons: 6, studyPlan: 'General Relativity', lastActive: 'Just now' },
-    { name: 'Marcus Vane', activeLessons: 1, studyPlan: 'None', lastActive: '3 days ago' },
-  ];
+const students = [
+  {
+    id: 's1',
+    name: 'Lan Anh',
+    activePlan: 'Grade 12 Math Sprint',
+    nextSession: 'Today, 10:30',
+    progress: 62,
+    history: ['Solved 18 integral problems', 'Needs more work on substitutions', 'Parent requested weekly progress note'],
+    notes: 'Strong motivation. Keep examples close to Vietnam national exam structure.',
+  },
+  {
+    id: 's2',
+    name: 'Minh Quan',
+    activePlan: 'IELTS Writing Band 6.5',
+    nextSession: 'Fri, 08:00',
+    progress: 48,
+    history: ['Task response improved', 'Grammar errors still repeated', 'Submitted essay 4/5 on time'],
+    notes: 'Prefers direct examples and short homework cycles.',
+  },
+  {
+    id: 's3',
+    name: 'Gia Bao',
+    activePlan: 'Physics Core Repair',
+    nextSession: 'Today, 14:00',
+    progress: 54,
+    history: ['Good at formulas', 'Needs conceptual explanation', 'Paid by VNPay'],
+    notes: 'Use diagrams before equations. Parent wants offline sessions twice a month.',
+  },
+  {
+    id: 's4',
+    name: 'Bao Chau',
+    activePlan: 'IELTS Speaking Routine',
+    nextSession: 'No confirmed session',
+    progress: 36,
+    history: ['Cancelled latest session', 'Replacement slot suggested', 'Reminder preference: Zalo + email'],
+    notes: 'Confidence is the main blocker. Keep warm-up short and predictable.',
+  },
+];
+
+const groups = [
+  { name: 'Group A3', members: '6 members', next: 'Today, 19:30', plan: 'Entrance Exam Roadmap' },
+  { name: 'IELTS Evening', members: '4 members', next: 'Thu, 20:00', plan: 'Speaking Routine' },
+  { name: 'Math 12 Weekend', members: '8 members', next: 'Sat, 08:30', plan: 'Problem Solving Sprint' },
+];
+
+export default function Students() {
+  const [selected, setSelected] = useState(students[0]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      className="tutor-page"
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.45 }}
     >
-      <div className="flex justify-between items-end mb-10">
+      <div className="tutor-page-header">
         <div>
-          <h1 className="text-4xl font-serif text-white mb-2">Students & Groups</h1>
-          <p className="text-white/50 tracking-wide">Manage your students and their learning progress.</p>
+          <span className="tutor-eyebrow"><UsersRound size={16} /> UC-08 students and groups</span>
+          <h1 className="tutor-page-title">Students / Groups</h1>
+          <p className="tutor-page-subtitle">
+            Keep student progress, lesson history, study plan assignment, notes, and group sessions in one place.
+          </p>
         </div>
-        <button className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-white/10 text-white hover:bg-white/10 transition-colors">
-          <Users size={16} /> Create Group
-        </button>
+        <div className="tutor-actions">
+          <button className="tutor-btn"><UserPlus size={16} /> Add student</button>
+          <button className="tutor-btn primary"><Plus size={16} /> Create group</button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {students.map((student, i) => (
-          <motion.div 
-            key={i} 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-panel p-6 rounded-3xl group relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-indigo-500/20"></div>
-            
-            <div className="flex justify-between items-start mb-6 relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40">
-                <User size={24} />
+      <section className="tutor-card" style={{ padding: 22 }}>
+        <div className="group-strip">
+          {groups.map((group) => (
+            <article className="group-card" key={group.name}>
+              <strong>{group.name}</strong>
+              <span>{group.members} - {group.plan}</span>
+              <div className="session-meta" style={{ marginTop: 12 }}>
+                <span><CalendarDays size={13} style={{ display: 'inline', marginRight: 4 }} /> {group.next}</span>
               </div>
-              <button className="text-white/20 hover:text-white/60 p-1 transition-colors"><MoreVertical size={20} /></button>
-            </div>
-
-            <h3 className="text-xl font-serif text-white mb-1 relative z-10">{student.name}</h3>
-            <p className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-6 relative z-10">Active {student.lastActive}</p>
-
-            <div className="space-y-4 mb-8 relative z-10">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-3 text-white/50">
-                  <Calendar size={16} className="text-white/20" /> Active Lessons
-                </div>
-                <div className="font-serif text-white text-lg">{student.activeLessons}</div>
+              <div className="request-actions">
+                <button className="compact-btn primary">Assign session</button>
+                <button className="compact-btn">Members</button>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-3 text-white/50">
-                  <Brain size={16} className="text-white/20" /> Study Plan
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <div className="students-layout">
+        <section className="student-grid">
+          {students.map((student) => (
+            <button
+              className={`student-card${selected.id === student.id ? ' is-selected' : ''}`}
+              key={student.id}
+              onClick={() => setSelected(student)}
+            >
+              <div className="student-card-head">
+                <div className="request-person">
+                  <div className="avatar-initial">{student.name.split(' ').map((part) => part[0]).join('')}</div>
+                  <div>
+                    <h3>{student.name}</h3>
+                    <p>{student.activePlan}</p>
+                  </div>
                 </div>
-                <div className={`text-[10px] uppercase tracking-widest font-bold ${student.studyPlan === 'None' ? 'text-white/20' : 'text-indigo-400'}`}>
-                  {student.studyPlan}
+                <span className="tutor-chip info">{student.progress}%</span>
+              </div>
+              <div className="student-facts">
+                <div className="student-fact">
+                  <span>Next session</span>
+                  <strong>{student.nextSession}</strong>
+                </div>
+                <div className="student-fact">
+                  <span>Active plan</span>
+                  <strong>{student.activePlan}</strong>
                 </div>
               </div>
-            </div>
+              <div className="progress-bar" aria-label={`${student.progress}% progress`}>
+                <span style={{ width: `${student.progress}%` }} />
+              </div>
+            </button>
+          ))}
+        </section>
 
-            <div className="grid grid-cols-2 gap-3 relative z-10">
-              <button className="glass-button-primary justify-center py-2.5 rounded-xl text-xs font-semibold text-center">
-                Profile
-              </button>
-              <button className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-semibold border border-white/10 text-white/60 hover:bg-white/5 hover:text-white transition-colors">
-                <MessageSquare size={14} /> Message
-              </button>
+        <aside className="tutor-card student-detail">
+          <div className="tutor-card-header">
+            <div>
+              <h2 className="tutor-section-title">{selected.name}</h2>
+              <p className="tutor-section-copy">Student detail, progress, history, and tutor notes.</p>
             </div>
-          </motion.div>
-        ))}
-        
-        {/* Add Student Card */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: students.length * 0.1 }}
-          className="border border-dashed border-white/20 rounded-3xl flex flex-col items-center justify-center text-white/30 hover:border-indigo-500/50 hover:text-indigo-400 hover:bg-indigo-500/5 transition-all cursor-pointer min-h-[320px] group"
-        >
-          <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-indigo-500/10 transition-colors">
-            <Plus size={24} />
+            <span className="tutor-chip success">Active</span>
           </div>
-          <span className="font-serif text-lg">Add New Student</span>
-        </motion.div>
+
+          <div className="detail-body">
+            <div className="student-facts">
+              <div className="student-fact">
+                <span>Progress</span>
+                <strong>{selected.progress}%</strong>
+              </div>
+              <div className="student-fact">
+                <span>Next session</span>
+                <strong>{selected.nextSession}</strong>
+              </div>
+            </div>
+
+            <div className="progress-bar" aria-label={`${selected.progress}% complete`}>
+              <span style={{ width: `${selected.progress}%` }} />
+            </div>
+
+            <div style={{ marginTop: 20 }}>
+              <h3 className="notification-group-title"><TrendingUp size={16} /> Recent progress</h3>
+              <div className="student-history">
+                {selected.history.map((item) => (
+                  <div className="notification-item" key={item}>
+                    <div className="tutor-soft-icon"><BookOpenCheck size={16} /></div>
+                    <div>
+                      <strong>{item}</strong>
+                      <span>Updated from latest lesson note</span>
+                    </div>
+                    <span className="tutor-chip">Note</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginTop: 20 }}>
+              <h3 className="notification-group-title"><FileText size={16} /> Tutor notes</h3>
+              <div className="notes-box">{selected.notes}</div>
+            </div>
+
+            <div className="request-actions">
+              <button className="compact-btn primary"><MessageSquare size={14} /> Message</button>
+              <button className="compact-btn">Assign plan</button>
+              <button className="compact-btn">Schedule lesson</button>
+            </div>
+          </div>
+        </aside>
       </div>
     </motion.div>
   );
-};
-
-export default Students;
+}

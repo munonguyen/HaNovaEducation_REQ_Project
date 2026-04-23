@@ -1,97 +1,304 @@
-import React from 'react';
-import { User, Calendar, Book, MessageSquare, Check, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  CalendarCheck,
+  Check,
+  Clock,
+  MessageSquare,
+  RefreshCw,
+  Send,
+  ShieldCheck,
+  UserRound,
+  X,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const BookingRequests: React.FC = () => {
-  const requests = [
-    {
-      student: 'Julian Thorne',
-      subject: 'Relativity & Spacetime',
-      time: 'Monday, 24 April • 2:00 PM – 3:30 PM',
-      message: 'I would like to focus on the Lorentz transformations and their derivation.',
-      status: 'pending'
-    },
-    {
-      student: 'Isabella Grant',
-      subject: 'Calculus III: Multiple Integrals',
-      time: 'Tuesday, 25 April • 10:00 AM – 11:00 AM',
-      message: 'I have an exam coming up next week and need help with triple integrals in spherical coordinates.',
-      status: 'pending'
-    },
-    {
-      student: 'Nathaniel West',
-      subject: 'Classical Mechanics',
-      time: 'Wednesday, 26 April • 4:00 PM – 5:00 PM',
-      message: '',
-      status: 'pending'
-    }
-  ];
+type BookingStatus = 'Clear' | 'Conflict' | 'Accepted' | 'Suggested' | 'Rejected';
+
+const initialRequests: Array<{
+  student: string;
+  subject: string;
+  time: string;
+  message: string;
+  status: BookingStatus;
+  payment: string;
+  expires: string;
+}> = [
+  {
+    student: 'Thanh Truc',
+    subject: 'Chemistry 11',
+    time: 'Fri 24 Apr, 18:00-19:30',
+    message: 'I want to review organic chemistry each Friday before school tests.',
+    status: 'Clear',
+    payment: 'MoMo hold ready',
+    expires: '11h 42m',
+  },
+  {
+    student: 'Duc Huy',
+    subject: 'SAT Math',
+    time: 'Sat 25 Apr, 09:00-10:00',
+    message: 'Can we start with a trial lesson and then decide a weekly plan?',
+    status: 'Clear',
+    payment: 'VNPay hold ready',
+    expires: '18h 05m',
+  },
+  {
+    student: 'Gia Linh',
+    subject: 'Grade 12 Math',
+    time: 'Wed 22 Apr, 11:00-12:30',
+    message: 'I need help with integrals. My exam is next Monday.',
+    status: 'Conflict',
+    payment: 'Awaiting slot',
+    expires: '07h 20m',
+  },
+  {
+    student: 'Bao Chau',
+    subject: 'IELTS Speaking',
+    time: 'Tue 21 Apr, 20:00-21:00',
+    message: '',
+    status: 'Clear',
+    payment: 'MoMo hold ready',
+    expires: '23h 10m',
+  },
+];
+
+export default function BookingRequests() {
+  const [requests, setRequests] = useState(initialRequests);
+
+  const counts = useMemo(() => {
+    const pending = requests.filter((request) => request.status === 'Clear' || request.status === 'Conflict').length;
+    const suggested = requests.filter((request) => request.status === 'Suggested').length;
+    const accepted = requests.filter((request) => request.status === 'Accepted').length;
+    return { pending, suggested, accepted };
+  }, [requests]);
+
+  const updateRequest = (student: string, status: BookingStatus) => {
+    setRequests((current) =>
+      current.map((request) => {
+        if (request.student !== student) return request;
+        if (status === 'Accepted') {
+          return {
+            ...request,
+            status,
+            payment: request.payment.replace('hold ready', 'verified'),
+            expires: 'Synced',
+          };
+        }
+        if (status === 'Suggested') {
+          return {
+            ...request,
+            status,
+            expires: 'Waiting for student',
+          };
+        }
+        if (status === 'Rejected') {
+          return {
+            ...request,
+            status,
+            payment: 'No charge',
+            expires: 'Closed',
+          };
+        }
+        return { ...request, status };
+      }),
+    );
+  };
+
+  const acceptClearRequests = () => {
+    setRequests((current) =>
+      current.map((request) =>
+        request.status === 'Clear'
+          ? {
+              ...request,
+              status: 'Accepted',
+              payment: request.payment.replace('hold ready', 'verified'),
+              expires: 'Synced',
+            }
+          : request,
+      ),
+    );
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      className="tutor-page"
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.45 }}
     >
-      <div className="mb-10">
-        <h1 className="text-4xl font-serif text-white mb-2">Booking Requests</h1>
-        <p className="text-white/50 tracking-wide">Respond to student requests for new tutoring sessions.</p>
+      <div className="tutor-page-header">
+        <div>
+          <span className="tutor-eyebrow"><CalendarCheck size={16} /> UC-03 booking flow</span>
+          <h1 className="tutor-page-title">Booking Requests</h1>
+          <p className="tutor-page-subtitle">
+            Review incoming requests, prevent invalid accepts, and auto-sync confirmed bookings into your schedule.
+          </p>
+        </div>
+        <div className="tutor-actions">
+          <button className="tutor-btn"><RefreshCw size={16} /> Sync now</button>
+          <button className="tutor-btn primary" onClick={acceptClearRequests}><Check size={16} /> Accept clear requests</button>
+        </div>
       </div>
 
-      <div className="space-y-6">
-        {requests.map((req, i) => (
-          <motion.div 
-            key={i} 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-panel overflow-hidden rounded-3xl"
-          >
-            <div className="flex flex-col md:flex-row gap-8 p-8">
-              <div className="flex-1">
-                <div className="flex items-center gap-5 mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-                    <User size={24} />
-                  </div>
+      <div className="requests-toolbar">
+        <div className="tab-bar">
+          <button className="tab-button is-active">Pending {counts.pending}</button>
+          <button className="tab-button">Suggested {counts.suggested}</button>
+          <button className="tab-button">Accepted today {counts.accepted}</button>
+        </div>
+        <div className="tutor-actions">
+          <span className="tutor-chip success"><ShieldCheck size={13} /> Live schedule lock on</span>
+          <span className="tutor-chip info"><Clock size={13} /> Average response 8 min</span>
+        </div>
+      </div>
+
+      <div className="requests-layout">
+        <section className="requests-list-large">
+          {requests.map((request) => {
+            const hasConflict = request.status === 'Conflict';
+            const isAccepted = request.status === 'Accepted';
+            const isSuggested = request.status === 'Suggested';
+            const isRejected = request.status === 'Rejected';
+            const isClosed = isAccepted || isSuggested || isRejected;
+            const statusTone = hasConflict ? 'danger' : isAccepted ? 'success' : isSuggested ? 'info' : isRejected ? 'warning' : 'success';
+            return (
+              <article className="booking-request-full" key={request.student}>
+                <div className="booking-request-main">
                   <div>
-                    <h3 className="text-xl font-serif text-white mb-1">{req.student}</h3>
-                    <div className="flex items-center gap-2 text-indigo-400 text-xs tracking-widest uppercase font-bold">
-                      <Book size={14} /> {req.subject}
+                    <div className="request-card-top">
+                      <div className="request-person">
+                        <div className="avatar-initial">{request.student.split(' ').map((part) => part[0]).join('')}</div>
+                        <div>
+                          <strong>{request.student}</strong>
+                          <span>{request.subject}</span>
+                        </div>
+                      </div>
+                      <span className={`tutor-chip ${statusTone}`}>
+                        {hasConflict ? <AlertTriangle size={13} /> : isRejected ? <X size={13} /> : <ShieldCheck size={13} />}
+                        {request.status}
+                      </span>
                     </div>
+
+                    <div className="request-detail-grid">
+                      <div className="request-detail">
+                        <span>Requested time</span>
+                        <strong>{request.time}</strong>
+                      </div>
+                      <div className="request-detail">
+                        <span>Payment</span>
+                        <strong>{request.payment}</strong>
+                      </div>
+                      <div className="request-detail">
+                        <span>Expires in</span>
+                        <strong>{request.expires}</strong>
+                      </div>
+                    </div>
+
+                    {request.message && (
+                      <p className="request-message">
+                        <MessageSquare size={14} style={{ display: 'inline', marginRight: 6 }} />
+                        {request.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="request-actions" style={{ alignContent: 'start', justifyContent: 'flex-end' }}>
+                    <button
+                      className="compact-btn success"
+                      disabled={hasConflict || isClosed}
+                      onClick={() => updateRequest(request.student, 'Accepted')}
+                    >
+                      <Check size={14} /> {isAccepted ? 'Accepted' : 'Accept'}
+                    </button>
+                    <button
+                      className="compact-btn primary"
+                      disabled={isAccepted || isRejected}
+                      onClick={() => updateRequest(request.student, 'Suggested')}
+                    >
+                      <Send size={14} /> {isSuggested ? 'Suggested' : 'Suggest new time'}
+                    </button>
+                    <button
+                      className="compact-btn danger"
+                      disabled={isAccepted || isRejected}
+                      onClick={() => updateRequest(request.student, 'Rejected')}
+                    >
+                      <X size={14} /> {isRejected ? 'Rejected' : 'Reject'}
+                    </button>
                   </div>
                 </div>
+              </article>
+            );
+          })}
+        </section>
 
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 text-white/60">
-                    <Calendar size={18} className="text-indigo-400" />
-                    <span className="text-sm">{req.time}</span>
-                  </div>
-                  {req.message && (
-                    <div className="flex items-start gap-3 text-white/60">
-                      <MessageSquare size={18} className="text-indigo-400 mt-1 flex-shrink-0" />
-                      <p className="text-sm italic leading-relaxed">"{req.message}"</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+        <aside className="tutor-card">
+          <div className="tutor-card-header">
+            <div>
+              <h2 className="tutor-section-title">Connected Accept Flow</h2>
+              <p className="tutor-section-copy">What happens after a tutor accepts a valid request.</p>
+            </div>
+          </div>
 
-              <div className="md:w-72 flex flex-col justify-center gap-4 border-t border-white/10 md:border-t-0 md:border-l pt-6 md:pt-0 md:pl-8">
-                <button className="glass-button-primary w-full justify-center py-3 rounded-xl flex items-center gap-2 text-sm font-semibold">
-                  <Check size={18} /> Accept Booking
-                </button>
-                <button className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold border border-white/10 text-white/60 hover:bg-white/5 hover:text-white transition-colors">
-                  <X size={18} /> Decline Request
-                </button>
-                <p className="text-[10px] text-center text-amber-500/70 mt-2 uppercase tracking-widest font-bold">
-                  Expires in 12 hours
-                </p>
+          <div className="flow-steps">
+            <div className="flow-step">
+              <div className="flow-step-num">1</div>
+              <div>
+                <strong>Schedule lock</strong>
+                <span>The requested time becomes Booked and is removed from public availability.</span>
               </div>
             </div>
-          </motion.div>
-        ))}
+            <div className="flow-step">
+              <div className="flow-step-num">2</div>
+              <div>
+                <strong>Payment confirmation</strong>
+                <span>VNPay or MoMo hold is verified before the lesson is fully confirmed.</span>
+              </div>
+            </div>
+            <div className="flow-step">
+              <div className="flow-step-num">3</div>
+              <div>
+                <strong>Notifications</strong>
+                <span>Student receives confirmation now and an automatic 24h reminder later.</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <aside className="insight-panel">
+          <div className="tutor-soft-icon amber"><AlertTriangle size={19} /></div>
+          <div>
+            <strong>Invalid action prevention</strong>
+            <p>Gia Linh cannot be accepted because the requested slot overlaps with an existing Math lesson. Suggesting a new time keeps the flow moving.</p>
+          </div>
+        </aside>
+
+        <aside className="tutor-card">
+          <div className="tutor-card-header">
+            <div>
+              <h2 className="tutor-section-title">Request Mix</h2>
+              <p className="tutor-section-copy">Light operational context, not an analytics dashboard.</p>
+            </div>
+          </div>
+          <div className="session-list">
+            <div className="session-row">
+              <div className="tutor-soft-icon"><UserRound size={18} /></div>
+              <div>
+                <h3 className="session-title">2 new individual students</h3>
+                <div className="session-meta"><span>Both ask for exam prep this week</span></div>
+              </div>
+              <span className="tutor-chip info">New</span>
+            </div>
+            <div className="session-row">
+              <div className="tutor-soft-icon green"><CalendarCheck size={18} /></div>
+              <div>
+                <h3 className="session-title">2 recurring opportunities</h3>
+                <div className="session-meta"><span>Friday evening and Tuesday night</span></div>
+              </div>
+              <span className="tutor-chip success">Fit</span>
+            </div>
+          </div>
+        </aside>
       </div>
     </motion.div>
   );
-};
-
-export default BookingRequests;
+}

@@ -1,161 +1,205 @@
-import React from 'react';
-import { Play, Clock, Video, Check, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  Bell,
+  CalendarDays,
+  Check,
+  Clock,
+  Lightbulb,
+  PlayCircle,
+  Send,
+  ShieldCheck,
+  UsersRound,
+  X,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const TutorHome: React.FC = () => {
+const todaySessions = [
+  { time: '08:00', student: 'Minh Quan', subject: 'IELTS Writing Task 2', mode: 'Online', status: 'Completed' },
+  { time: '10:30', student: 'Lan Anh', subject: 'Grade 12 Math - Integrals', mode: 'Online', status: 'Next' },
+  { time: '14:00', student: 'Gia Bao', subject: 'Physics - Electric field', mode: 'Offline', status: 'Booked' },
+  { time: '19:30', student: 'Group A3', subject: 'University entrance review', mode: 'Online', status: 'Booked' },
+];
+
+const pendingRequests = [
+  { student: 'Thanh Truc', subject: 'Chemistry 11', time: 'Fri 24 Apr, 18:00', note: 'Needs a recurring Friday evening slot.' },
+  { student: 'Duc Huy', subject: 'SAT Math', time: 'Sat 25 Apr, 09:00', note: 'Parent asks for a trial lesson first.' },
+];
+
+const notifications = [
+  { icon: Bell, title: 'New booking request', detail: 'Thanh Truc requested Chemistry 11 for Friday evening.', type: 'info' },
+  { icon: ShieldCheck, title: 'Payment confirmed', detail: 'MoMo payment for Lan Anh lesson has been verified.', type: 'success' },
+  { icon: Clock, title: '24h reminder ready', detail: 'Reminder for Group A3 will send automatically tonight.', type: 'warning' },
+];
+
+const stats = [
+  { value: '4', label: 'Sessions today', note: '1 completed, 3 remaining' },
+  { value: '6', label: 'Requests pending', note: '2 need response in 12h' },
+  { value: '0', label: 'Schedule conflicts', note: 'Calendar is synced live' },
+  { value: '92%', label: 'Auto-booking coverage', note: 'Zalo/Excel work reduced' },
+];
+
+export default function TutorHome() {
   return (
-    <div className="tutor-hero">
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="mb-10"
-      >
-        <h1 className="text-4xl font-serif text-white mb-2">Good morning, Dr. Aris</h1>
-        <p className="text-white/50 tracking-wide">Your guidance today will shape the scholars of tomorrow.</p>
-      </motion.div>
-
-      <div className="tutor-grid">
-        <div className="left-col flex flex-col gap-8">
-          {/* Next Lesson Card */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-panel p-8 rounded-3xl relative overflow-hidden"
-          >
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-            
-            <div className="text-[10px] uppercase tracking-widest text-white/50 font-bold mb-6">Next Session</div>
-            <div className="flex justify-between items-end relative z-10">
-              <div>
-                <h2 className="text-3xl font-serif text-white mb-2">Advanced Quantum Mechanics</h2>
-                <p className="text-white/70 mb-8">Student: Alexander Sterling</p>
-                <div className="flex gap-6">
-                  <div className="flex items-center gap-2 text-sm text-white/60">
-                    <Clock size={16} className="text-indigo-400" /> 10:30 AM (In 45 mins)
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-white/60">
-                    <Video size={16} className="text-indigo-400" /> Online Session
-                  </div>
-                </div>
-              </div>
-              <button className="glass-button-primary px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-semibold">
-                <Play size={16} fill="currentColor" />
-                Enter Session
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Today's Schedule */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-panel p-8 rounded-3xl"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="font-serif text-xl text-white">Today's Schedule</h3>
-              <button className="text-[10px] uppercase tracking-widest text-indigo-400 font-bold hover:text-indigo-300 transition-colors">
-                View Calendar
-              </button>
-            </div>
-            
-            <div className="flex flex-col gap-4">
-              {[
-                { time: '10:30 AM', student: 'Alexander Sterling', subject: 'Quantum Mechanics', status: 'upcoming' },
-                { time: '01:00 PM', student: 'Sophia Chen', subject: 'Linear Algebra', status: 'upcoming' },
-                { time: '03:30 PM', student: 'Marcus Vane', subject: 'Astrophysics', status: 'upcoming' },
-                { time: '08:00 AM', student: 'Elena Rossi', subject: 'Vector Calculus', status: 'completed' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center py-3 border-b border-white/5 last:border-0">
-                  <div className="w-24 text-sm font-bold text-indigo-300">{item.time}</div>
-                  <div className="flex-1">
-                    <div className="text-white font-medium">{item.student}</div>
-                    <div className="text-xs text-white/40">{item.subject}</div>
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-[9px] uppercase tracking-widest font-bold ${
-                    item.status === 'upcoming' 
-                      ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' 
-                      : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  }`}>
-                    {item.status}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+    <motion.div
+      className="tutor-page"
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45 }}
+    >
+      <section className="tutor-card home-hero">
+        <div>
+          <span className="tutor-eyebrow"><ShieldCheck size={16} /> Calm teaching workspace</span>
+          <h2>Good morning, Nguyen Minh Anh.</h2>
+          <p>
+            HaNova keeps your availability, booking requests, lessons, students, payments, and reminders in one focused tutor workspace.
+          </p>
+          <div className="home-hero-actions">
+            <Link to="/tutor/bookings" className="tutor-btn primary"><Check size={17} /> Accept requests</Link>
+            <Link to="/tutor/schedule" className="tutor-btn"><CalendarDays size={17} /> View schedule</Link>
+          </div>
         </div>
 
-        <div className="right-col flex flex-col gap-8">
-          {/* Pending Requests */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-panel p-8 rounded-3xl"
-          >
-            <h3 className="font-serif text-xl text-white mb-6">Pending Bookings</h3>
-            <div className="flex flex-col gap-4">
-              {[
-                { student: 'Julian Thorne', subject: 'Relativity', time: 'Mon, 24 Apr • 2:00 PM' },
-                { student: 'Isabella Grant', subject: 'Calculus III', time: 'Tue, 25 Apr • 10:00 AM' },
-              ].map((req, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-colors">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30"></div>
-                    <div>
-                      <div className="font-medium text-white text-sm">{req.student}</div>
-                      <div className="text-xs text-white/40">{req.subject}</div>
+        <div className="teaching-visual" aria-label="Schedule preview illustration">
+          <div className="teaching-visual-grid">
+            {Array.from({ length: 35 }, (_, index) => <span key={index} />)}
+          </div>
+          <div className="teaching-visual-card">
+            <strong>10:30 - Lan Anh</strong>
+            <span>Grade 12 Math lesson starts in 38 minutes. Notes and materials are ready.</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="home-layout">
+        <div className="home-main">
+          <section className="tutor-card">
+            <div className="tutor-card-header">
+              <div>
+                <h2 className="tutor-section-title">Today's Schedule</h2>
+                <p className="tutor-section-copy">Next sessions with payment, mode, and quick lesson actions.</p>
+              </div>
+              <Link to="/tutor/schedule" className="tutor-btn ghost">Full calendar</Link>
+            </div>
+
+            <div className="session-list">
+              {todaySessions.map((session) => (
+                <div className="session-row" key={`${session.time}-${session.student}`}>
+                  <div className="session-time">{session.time}</div>
+                  <div>
+                    <h3 className="session-title">{session.subject}</h3>
+                    <div className="session-meta">
+                      <span>{session.student}</span>
+                      <span>{session.mode}</span>
+                      <span>VNPay/MoMo synced</span>
                     </div>
                   </div>
-                  <div className="text-[11px] font-bold text-indigo-300 bg-indigo-500/10 py-2 px-3 rounded-lg text-center mb-4 border border-indigo-500/20">
-                    {req.time}
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button className="flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold border border-white/10 text-white/60 hover:bg-white/5 hover:text-white transition-colors">
-                      <X size={14} /> Reject
-                    </button>
-                    <button className="flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 border border-indigo-500/30 transition-all shadow-[0_0_15px_rgba(99,102,241,0.2)]">
-                      <Check size={14} /> Accept
-                    </button>
+                  <div className="tutor-actions">
+                    <span className={`tutor-chip ${session.status === 'Completed' ? 'success' : session.status === 'Next' ? 'info' : 'indigo'}`}>
+                      {session.status}
+                    </span>
+                    {session.status === 'Next' && (
+                      <button className="compact-btn primary"><PlayCircle size={15} /> Enter</button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-            <button className="w-full text-white/30 text-xs font-medium hover:text-white transition-colors mt-6 uppercase tracking-widest">
-              View all requests
-            </button>
-          </motion.div>
+          </section>
 
-          {/* Quick Stats */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-panel p-8 rounded-3xl"
-          >
-            <h3 className="font-serif text-xl text-white mb-6">Week at a Glance</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-3 bg-white/5 rounded-2xl border border-white/10">
-                <div className="text-2xl font-bold text-indigo-300 mb-1">12</div>
-                <div className="text-[9px] uppercase tracking-widest text-white/40">Lessons</div>
+          <section className="tutor-card">
+            <div className="tutor-card-header">
+              <div>
+                <h2 className="tutor-section-title">Pending Booking Requests</h2>
+                <p className="tutor-section-copy">Fast accept, reject, or suggest another time without leaving the page.</p>
               </div>
-              <div className="text-center p-3 bg-white/5 rounded-2xl border border-white/10">
-                <div className="text-2xl font-bold text-emerald-300 mb-1">98%</div>
-                <div className="text-[9px] uppercase tracking-widest text-white/40">Done</div>
+              <Link to="/tutor/bookings" className="tutor-btn ghost">Review all</Link>
+            </div>
+
+            <div className="request-list">
+              {pendingRequests.map((request) => (
+                <article className="request-card" key={request.student}>
+                  <div className="request-card-top">
+                    <div className="request-person">
+                      <div className="avatar-initial">{request.student.split(' ').map((part) => part[0]).join('')}</div>
+                      <div>
+                        <strong>{request.student}</strong>
+                        <span>{request.subject} - {request.time}</span>
+                      </div>
+                    </div>
+                    <span className="tutor-chip warning">Pending</span>
+                  </div>
+                  <p className="request-message">{request.note}</p>
+                  <div className="request-actions">
+                    <button className="compact-btn success"><Check size={14} /> Accept</button>
+                    <button className="compact-btn"><Send size={14} /> Suggest time</button>
+                    <button className="compact-btn danger"><X size={14} /> Reject</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside className="home-side">
+          <section className="stats-grid">
+            {stats.map((stat) => (
+              <div className="stat-card" key={stat.label}>
+                <span className="stat-value">{stat.value}</span>
+                <span className="stat-label">{stat.label}</span>
+                <span className="stat-note">{stat.note}</span>
               </div>
-              <div className="text-center p-3 bg-white/5 rounded-2xl border border-white/10">
-                <div className="text-2xl font-bold text-amber-300 mb-1">4.9</div>
-                <div className="text-[9px] uppercase tracking-widest text-white/40">Rating</div>
+            ))}
+          </section>
+
+          <section className="insight-panel">
+            <div className="tutor-soft-icon"><Lightbulb size={19} /></div>
+            <div>
+              <strong>Smart availability suggestion</strong>
+              <p>Open Tue/Thu 19:00-20:30 next week. Three students searched for those slots and no conflict is detected.</p>
+            </div>
+          </section>
+
+          <section className="tutor-card">
+            <div className="tutor-card-header">
+              <div>
+                <h2 className="tutor-section-title">Notifications Preview</h2>
+                <p className="tutor-section-copy">Real-time booking, confirmation, cancellation, and reminder events.</p>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
-  );
-};
+            <div className="notification-list">
+              {notifications.map(({ icon: Icon, title, detail, type }) => (
+                <div className="notification-item" key={title}>
+                  <div className={`tutor-soft-icon ${type === 'success' ? 'green' : type === 'warning' ? 'amber' : ''}`}>
+                    <Icon size={18} />
+                  </div>
+                  <div>
+                    <strong>{title}</strong>
+                    <span>{detail}</span>
+                  </div>
+                  <span className={`tutor-chip ${type}`}>Live</span>
+                </div>
+              ))}
+            </div>
+          </section>
 
-export default TutorHome;
+          <section className="tutor-card flat">
+            <div className="session-list">
+              <div className="session-row">
+                <div className="tutor-soft-icon green"><UsersRound size={18} /></div>
+                <div>
+                  <h3 className="session-title">Mentoring operations are healthy</h3>
+                  <div className="session-meta">
+                    <span>500+ user ready</span>
+                    <span>Realtime updates</span>
+                    <span>Page goal &lt; 3s</span>
+                  </div>
+                </div>
+                <span className="tutor-chip success">OK</span>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </motion.div>
+  );
+}

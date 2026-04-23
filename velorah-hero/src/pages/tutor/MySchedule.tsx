@@ -1,89 +1,179 @@
-import React from 'react';
-import { Plus, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  AlertTriangle,
+  CalendarRange,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  CopyPlus,
+  FileUp,
+  GripVertical,
+  Plus,
+  Repeat,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const MySchedule: React.FC = () => {
-  const hours = Array.from({ length: 16 }, (_, i) => i + 7); // 07:00 to 22:00
-  const days = ['Mon 24', 'Tue 25', 'Wed 26', 'Thu 27', 'Fri 28', 'Sat 29', 'Sun 30'];
+const hours = Array.from({ length: 15 }, (_, i) => i + 7);
+const days = [
+  { label: 'Mon', date: '20 Apr' },
+  { label: 'Tue', date: '21 Apr' },
+  { label: 'Wed', date: '22 Apr' },
+  { label: 'Thu', date: '23 Apr' },
+  { label: 'Fri', date: '24 Apr' },
+  { label: 'Sat', date: '25 Apr' },
+  { label: 'Sun', date: '26 Apr' },
+];
+
+const slotMap: Record<string, { type: 'available' | 'booked' | 'blocked' | 'conflict'; title: string; detail: string }> = {
+  '0-8': { type: 'booked', title: 'Minh Quan', detail: 'IELTS Writing - Online - paid by MoMo' },
+  '0-14': { type: 'available', title: 'Available', detail: 'Drag to extend until 16:00' },
+  '1-19': { type: 'available', title: 'Available', detail: 'Recurring Tue evening slot' },
+  '2-10': { type: 'booked', title: 'Lan Anh', detail: 'Grade 12 Math - VNPay confirmed' },
+  '2-11': { type: 'conflict', title: 'Overlap risk', detail: 'Trial booking overlaps with Lan Anh by 15 minutes' },
+  '3-18': { type: 'available', title: 'Available', detail: 'Best-fit suggestion from demand data' },
+  '4-9': { type: 'blocked', title: 'Blocked', detail: 'School meeting, unavailable' },
+  '4-19': { type: 'available', title: 'Available', detail: 'Recurring Friday evening slot' },
+  '5-9': { type: 'booked', title: 'Duc Huy', detail: 'SAT Math trial - pending payment hold' },
+  '6-15': { type: 'blocked', title: 'Blocked', detail: 'Personal time' },
+};
+
+export default function MySchedule() {
+  const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      className="tutor-page"
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.45 }}
     >
-      <div className="flex justify-between items-end mb-10">
+      <div className="tutor-page-header">
         <div>
-          <h1 className="text-4xl font-serif text-white mb-2">My Schedule</h1>
-          <p className="text-white/50 tracking-wide">Manage your availability and lesson time slots.</p>
+          <span className="tutor-eyebrow"><CalendarRange size={16} /> Core scheduling</span>
+          <h1 className="tutor-page-title">My Schedule</h1>
+          <p className="tutor-page-subtitle">
+            Weekly availability is the source of truth for bookings. Slots sync in real time to prevent double booking.
+          </p>
         </div>
-        <div className="flex gap-4">
-          <button className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold border border-white/10 text-white/70 hover:bg-white/5 hover:text-white transition-colors">
-            <Filter size={16} /> Filter
-          </button>
-          <button className="glass-button-primary px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-semibold">
-            <Plus size={16} /> Add Availability
-          </button>
+        <div className="tutor-actions">
+          <button className="tutor-btn"><FileUp size={16} /> Bulk upload</button>
+          <button className="tutor-btn"><Repeat size={16} /> Recurring slots</button>
+          <button className="tutor-btn primary"><Plus size={16} /> Add availability</button>
         </div>
       </div>
 
-      <div className="glass-panel p-8 rounded-3xl">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-6">
-            <h2 className="text-2xl font-serif text-white">April 24 – 30, 2026</h2>
-            <div className="flex border border-white/10 rounded-xl overflow-hidden bg-white/5">
-              <button className="p-2.5 hover:bg-white/10 border-r border-white/10 text-white/70 hover:text-white transition-colors"><ChevronLeft size={16} /></button>
-              <button className="p-2.5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"><ChevronRight size={16} /></button>
-            </div>
+      <section className="insight-panel">
+        <div className="tutor-soft-icon amber"><AlertTriangle size={19} /></div>
+        <div>
+          <strong>Conflict detection is active</strong>
+          <p>Wed 11:00 has a 15-minute overlap with an accepted Math lesson. Accepting the new request is disabled until a new time is suggested.</p>
+        </div>
+      </section>
+
+      <div className="schedule-toolbar">
+        <div className="segmented-control" aria-label="Calendar view">
+          <button className={viewMode === 'week' ? 'is-active' : ''} onClick={() => setViewMode('week')}>Weekly</button>
+          <button className={viewMode === 'month' ? 'is-active' : ''} onClick={() => setViewMode('month')}>Monthly</button>
+        </div>
+        <div className="tutor-actions">
+          <button className="tutor-btn ghost"><ChevronLeft size={16} /> Previous</button>
+          <button className="tutor-btn ghost">Today</button>
+          <button className="tutor-btn ghost">Next <ChevronRight size={16} /></button>
+        </div>
+      </div>
+
+      <section className="tutor-card calendar-shell">
+        <div className="calendar-topline">
+          <div>
+            <h2 className="calendar-title">
+              {viewMode === 'week' ? 'April 20-26, 2026' : 'April 2026'}
+              <span>Timezone: Vietnam (GMT+7). Drag across empty cells to create availability.</span>
+            </h2>
           </div>
-          <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10">
-            <button className="px-5 py-2 rounded-xl text-xs font-bold tracking-widest uppercase bg-indigo-500/20 text-indigo-300 shadow-sm border border-indigo-500/30">Week</button>
-            <button className="px-5 py-2 rounded-xl text-xs font-bold tracking-widest uppercase text-white/40 hover:text-white/70 transition-colors">Day</button>
+          <div className="calendar-legend">
+            <span className="legend-item"><span className="legend-dot" /> Available</span>
+            <span className="legend-item"><span className="legend-dot booked" /> Booked</span>
+            <span className="legend-item"><span className="legend-dot blocked" /> Blocked</span>
+            <span className="legend-item"><span className="legend-dot conflict" /> Conflict</span>
           </div>
         </div>
 
-        <div className="calendar-grid">
-          <div className="calendar-header">Time</div>
-          {days.map(day => (
-            <div key={day} className="calendar-header">{day}</div>
-          ))}
-
-          {hours.map(hour => (
-            <React.Fragment key={hour}>
-              <div className="calendar-cell text-[10px] font-bold text-white/40 flex items-center justify-center border-r border-white/10 bg-white/5">
-                {hour < 10 ? `0${hour}:00` : `${hour}:00`}
-              </div>
-              {days.map((day, di) => (
-                <div key={`${day}-${hour}`} className="calendar-cell group relative hover:bg-indigo-500/10 cursor-pointer transition-colors">
-                  {/* Mock data for availability */}
-                  {hour === 10 && di === 0 && (
-                    <div className="slot-booked">
-                      <div className="text-[9px] font-bold text-white/60 truncate">Booked: Alex</div>
-                    </div>
-                  )}
-                  {hour === 14 && di <= 2 && (
-                    <div className="slot-available shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                      <div className="font-bold tracking-wider uppercase text-[8px]">Available</div>
-                    </div>
-                  )}
-                  {hour === 9 && di === 4 && (
-                    <div className="slot-available shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                      <div className="font-bold tracking-wider uppercase text-[8px]">Available</div>
-                    </div>
-                  )}
-                  <button className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                    <div className="bg-indigo-500/20 p-2 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.4)] border border-indigo-500/40 text-indigo-200">
-                      <Plus size={16} />
-                    </div>
-                  </button>
+        {viewMode === 'week' ? (
+          <div className="calendar-scroller">
+            <div className="calendar-grid">
+              <div className="calendar-header">Time</div>
+              {days.map((day) => (
+                <div className="calendar-header" key={day.label}>
+                  {day.label}
+                  <span>{day.date}</span>
                 </div>
               ))}
-            </React.Fragment>
-          ))}
+
+              {hours.map((hour) => (
+                <React.Fragment key={hour}>
+                  <div className="calendar-time">{hour.toString().padStart(2, '0')}:00</div>
+                  {days.map((day, dayIndex) => {
+                    const slot = slotMap[`${dayIndex}-${hour}`];
+                    return (
+                      <div className="calendar-cell" key={`${day.label}-${hour}`}>
+                        {slot ? (
+                          <div className={`calendar-slot ${slot.type}`}>
+                            <GripVertical size={12} />
+                            {slot.title}
+                            <span>{slot.type === 'available' ? `${hour}:00-${hour + 1}:30` : slot.detail}</span>
+                            <div className="slot-tooltip">
+                              <strong>{slot.title}</strong>
+                              <span>{slot.detail}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <button className="compact-btn" aria-label={`Add availability ${day.label} ${hour}:00`}>
+                            <Plus size={14} /> Add
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="schedule-side-grid" style={{ padding: 22 }}>
+            {['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'].map((week, index) => (
+              <div className="side-note" key={week}>
+                <strong>{week}</strong>
+                <p>{index === 2 ? '1 conflict, 8 booked sessions, 12 available slots.' : 'No conflicts. Availability coverage is healthy.'}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <div className="schedule-side-grid">
+        <div className="side-note">
+          <div className="tutor-soft-icon"><CopyPlus size={18} /></div>
+          <strong style={{ marginTop: 12 }}>Drag & drop availability</strong>
+          <p>Move blue availability blocks between days. Students see changes immediately.</p>
+        </div>
+        <div className="side-note">
+          <div className="tutor-soft-icon green"><ShieldCheck size={18} /></div>
+          <strong style={{ marginTop: 12 }}>Auto-sync after booking</strong>
+          <p>Accepted requests become booked slots and trigger confirmation notifications.</p>
+        </div>
+        <div className="side-note">
+          <div className="tutor-soft-icon amber"><Sparkles size={18} /></div>
+          <strong style={{ marginTop: 12 }}>Smart suggestion</strong>
+          <p>Open Thu 18:00 because three students search this subject and no overlap exists.</p>
+        </div>
+        <div className="side-note">
+          <div className="tutor-soft-icon"><Clock3 size={18} /></div>
+          <strong style={{ marginTop: 12 }}>24h reminders</strong>
+          <p>Reminder rules are tied to booked sessions and can be changed in Settings.</p>
         </div>
       </div>
     </motion.div>
   );
-};
-
-export default MySchedule;
+}

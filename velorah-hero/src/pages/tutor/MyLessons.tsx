@@ -1,117 +1,257 @@
-import React, { useState } from 'react';
-import { Search, Calendar, User, Video, MapPin, MoreVertical } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useMemo, useState } from 'react';
+import {
+  Ban,
+  BookOpenCheck,
+  CalendarClock,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  MapPin,
+  MoreHorizontal,
+  PencilLine,
+  RefreshCw,
+  Search,
+  Video,
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
-const MyLessons: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('upcoming');
+type LessonStatus = 'upcoming' | 'completed' | 'cancelled';
+type LessonMode = 'Online' | 'Offline';
 
-  const lessons = [
-    { student: 'Alexander Sterling', subject: 'Quantum Mechanics', time: 'Today, 10:30 AM', format: 'Online', status: 'upcoming' },
-    { student: 'Sophia Chen', subject: 'Linear Algebra', time: 'Today, 1:00 PM', format: 'Online', status: 'upcoming' },
-    { student: 'Marcus Vane', subject: 'Astrophysics', time: 'Today, 3:30 PM', format: 'Offline', status: 'upcoming' },
-    { student: 'Elena Rossi', subject: 'Vector Calculus', time: 'Yesterday, 8:00 AM', format: 'Online', status: 'completed' },
-  ];
+interface Lesson {
+  id: string;
+  student: string;
+  subject: string;
+  time: string;
+  mode: LessonMode;
+  status: LessonStatus;
+  payment: string;
+  note: string;
+  locked: boolean;
+}
 
-  const filteredLessons = lessons.filter(l => l.status === activeTab);
+const initialLessons: Lesson[] = [
+  {
+    id: 'l1',
+    student: 'Lan Anh',
+    subject: 'Grade 12 Math - Integrals',
+    time: 'Today, 10:30-12:00',
+    mode: 'Online',
+    status: 'upcoming',
+    payment: 'Paid via VNPay',
+    note: 'Review substitution method and keep 10 minutes for homework planning.',
+    locked: false,
+  },
+  {
+    id: 'l2',
+    student: 'Gia Bao',
+    subject: 'Physics - Electric field',
+    time: 'Today, 14:00-15:30',
+    mode: 'Offline',
+    status: 'upcoming',
+    payment: 'MoMo hold verified',
+    note: 'Bring printed field diagram examples.',
+    locked: false,
+  },
+  {
+    id: 'l3',
+    student: 'Group A3',
+    subject: 'University entrance review',
+    time: 'Today, 19:30-21:00',
+    mode: 'Online',
+    status: 'upcoming',
+    payment: 'Group payment complete',
+    note: 'Quick quiz at the start. Assign phase 2 practice after class.',
+    locked: true,
+  },
+  {
+    id: 'l4',
+    student: 'Minh Quan',
+    subject: 'IELTS Writing Task 2',
+    time: 'Yesterday, 08:00-09:00',
+    mode: 'Online',
+    status: 'completed',
+    payment: 'Paid via MoMo',
+    note: 'Completed. Essay score moved from 6.0 to 6.5 target band.',
+    locked: true,
+  },
+  {
+    id: 'l5',
+    student: 'Bao Chau',
+    subject: 'IELTS Speaking',
+    time: 'Mon 20 Apr, 20:00-21:00',
+    mode: 'Online',
+    status: 'cancelled',
+    payment: 'Refund queued',
+    note: 'Student cancelled before 24h window. Slot returned to availability.',
+    locked: true,
+  },
+];
+
+const tabs: { label: string; value: LessonStatus }[] = [
+  { label: 'Upcoming', value: 'upcoming' },
+  { label: 'Completed', value: 'completed' },
+  { label: 'Cancelled', value: 'cancelled' },
+];
+
+export default function MyLessons() {
+  const [activeTab, setActiveTab] = useState<LessonStatus>('upcoming');
+  const [query, setQuery] = useState('');
+  const [lessons, setLessons] = useState(initialLessons);
+
+  const filteredLessons = useMemo(() => {
+    return lessons.filter((lesson) => {
+      const matchesTab = lesson.status === activeTab;
+      const haystack = `${lesson.student} ${lesson.subject}`.toLowerCase();
+      return matchesTab && haystack.includes(query.toLowerCase());
+    });
+  }, [activeTab, lessons, query]);
+
+  const lessonCounts = useMemo(() => {
+    return {
+      upcoming: lessons.filter((lesson) => lesson.status === 'upcoming').length,
+      completed: lessons.filter((lesson) => lesson.status === 'completed').length,
+      cancelled: lessons.filter((lesson) => lesson.status === 'cancelled').length,
+    };
+  }, [lessons]);
+
+  const updateLesson = (id: string, update: Partial<Lesson>) => {
+    setLessons((current) => current.map((lesson) => (lesson.id === id ? { ...lesson, ...update } : lesson)));
+  };
+
+  const markNextCompleted = () => {
+    const nextLesson = lessons.find((lesson) => lesson.status === 'upcoming' && !lesson.locked) ?? lessons.find((lesson) => lesson.status === 'upcoming');
+    if (!nextLesson) return;
+    updateLesson(nextLesson.id, {
+      status: 'completed',
+      locked: true,
+      note: 'Completed from tutor workspace. Notes are ready for student review and study plan follow-up.',
+    });
+    setActiveTab('completed');
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      className="tutor-page"
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.45 }}
     >
-      <div className="flex justify-between items-end mb-10">
+      <div className="tutor-page-header">
         <div>
-          <h1 className="text-4xl font-serif text-white mb-2">My Lessons</h1>
-          <p className="text-white/50 tracking-wide">Track and manage all your teaching sessions.</p>
+          <span className="tutor-eyebrow"><BookOpenCheck size={16} /> UC-04 and UC-05</span>
+          <h1 className="tutor-page-title">My Lessons</h1>
+          <p className="tutor-page-subtitle">
+            Manage upcoming, completed, and cancelled sessions with payment state, reschedule rules, and quick notes.
+          </p>
         </div>
-        <div className="relative w-72">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={16} />
-          <input 
-            type="text" 
-            placeholder="Search student or subject..." 
-            className="w-full pl-12 pr-4 py-3 rounded-2xl border border-white/10 bg-white/5 text-white focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all text-sm placeholder:text-white/30"
+        <div className="tutor-actions">
+          <button className="tutor-btn" onClick={() => setLessons(initialLessons)}><RefreshCw size={16} /> Sync lessons</button>
+          <button className="tutor-btn primary" onClick={markNextCompleted}><CheckCircle2 size={16} /> Mark completed</button>
+        </div>
+      </div>
+
+      <div className="lesson-toolbar">
+        <div className="tab-bar" aria-label="Lesson tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.value}
+              className={`tab-button${activeTab === tab.value ? ' is-active' : ''}`}
+              onClick={() => setActiveTab(tab.value)}
+            >
+              {tab.label} {lessonCounts[tab.value]}
+            </button>
+          ))}
+        </div>
+        <label className="search-field">
+          <Search size={16} />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search student or subject..."
           />
-        </div>
+        </label>
       </div>
 
-      <div className="flex gap-8 border-b border-white/10 mb-10">
-        {['upcoming', 'completed', 'cancelled'].map(tab => (
-          <button 
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-4 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 ${
-              activeTab === tab ? 'border-indigo-400 text-indigo-300' : 'border-transparent text-white/30 hover:text-white/60'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <AnimatePresence mode="popLayout">
-          {filteredLessons.length > 0 ? filteredLessons.map((lesson, i) => (
-            <motion.div 
-              key={lesson.student + lesson.time}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="glass-panel p-6 rounded-3xl group relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none transition-all group-hover:bg-indigo-500/20"></div>
-              
-              <div className="flex justify-between items-start mb-6 relative z-10">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40">
-                    <User size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-serif text-lg text-white mb-0.5">{lesson.student}</h3>
-                    <p className="text-[10px] uppercase tracking-widest text-indigo-400 font-bold">{lesson.subject}</p>
-                  </div>
+      <section className="lesson-grid">
+        {filteredLessons.map((lesson) => {
+          const isUpcoming = lesson.status === 'upcoming';
+          const paymentChip = lesson.payment.includes('Refund') ? 'warning' : 'success';
+          return (
+            <article className="lesson-card" key={lesson.id}>
+              <div className="lesson-card-head">
+                <div>
+                  <h3>{lesson.student}</h3>
+                  <p>{lesson.subject}</p>
                 </div>
-                <button className="text-white/20 hover:text-white/60 p-1 transition-colors"><MoreVertical size={20} /></button>
+                <button className="compact-btn" aria-label="More actions"><MoreHorizontal size={16} /></button>
               </div>
 
-              <div className="space-y-3 mb-8 relative z-10">
-                <div className="flex items-center gap-3 text-white/60 text-sm">
-                  <Calendar size={16} className="text-white/30" />
-                  {lesson.time}
-                </div>
-                <div className="flex items-center gap-3 text-white/60 text-sm">
-                  {lesson.format === 'Online' ? <Video size={16} className="text-white/30" /> : <MapPin size={16} className="text-white/30" />}
-                  {lesson.format} Session
-                </div>
+              <div className="lesson-meta-grid">
+                <div className="lesson-meta-item"><CalendarClock size={15} /> {lesson.time}</div>
+                <div className="lesson-meta-item">{lesson.mode === 'Online' ? <Video size={15} /> : <MapPin size={15} />} {lesson.mode}</div>
+                <div className="lesson-meta-item"><CreditCard size={15} /> {lesson.payment}</div>
+                <div className="lesson-meta-item"><Clock size={15} /> 24h reminder on</div>
               </div>
 
-              <div className="flex gap-4 relative z-10">
-                <button className="glass-button-primary flex-1 justify-center py-2.5 rounded-xl text-xs font-semibold">
-                  {lesson.status === 'upcoming' ? 'Enter Session' : 'View Notes'}
-                </button>
-                <button className="flex-1 justify-center py-2.5 rounded-xl text-xs font-semibold border border-white/10 text-white/60 hover:bg-white/5 hover:text-white transition-colors">
-                  Reschedule
-                </button>
+              <div className="inline-note">
+                <PencilLine size={15} />
+                <span>{lesson.note}</span>
               </div>
-            </motion.div>
-          )) : (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="col-span-full py-20 text-center"
-            >
-              <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-white/10">
-                <Calendar size={32} className="text-white/20" />
+
+              <div className="lesson-actions">
+                {isUpcoming ? (
+                  <>
+                    <button className="compact-btn primary">{lesson.mode === 'Online' ? 'Enter session' : 'Open details'}</button>
+                    <button
+                      className="compact-btn"
+                      disabled={lesson.locked}
+                      onClick={() => updateLesson(lesson.id, {
+                        time: 'Suggested: Thu 23 Apr, 18:00-19:30',
+                        note: 'Reschedule suggestion sent. Original slot stays locked until the student confirms.',
+                      })}
+                    >
+                      Reschedule
+                    </button>
+                    <button
+                      className="compact-btn danger"
+                      disabled={lesson.locked}
+                      onClick={() => updateLesson(lesson.id, {
+                        status: 'cancelled',
+                        payment: 'Refund queued',
+                        note: 'Cancelled by tutor. Slot returned to availability and notification sent to student.',
+                        locked: true,
+                      })}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : lesson.status === 'completed' ? (
+                  <>
+                    <button className="compact-btn primary">View notes</button>
+                    <button className="compact-btn">Assign task</button>
+                    <button className="compact-btn" disabled><Ban size={14} /> Cannot cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <button className="compact-btn primary">Create replacement slot</button>
+                    <button className="compact-btn" disabled><Ban size={14} /> Payment locked</button>
+                  </>
+                )}
+                <span className={`tutor-chip ${paymentChip}`}>{lesson.payment}</span>
               </div>
-              <h3 className="text-xl font-serif text-white mb-2">No {activeTab} lessons found</h3>
-              <p className="text-white/40 text-sm">Your schedule looks clear for now.</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            </article>
+          );
+        })}
+      </section>
+
+      {filteredLessons.length === 0 && (
+        <section className="tutor-card" style={{ padding: 32, textAlign: 'center' }}>
+          <div className="tutor-soft-icon" style={{ margin: '0 auto 14px' }}><BookOpenCheck size={18} /></div>
+          <h2 className="tutor-section-title">No lessons found</h2>
+          <p className="tutor-section-copy">Try a different tab or search term.</p>
+        </section>
+      )}
     </motion.div>
   );
-};
-
-export default MyLessons;
+}
