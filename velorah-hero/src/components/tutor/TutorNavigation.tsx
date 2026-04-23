@@ -3,20 +3,19 @@ import { Link, useLocation } from 'react-router-dom';
 
 const E = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
-const links = [
-  { path: '/', label: 'Home' },
-  { path: '/tutors', label: 'Find Tutors' },
-  { path: '/schedule', label: 'Schedule' },
-  { path: '/study-plan', label: 'Study Plan' },
-  { path: '/dashboard', label: 'Dashboard' },
-  { path: '/notifications', label: 'Notifications' },
-  { path: '/profile', label: 'Profile' },
+const tutorLinks = [
+  { path: '/tutor/dashboard', label: 'Home', num: '01', desc: 'Your teaching overview & daily tasks' },
+  { path: '/tutor/schedule', label: 'My Schedule', num: '02', desc: 'Manage your availability & calendar' },
+  { path: '/tutor/bookings', label: 'Booking Requests', num: '03', desc: 'Review and accept student requests' },
+  { path: '/tutor/lessons', label: 'My Lessons', num: '04', desc: 'Track upcoming & past sessions' },
+  { path: '/tutor/study-plans', label: 'Study Plans', num: '05', desc: 'Design personalized learning paths' },
+  { path: '/tutor/students', label: 'Students & Groups', num: '06', desc: 'Manage your scholars & classes' },
+  { path: '/tutor/notifications', label: 'Notifications', num: '07', desc: 'System & booking alerts' },
+  { path: '/tutor/profile', label: 'Profile', num: '08', desc: 'Your public tutor presence' },
+  { path: '/tutor/settings', label: 'Settings', num: '09', desc: 'Preferences & account details' },
 ];
 
-/* ═══ LOGO: The HaNova Hexagon (Bespoke Brand Mark) ═══ 
-   A hexagon represents structure and logic.
-   The inner monogram elegantly combines H and N.
-*/
+/* ═══ LOGO: The HaNova Hexagon (Bespoke Brand Mark) ═══ */
 function LogoMark({ size, glow }: { size: number; glow?: boolean }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" style={{ display: 'block' }}>
@@ -39,7 +38,7 @@ function LogoMark({ size, glow }: { size: number; glow?: boolean }) {
       <path d="M24 8 L38 16.5 L38 31.5 L24 40 L10 31.5 L10 16.5 Z" 
         stroke="white" strokeWidth="1.2" />
       
-      {/* Inner Accent Hexagon (creates an architectural depth) */}
+      {/* Inner Accent Hexagon */}
       <path d="M24 13 L33 18.5 L33 29.5 L24 35 L15 29.5 L15 18.5 Z" 
         stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" fill="rgba(255,255,255,0.03)" />
 
@@ -51,33 +50,23 @@ function LogoMark({ size, glow }: { size: number; glow?: boolean }) {
       {/* Crossbar (H) */}
       <path d="M19 24 L29 24" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
       
-      {/* Nova Star Accent (Top point) */}
+      {/* Nova Star Accent */}
       <circle cx="24" cy="4" r="1.5" fill="white" opacity="0.8" />
       <path d="M24 1 L24 7" stroke="white" strokeWidth="0.5" opacity="0.4" />
     </svg>
   );
 }
 
-export default function Navigation() {
+export default function TutorNavigation() {
   const location = useLocation();
   const activeTab = location.pathname;
-  const [phase, setPhase] = useState(0);
+  // Initialize to 3 to skip the heavy intro animation (which only happens on the main app load)
+  const [phase, setPhase] = useState(3);
   const [isOpen, setIsOpen] = useState(false);
-  const [introIn, setIntroIn] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
-
-  useEffect(() => {
-    const t0 = setTimeout(() => setIntroIn(true), 300);
-    const t = [
-      setTimeout(() => setPhase(1), 2400),
-      setTimeout(() => setPhase(2), 3800),
-      setTimeout(() => setPhase(3), 4500),
-    ];
-    return () => { clearTimeout(t0); t.forEach(clearTimeout); };
-  }, []);
 
   const isIntro = phase === 0;
   const isPill = phase >= 2;
@@ -85,25 +74,6 @@ export default function Navigation() {
 
   return (
     <>
-      <style>{`
-        @keyframes introReveal {
-          from { opacity: 0; letter-spacing: 0.5em; }
-          to { opacity: 1; letter-spacing: 0.25em; }
-        }
-        @keyframes introLineGrow {
-          from { transform: scaleX(0); }
-          to { transform: scaleX(1); }
-        }
-        @keyframes introTagline {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 0.75; transform: translateY(0); }
-        }
-        @keyframes ringPulse {
-          0%, 100% { opacity: 0.4; }
-          50% { opacity: 0.8; }
-        }
-      `}</style>
-
       {/* ── Overlay ── */}
       <div
         className="fixed inset-0 z-[95]"
@@ -123,7 +93,7 @@ export default function Navigation() {
         className="fixed left-0 right-0 z-[999] flex justify-center"
         style={{
           top: isIntro ? '50%' : 'auto',
-          bottom: isIntro ? 'auto' : isOpen ? 'max(14vh, 50px)' : '34px',
+          bottom: isIntro ? 'auto' : isOpen ? 'max(8vh, 30px)' : '34px',
           transform: isIntro ? 'translateY(-50%)' : 'none',
           willChange: 'top, bottom, transform',
           transition: `top 1.4s ${E}, bottom 0.6s ${E}, transform 1.4s ${E}`,
@@ -134,10 +104,9 @@ export default function Navigation() {
         <div
           style={{
             display: 'flex', flexDirection: 'column', position: 'relative',
-            width: isOpen ? 'min(420px, 90vw)' : isPill ? '230px' : '56px',
+            width: isOpen ? 'min(460px, 95vw)' : isPill ? '280px' : '56px',
             borderRadius: isOpen ? '28px' : '9999px',
             padding: isOpen ? '24px 28px 22px' : '6px',
-            /* STRONGER glass for menu visibility */
             background: isPill
               ? isOpen ? 'rgba(6,8,14,0.95)' : 'rgba(6,8,14,0.7)'
               : 'transparent',
@@ -168,7 +137,7 @@ export default function Navigation() {
             minHeight: '38px',
             transition: `margin 0.5s ${E}, padding 0.5s ${E}, border-color 0.4s ${E}`,
           }}>
-            <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center flex-shrink-0" style={{
+            <Link to="/tutor/dashboard" onClick={() => setIsOpen(false)} className="flex items-center flex-shrink-0" style={{
               gap: isPill ? '10px' : '0',
               paddingLeft: isPill ? (isOpen ? '4px' : '12px') : '0',
               paddingRight: isPill ? (isOpen ? '0' : '12px') : '0',
@@ -193,7 +162,7 @@ export default function Navigation() {
             </Link>
 
             <div className="flex-shrink-0 overflow-hidden" style={{
-              opacity: isPill ? 1 : 0, maxWidth: isPill ? '130px' : '0',
+              opacity: isPill ? 1 : 0, maxWidth: isPill ? '160px' : '0',
               transition: `opacity 0.8s ${E} 0.15s, max-width 1s ${E}`,
             }}>
               {isOpen ? (
@@ -208,31 +177,25 @@ export default function Navigation() {
                     <span className="h-[1.2px] w-[55%] bg-current rounded-full" />
                     <span className="h-[1.2px] w-full bg-current rounded-full" />
                   </div>
-                  <span className="text-[11px] uppercase tracking-widest font-semibold">Menu</span>
+                  <span className="text-[11px] uppercase tracking-widest font-semibold">Tutor Menu</span>
                 </button>
               )}
             </div>
           </div>
 
           {/* ── MENU LINKS ── */}
-          <div style={{
-            maxHeight: isOpen ? '600px' : '0', opacity: isOpen ? 1 : 0,
+          <div className="custom-scrollbar" style={{
+            maxHeight: isOpen ? '75vh' : '0', opacity: isOpen ? 1 : 0,
             transition: `max-height 0.6s ${E}, opacity 0.45s ${E} ${isOpen ? '0.1s' : '0s'}`,
-            overflow: 'hidden',
+            overflowY: 'auto',
+            overflowX: 'hidden',
           }}>
-            {[
-              { ...links[0], num: '01', desc: 'Overview & latest updates' },
-              { ...links[1], num: '02', desc: 'Browse the mentor roster' },
-              { ...links[2], num: '03', desc: 'Your weekly timetable & sessions' },
-              { ...links[3], num: '04', desc: 'Track your learning milestones' },
-              { ...links[4], num: '05', desc: 'System & messaging alerts' },
-              { ...links[5], num: '06', desc: 'Preferences & account settings' },
-            ].map((link, i) => (
+            {tutorLinks.map((link, i) => (
               <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="group block" style={{
                 opacity: isOpen ? 1 : 0, transform: isOpen ? 'translateY(0)' : 'translateY(14px)',
-                transition: `opacity 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(links.length - 1 - i) * 0.03}s`}, transform 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(links.length - 1 - i) * 0.03}s`}`,
+                transition: `opacity 0.45s ${E} ${isOpen ? `${0.12 + i * 0.04}s` : `${(tutorLinks.length - 1 - i) * 0.02}s`}, transform 0.45s ${E} ${isOpen ? `${0.12 + i * 0.04}s` : `${(tutorLinks.length - 1 - i) * 0.02}s`}`,
               }}>
-                <div className={`py-[14px] px-3 rounded-[14px] transition-all duration-300 flex items-center gap-4 ${
+                <div className={`py-[12px] px-3 rounded-[14px] transition-all duration-300 flex items-center gap-4 ${
                   activeTab === link.path 
                     ? 'bg-white/[0.04]' 
                     : 'hover:bg-white/[0.03]'
@@ -243,14 +206,14 @@ export default function Navigation() {
                   }`} />
                   
                   <span className={`text-[10px] uppercase font-bold tracking-widest flex-shrink-0 w-6 transition-colors duration-300 ${
-                    activeTab === link.path ? 'text-white' : 'text-white/20 group-hover:text-white/50'
+                    activeTab === link.path ? 'text-indigo-400' : 'text-white/20 group-hover:text-white/50'
                   }`}>{link.num}</span>
 
                   <div className="flex-1 min-w-0 pr-4">
                     <span className={`text-xl font-serif tracking-wide block transition-colors duration-300 ${
                       activeTab === link.path ? 'text-white' : 'text-white/40 group-hover:text-white/80'
                     }`}>{link.label}</span>
-                    <span className={`text-[11px] font-medium block mt-1 transition-colors duration-300 ${
+                    <span className={`text-[10px] font-medium block mt-0.5 transition-colors duration-300 ${
                       activeTab === link.path ? 'text-white/50' : 'text-white/20 group-hover:text-white/40'
                     }`}>{link.desc}</span>
                   </div>
@@ -265,16 +228,12 @@ export default function Navigation() {
             ))}
 
             {/* Footer */}
-            <div className="mt-5 pt-5 flex justify-between items-center px-4" style={{
+            <div className="mt-4 pt-4 flex justify-between items-center px-4 pb-2" style={{
               borderTop: '1px solid rgba(255,255,255,0.05)',
               opacity: isOpen ? 1 : 0, transition: `opacity 0.3s ${E} ${isOpen ? '0.5s' : '0s'}`,
             }}>
-              <span className="text-[9px] text-white/20 uppercase tracking-[0.15em] bg-white/[0.04] px-3 py-1.5 rounded-full">v1.0 Beta</span>
+              <span className="text-[9px] text-white/20 uppercase tracking-[0.15em] bg-white/[0.04] px-3 py-1.5 rounded-full">v1.0 Tutor</span>
               <div className="flex items-center gap-4">
-                <div className="flex gap-3">
-                  <a href="#" className="text-[9px] text-white/25 hover:text-white/50 uppercase tracking-widest transition-colors">About</a>
-                  <a href="#" className="text-[9px] text-white/25 hover:text-white/50 uppercase tracking-widest transition-colors">Help</a>
-                </div>
                 <button 
                   onClick={() => {
                     setIsOpen(false);
@@ -288,22 +247,6 @@ export default function Navigation() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* ── Intro text ── */}
-        <div className="absolute left-1/2 flex flex-col items-center pointer-events-none" style={{
-          top: '100%', transform: 'translateX(-50%)', marginTop: '28px',
-          opacity: isIntro && introIn ? 1 : 0, transition: `opacity 0.8s ${E}`,
-        }}>
-          <div className="h-px bg-gradient-to-r from-transparent via-white/25 to-transparent mb-7" style={{
-            width: '80px', animation: introIn ? `introLineGrow 1s ${E} 0.4s both` : 'none',
-          }} />
-          <h1 className="font-serif text-white uppercase whitespace-nowrap" style={{
-            fontSize: '32px', animation: introIn ? `introReveal 1.6s ${E} 0.3s both` : 'none',
-          }}>HaNova</h1>
-          <p className="text-white/70 tracking-[0.2em] text-[11px] uppercase mt-6 whitespace-nowrap" style={{
-            animation: introIn ? `introTagline 1s ${E} 1.2s both` : 'none',
-          }}>Where Guidance Becomes Progress</p>
         </div>
       </div>
     </>

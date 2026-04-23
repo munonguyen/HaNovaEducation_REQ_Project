@@ -1,0 +1,88 @@
+/* Tutor Workspace Premium Dark Styles */
+
+.tutor-app-container {
+  min-height: 100vh;
+  /* Background is handled by StarfieldCanvas in layout */
+  position: relative;
+}
+
+
+/* Dashboard Layout */
+.tutor-content {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 40px 20px 120px 20px; /* Added bottom padding for the floating dock */
+  position: relative;
+  z-index: 10;
+}
+
+.tutor-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+}
+
+/* Typography Overrides */
+.tutor-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Schedule Grid for Dark Theme */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  border: 1px solid rgba(90, 107, 156, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(10, 15, 30, 0.2);
+}
+
+.calendar-cell {
+  height: 60px;
+  border: 1px solid rgba(90, 107, 156, 0.15);
+  padding: 4px;
+}
+
+.calendar-header {
+  background: rgba(90, 107, 156, 0.1);
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(90, 107, 156, 0.3);
+}
+
+.slot-available {
+  background: rgba(59, 130, 246, 0.15);
+  border-left: 2px solid #3b82f6;
+  height: 100%;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  padding: 4px;
+  color: #93c5fd;
+  backdrop-filter: blur(4px);
+}
+
+.slot-booked {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  height: 100%;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+/* Utilities */
+.text-gradient {
+  background: linear-gradient(to right, #93c5fd, #c4b5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

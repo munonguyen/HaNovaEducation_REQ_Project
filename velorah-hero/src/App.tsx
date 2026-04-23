@@ -14,6 +14,24 @@ const Notifications = lazy(() => import('./pages/Notifications'));
 const Profile      = lazy(() => import('./pages/Profile'));
 const StudyPlan    = lazy(() => import('./pages/StudyPlan'));
 
+// Auth Pages
+const SignIn       = lazy(() => import('./pages/auth/SignIn'));
+const SignUp       = lazy(() => import('./pages/auth/SignUp'));
+const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
+const AuthSuccess  = lazy(() => import('./pages/auth/AuthSuccess'));
+
+// Tutor Pages
+const TutorLayout    = lazy(() => import('./layout/TutorLayout'));
+const TutorHome      = lazy(() => import('./pages/tutor/TutorHome'));
+const MySchedule     = lazy(() => import('./pages/tutor/MySchedule'));
+const BookingRequests = lazy(() => import('./pages/tutor/BookingRequests'));
+const MyLessons      = lazy(() => import('./pages/tutor/MyLessons'));
+const StudyPlans     = lazy(() => import('./pages/tutor/StudyPlans'));
+const Students       = lazy(() => import('./pages/tutor/Students'));
+const TutorNotifications = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Notifications })));
+const TutorSelfProfile   = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Profile })));
+const TutorSettings  = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Settings })));
+
 /** Minimal dark-theme fallback shown while a lazy chunk loads */
 function PageLoader() {
   return (
@@ -28,7 +46,7 @@ function PageLoader() {
 
 export default function App() {
   const location = useLocation();
-  // Instantly show content — only a brief flash cover for first paint
+  const isTutorRoute = location.pathname.startsWith('/tutor');
   const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
@@ -42,21 +60,39 @@ export default function App() {
       <div
         className="fixed inset-0 z-[997] bg-[#020205] pointer-events-none"
         style={{
-          opacity: introDone ? 0 : 1,
+          opacity: (introDone || isTutorRoute) ? 0 : 1,
           transition: 'opacity 0.7s cubic-bezier(0.22,1,0.36,1)',
         }}
       />
 
-      <Navigation />
+      {!isTutorRoute && <Navigation />}
 
       <div style={{
-        opacity: introDone ? 1 : 0,
+        opacity: (introDone || isTutorRoute) ? 1 : 0,
         transition: 'opacity 0.8s cubic-bezier(0.22,1,0.36,1)',
       }}>
-        <Layout>
+        {isTutorRoute ? (
           <Suspense fallback={<PageLoader />}>
-            <AnimatePresence mode="wait">
+            <TutorLayout>
               <Routes location={location} key={location.pathname}>
+                <Route path="/tutor/dashboard"   element={<TutorHome />} />
+                <Route path="/tutor/schedule"    element={<MySchedule />} />
+                <Route path="/tutor/bookings"    element={<BookingRequests />} />
+                <Route path="/tutor/lessons"     element={<MyLessons />} />
+                <Route path="/tutor/study-plans" element={<StudyPlans />} />
+                <Route path="/tutor/students"    element={<Students />} />
+                <Route path="/tutor/notifications" element={<TutorNotifications />} />
+                <Route path="/tutor/profile"     element={<TutorSelfProfile />} />
+                <Route path="/tutor/settings"    element={<TutorSettings />} />
+                <Route path="/tutor/*"           element={<TutorHome />} />
+              </Routes>
+            </TutorLayout>
+          </Suspense>
+        ) : (
+          <Layout>
+            <Suspense fallback={<PageLoader />}>
+              <AnimatePresence mode="wait">
+                <Routes location={location} key={location.pathname}>
                 <Route path="/"            element={<Home />} />
                 <Route path="/tutors"      element={<Tutors />} />
                 <Route path="/tutors/:id"  element={<TutorProfile />} />
@@ -65,6 +101,12 @@ export default function App() {
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/profile"     element={<Profile />} />
                 <Route path="/study-plan"  element={<StudyPlan />} />
+                
+                {/* Auth Routes */}
+                <Route path="/signin"      element={<SignIn />} />
+                <Route path="/signup"      element={<SignUp />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/auth-success" element={<AuthSuccess />} />
                 <Route path="*" element={
                   <div className="w-full flex items-center justify-center min-h-[50vh]">
                     <div className="glass-panel px-10 py-16 rounded-3xl text-center max-w-lg">
@@ -78,6 +120,7 @@ export default function App() {
             </AnimatePresence>
           </Suspense>
         </Layout>
+        )}
       </div>
     </>
   );

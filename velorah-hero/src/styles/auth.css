@@ -1,0 +1,242 @@
+/* Auth Premium Styles */
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  background: #020205;
+  color: white;
+  overflow: hidden;
+}
+
+.auth-visual {
+  flex: 1.2;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 30%, #1a1a2e 0%, #020205 100%);
+}
+
+.auth-visual-content {
+  position: relative;
+  z-index: 2;
+  max-width: 480px;
+  padding: 40px;
+}
+
+.auth-tagline {
+  font-family: 'Outfit', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  background: linear-gradient(to bottom right, #fff 30%, rgba(255,255,255,0.4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+}
+
+.auth-description {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+}
+
+.auth-form-section {
+  flex: 1;
+  background: #ffffff;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+}
+
+.auth-form-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+  color: #666;
+  margin-bottom: 2.5rem;
+}
+
+.auth-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.auth-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #000;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+}
+
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+.auth-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-link {
+  color: #111;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.auth-link:hover {
+  opacity: 0.7;
+}
+
+.auth-button-primary {
+  width: 100%;
+  padding: 16px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.auth-button-primary:hover {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.auth-button-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-secondary-text {
+  text-align: center;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Role Selection Cards */
+.role-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 2.5rem;
+}
+
+.role-card {
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  background: #fff;
+}
+
+.role-card:hover {
+  border-color: #111;
+  transform: scale(1.02);
+}
+
+.role-card.selected {
+  border-color: #111;
+  background: #fcfcfc;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.role-icon {
+  width: 40px;
+  height: 40px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: #111;
+}
+
+.role-card.selected .role-icon {
+  background: #111;
+  color: #fff;
+}
+
+.role-name {
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 4px;
+}
+
+.role-desc {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Multi-step animations */
+.form-step-container {
+  position: relative;
+}
+
+/* Mobile adjustments */
+@media (max-width: 1024px) {
+  .auth-visual {
+    display: none;
+  }
+  .auth-form-section {
+    border-radius: 0;
+    flex: 1;
+  }
+}
+
+/* Background elements */
+.auth-glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(64, 92, 255, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: 1;
+  pointer-events: none;
+}
