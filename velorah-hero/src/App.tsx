@@ -9,6 +9,8 @@ const Home         = lazy(() => import('./pages/Home'));
 const Tutors       = lazy(() => import('./pages/Tutors'));
 const TutorProfile = lazy(() => import('./pages/TutorProfile'));
 const Dashboard    = lazy(() => import('./pages/Dashboard'));
+const StudyGroups  = lazy(() => import('./pages/StudyGroups'));
+const StudyGroupDetail = lazy(() => import('./pages/StudyGroupDetail'));
 const Schedule     = lazy(() => import('./pages/Schedule'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Profile      = lazy(() => import('./pages/Profile'));
@@ -98,6 +100,8 @@ export default function App() {
                 <Route path="/tutors"      element={<Tutors />} />
                 <Route path="/tutors/:id"  element={<TutorProfile />} />
                 <Route path="/dashboard"   element={<Dashboard />} />
+                <Route path="/groups"      element={<StudyGroups />} />
+                <Route path="/groups/:groupId" element={<StudyGroupDetail />} />
                 <Route path="/schedule"    element={<Schedule />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/profile"     element={<Profile />} />

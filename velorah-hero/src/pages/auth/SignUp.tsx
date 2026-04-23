@@ -25,6 +25,7 @@ import {
   WalletCards,
   type LucideIcon,
 } from 'lucide-react';
+import { writeStoredUserProfile } from '../../utils/helpers';
 
 type StepId = 'account' | 'goals' | 'preferences' | 'profile' | 'review';
 type Role = 'student' | 'tutor' | 'admin';
@@ -64,7 +65,6 @@ interface OnboardingData {
 }
 
 const DRAFT_KEY = 'hanova:onboarding-draft';
-const USER_KEY = 'hanova:user-profile';
 
 const roleSteps: Record<Role, Array<{ id: StepId; label: string; eyebrow: string }>> = {
   student: [
@@ -409,9 +409,8 @@ function SignUp() {
       createdAt: new Date().toISOString(),
     };
 
-    window.localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
+    writeStoredUserProfile(userProfile);
     window.localStorage.removeItem(DRAFT_KEY);
-    window.dispatchEvent(new Event('hanova:user-updated'));
 
     window.setTimeout(() => {
       setIsSaving(false);

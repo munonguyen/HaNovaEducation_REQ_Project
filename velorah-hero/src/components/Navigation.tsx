@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ProfileQuickMenu from './ProfileQuickMenu';
+import { clearStoredUserProfile, readStoredUserProfile, USER_UPDATED_EVENT } from '../utils/helpers';
 
 const E = 'cubic-bezier(0.16, 1, 0.3, 1)';
-const USER_KEY = 'hanova:user-profile';
 
-const links = [
-  { path: '/', label: 'Home' },
-  { path: '/tutors', label: 'Find Tutors' },
-  { path: '/schedule', label: 'Schedule' },
-  { path: '/study-plan', label: 'Study Plan' },
-  { path: '/dashboard', label: 'Dashboard' },
-  { path: '/notifications', label: 'Notifications' },
-  { path: '/profile', label: 'Profile' },
+const menuLinks = [
+  { path: '/', label: 'Home', num: '01', desc: 'Overview & latest updates' },
+  { path: '/tutors', label: 'Find Tutors', num: '02', desc: 'Browse the mentor roster' },
+  { path: '/groups', label: 'Study Groups', num: '03', desc: 'Structured peer and tutor-led cohorts' },
+  { path: '/schedule', label: 'Schedule', num: '04', desc: 'Your weekly timetable and sessions' },
+  { path: '/study-plan', label: 'Study Plan', num: '05', desc: 'Track your learning milestones' },
+  { path: '/dashboard', label: 'Dashboard', num: '06', desc: 'Personal academic overview' },
+  { path: '/notifications', label: 'Notifications', num: '07', desc: 'System and booking alerts' },
+  { path: '/profile', label: 'Profile', num: '08', desc: 'Preferences and account settings' },
 ];
 
 /* ═══ LOGO: The HaNova Hexagon (Bespoke Brand Mark) ═══ 
@@ -61,11 +62,7 @@ function LogoMark({ size, glow }: { size: number; glow?: boolean }) {
 }
 
 function readIsAuthenticated() {
-  try {
-    return Boolean(window.localStorage.getItem(USER_KEY));
-  } catch {
-    return false;
-  }
+  return Boolean(readStoredUserProfile());
 }
 
 export default function Navigation() {
@@ -93,16 +90,21 @@ export default function Navigation() {
   useEffect(() => {
     const syncAuth = () => setIsAuthenticated(readIsAuthenticated());
     window.addEventListener('storage', syncAuth);
-    window.addEventListener('hanova:user-updated', syncAuth);
+    window.addEventListener(USER_UPDATED_EVENT, syncAuth);
     return () => {
       window.removeEventListener('storage', syncAuth);
-      window.removeEventListener('hanova:user-updated', syncAuth);
+      window.removeEventListener(USER_UPDATED_EVENT, syncAuth);
     };
   }, []);
 
   const isIntro = phase === 0;
   const isPill = phase >= 2;
   const isReady = phase >= 3;
+
+  const isActivePath = (path: string) => {
+    if (path === '/') return activeTab === '/';
+    return activeTab === path || activeTab.startsWith(`${path}/`);
+  };
 
   return (
     <>
@@ -243,43 +245,36 @@ export default function Navigation() {
             transition: `max-height 0.6s ${E}, opacity 0.45s ${E} ${isOpen ? '0.1s' : '0s'}`,
             overflow: 'hidden',
           }}>
-            {[
-              { ...links[0], num: '01', desc: 'Overview & latest updates' },
-              { ...links[1], num: '02', desc: 'Browse the mentor roster' },
-              { ...links[2], num: '03', desc: 'Your weekly timetable & sessions' },
-              { ...links[3], num: '04', desc: 'Track your learning milestones' },
-              { ...links[4], num: '05', desc: 'System & messaging alerts' },
-              { ...links[5], num: '06', desc: 'Preferences & account settings' },
-            ].map((link, i) => (
+            {menuLinks.map((link, i) => (
               <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="group block" style={{
                 opacity: isOpen ? 1 : 0, transform: isOpen ? 'translateY(0)' : 'translateY(14px)',
-                transition: `opacity 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(links.length - 1 - i) * 0.03}s`}, transform 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(links.length - 1 - i) * 0.03}s`}`,
+                transition: `opacity 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(menuLinks.length - 1 - i) * 0.03}s`}, transform 0.45s ${E} ${isOpen ? `${0.12 + i * 0.06}s` : `${(menuLinks.length - 1 - i) * 0.03}s`}`,
               }}>
                 <div className={`py-[14px] px-3 rounded-[14px] transition-all duration-300 flex items-center gap-4 ${
-                  activeTab === link.path 
+                  isActivePath(link.path)
                     ? 'bg-white/[0.04]' 
                     : 'hover:bg-white/[0.03]'
                 }`}>
                   {/* Active indicator */}
                   <div className={`w-1 h-10 rounded-full flex-shrink-0 transition-colors duration-500 ${
-                      activeTab === link.path ? 'bg-gradient-to-b from-blue-400 to-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.6)]' : 'bg-white/[0.05]'
+                      isActivePath(link.path) ? 'bg-gradient-to-b from-blue-400 to-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.6)]' : 'bg-white/[0.05]'
                   }`} />
                   
                   <span className={`text-[10px] uppercase font-bold tracking-widest flex-shrink-0 w-6 transition-colors duration-300 ${
-                    activeTab === link.path ? 'text-white' : 'text-white/20 group-hover:text-white/50'
+                    isActivePath(link.path) ? 'text-white' : 'text-white/20 group-hover:text-white/50'
                   }`}>{link.num}</span>
 
                   <div className="flex-1 min-w-0 pr-4">
                     <span className={`text-xl font-serif tracking-wide block transition-colors duration-300 ${
-                      activeTab === link.path ? 'text-white' : 'text-white/40 group-hover:text-white/80'
+                      isActivePath(link.path) ? 'text-white' : 'text-white/40 group-hover:text-white/80'
                     }`}>{link.label}</span>
                     <span className={`text-[11px] font-medium block mt-1 transition-colors duration-300 ${
-                      activeTab === link.path ? 'text-white/50' : 'text-white/20 group-hover:text-white/40'
+                      isActivePath(link.path) ? 'text-white/50' : 'text-white/20 group-hover:text-white/40'
                     }`}>{link.desc}</span>
                   </div>
                   {/* Arrow */}
                   <svg className={`w-4 h-4 flex-shrink-0 transition-all duration-300 ${
-                    activeTab === link.path ? 'text-white/30' : 'text-white/10 group-hover:text-white/30 group-hover:translate-x-0.5'
+                    isActivePath(link.path) ? 'text-white/30' : 'text-white/10 group-hover:text-white/30 group-hover:translate-x-0.5'
                   }`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                   </svg>
@@ -301,8 +296,7 @@ export default function Navigation() {
                 {isAuthenticated ? (
                   <button
                     onClick={() => {
-                      window.localStorage.removeItem(USER_KEY);
-                      window.dispatchEvent(new Event('hanova:user-updated'));
+                      clearStoredUserProfile();
                       setIsOpen(false);
                       window.location.href = '/signin';
                     }}

@@ -3,9 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Building2, CheckCircle2, GraduationCap, LockKeyhole, Mail, School, ShieldCheck, type LucideIcon } from 'lucide-react';
 import AuthShell from '../../components/auth/AuthShell';
-import { demoAccounts, findDemoAccount, type DemoAccountRole } from '../../utils/helpers';
-
-const USER_KEY = 'hanova:user-profile';
+import { demoAccounts, findDemoAccount, type DemoAccountRole, writeStoredUserProfile } from '../../utils/helpers';
 const roleIcons: Record<DemoAccountRole, LucideIcon> = {
   student: GraduationCap,
   tutor: School,
@@ -37,19 +35,15 @@ function SignIn() {
   };
 
   const createSessionProfile = (account: (typeof demoAccounts)[number]) => {
-    window.localStorage.setItem(
-      USER_KEY,
-      JSON.stringify({
-        name: account.name,
-        email: account.email,
-        initials: account.initials,
-        role: account.label,
-        goal: account.goal,
-        remember,
-        accountRole: account.role,
-      }),
-    );
-    window.dispatchEvent(new Event('hanova:user-updated'));
+    writeStoredUserProfile({
+      name: account.name,
+      email: account.email,
+      initials: account.initials,
+      role: account.label,
+      goal: account.goal,
+      remember,
+      accountRole: account.role,
+    });
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, CreditCard, Shield, Edit2, Bookmark, ChevronRight, Globe, Moon, Bell, CheckCircle2, LogOut, Camera, Mail, Phone, MapPin } from 'lucide-react';
+import { User, CreditCard, Shield, Edit2, Bookmark, ChevronRight, Globe, Moon, Bell, CheckCircle2, LogOut, Camera, Mail, MapPin, Target } from 'lucide-react';
+import {
+  USER_UPDATED_EVENT,
+  clearStoredUserProfile,
+  readStoredUserProfile,
+  type StoredUserProfile,
+} from '../utils/helpers';
 
 type ProfileTab = 'personal' | 'preferences' | 'billing' | 'security';
 
@@ -16,6 +22,70 @@ const tabs = [
 
 function isProfileTab(value: string | null): value is ProfileTab {
   return tabs.some((tab) => tab.id === value);
+}
+
+function buildToggleState(profile: StoredUserProfile | null) {
+  return {
+    reminders: profile?.notifications?.inApp ?? true,
+    studyGroups: profile?.accountRole === 'student',
+    quietMode: false,
+    emailDigest: profile?.notifications?.email ?? true,
+  };
+}
+
+function formatCreatedAt(createdAt?: string) {
+  if (!createdAt) return 'Demo access';
+
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return 'HaNova member';
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+}
+
+function getAccountSummary(profile: StoredUserProfile) {
+  if (profile.accountRole === 'tutor') return 'Tutor profile • Teaching account';
+  if (profile.accountRole === 'admin') return 'Manager profile • Workspace access';
+  return 'Student profile • Learning account';
+}
+
+function getFocusLabel(profile: StoredUserProfile) {
+  if (profile.accountRole === 'tutor') return 'Teaching focus';
+  if (profile.accountRole === 'admin') return 'Workspace scope';
+  return 'Current goal';
+}
+
+function getFocusValue(profile: StoredUserProfile) {
+  if (profile.accountRole === 'tutor') {
+    return profile.tutorProfile?.qualification || profile.goal || 'Teaching profile active';
+  }
+
+  if (profile.accountRole === 'admin') {
+    return profile.organization?.name || profile.goal || 'Workspace management active';
+  }
+
+  return profile.goal || 'No study goal saved yet';
+}
+
+function getSecondaryLabel(profile: StoredUserProfile) {
+  if (profile.accountRole === 'tutor') return 'Formats';
+  if (profile.accountRole === 'admin') return 'Organization role';
+  return 'Learning style';
+}
+
+function getSecondaryValue(profile: StoredUserProfile) {
+  if (profile.accountRole === 'tutor') {
+    return profile.tutorProfile?.teachingFormats?.join(', ') || 'Teaching formats not set';
+  }
+
+  if (profile.accountRole === 'admin') {
+    return profile.organization?.role || 'Workspace owner';
+  }
+
+  return profile.learningStyle || 'Structured plan';
 }
 
 function ToggleSwitch({ enabled, onClick }: { enabled: boolean; onClick: () => void }) {
@@ -41,27 +111,77 @@ function ToggleSwitch({ enabled, onClick }: { enabled: boolean; onClick: () => v
 
 export default function Profile() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const requestedTab = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState<ProfileTab>(isProfileTab(requestedTab) ? requestedTab : DEFAULT_TAB);
-  const [toggles, setToggles] = useState({
-    reminders: true,
-    studyGroups: true,
-    quietMode: false,
-    emailDigest: true,
-  });
+  const activeTab = isProfileTab(requestedTab) ? requestedTab : DEFAULT_TAB;
+  const [profile, setProfile] = useState<StoredUserProfile | null>(() => readStoredUserProfile());
+  const [toggles, setToggles] = useState(() => buildToggleState(readStoredUserProfile()));
 
   useEffect(() => {
-    setActiveTab(isProfileTab(requestedTab) ? requestedTab : DEFAULT_TAB);
-  }, [requestedTab]);
+    const syncProfile = () => {
+      const nextProfile = readStoredUserProfile();
+      setProfile(nextProfile);
+      setToggles(buildToggleState(nextProfile));
+    };
+
+    window.addEventListener('storage', syncProfile);
+    window.addEventListener(USER_UPDATED_EVENT, syncProfile);
+    return () => {
+      window.removeEventListener('storage', syncProfile);
+      window.removeEventListener(USER_UPDATED_EVENT, syncProfile);
+    };
+  }, []);
 
   const toggle = (key: keyof typeof toggles) => {
     setToggles(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleTabChange = (tab: ProfileTab) => {
-    setActiveTab(tab);
     setSearchParams({ tab });
   };
+
+  const handleSignOut = () => {
+    clearStoredUserProfile();
+    navigate('/signin');
+  };
+
+  if (!profile) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mx-auto min-h-screen max-w-[960px] px-8 pb-32 pt-[120px] text-white"
+      >
+        <div className="rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),transparent)] p-10 text-center shadow-2xl glass-panel">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/35">Account access</p>
+          <h1 className="mt-4 font-serif text-4xl text-white">Sign in to view your profile</h1>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-white/48">
+            The profile page now reads directly from your active HaNova profile card, so you need an active session before editing details.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link
+              to="/signin"
+              className="rounded-full border border-cyan-200/25 bg-cyan-200/[0.12] px-5 py-2.5 text-sm font-semibold text-cyan-50 transition hover:bg-cyan-200/[0.18]"
+            >
+              Go to sign in
+            </Link>
+            <Link
+              to="/signup"
+              className="rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 text-sm font-semibold text-white/72 transition hover:border-white/18 hover:text-white"
+            >
+              Create account
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  const accountSummary = getAccountSummary(profile);
+  const focusLabel = getFocusLabel(profile);
+  const focusValue = getFocusValue(profile);
+  const secondaryLabel = getSecondaryLabel(profile);
+  const secondaryValue = getSecondaryValue(profile);
 
   return (
     <motion.div 
@@ -73,9 +193,13 @@ export default function Profile() {
       <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-4xl lg:text-5xl font-serif text-white tracking-tight">Account Settings</h1>
-          <p className="text-white/50 text-lg mt-3">Manage your profile, learning preferences, and billing.</p>
+          <p className="text-white/50 text-lg mt-3">Manage the same profile identity shown on your HaNova account card.</p>
         </div>
-        <button className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-colors text-xs font-bold uppercase tracking-widest text-red-400/70 hover:text-red-400 shrink-0">
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 transition-colors text-xs font-bold uppercase tracking-widest text-red-400/70 hover:text-red-400 shrink-0"
+        >
           <LogOut size={14} /> Sign Out
         </button>
       </div>
@@ -87,15 +211,19 @@ export default function Profile() {
           {/* Profile Card */}
           <div className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),transparent)] p-6 shadow-2xl glass-panel text-center">
             <div className="w-20 h-20 rounded-full bg-white/10 border-2 border-white/20 p-0.5 mx-auto relative group cursor-pointer mb-4">
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-serif">M</div>
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-serif">{profile.initials}</div>
               <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <Camera size={18} className="text-white" />
               </div>
             </div>
-            <h3 className="text-lg font-serif text-white mb-0.5">Muno Nguyen</h3>
-            <p className="text-xs text-white/40 uppercase tracking-widest mb-4">Student • Scholar Premium</p>
-            <div className="flex justify-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold uppercase tracking-widest">3 Active Courses</span>
+            <h3 className="text-lg font-serif text-white mb-0.5">{profile.name}</h3>
+            <p className="text-xs text-white/40 uppercase tracking-widest mb-4">{accountSummary}</p>
+            <p className="text-sm leading-6 text-white/58">{focusValue}</p>
+            <div className="mt-4 flex justify-center gap-2 flex-wrap">
+              <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[10px] font-bold uppercase tracking-widest">{profile.role}</span>
+              <span className="px-3 py-1 rounded-full bg-white/5 text-white/55 border border-white/10 text-[10px] font-bold uppercase tracking-widest">
+                Joined {formatCreatedAt(profile.createdAt)}
+              </span>
             </div>
           </div>
 
@@ -143,28 +271,40 @@ export default function Profile() {
 
               <div className="grid sm:grid-cols-2 gap-6">
                 <div className="sm:col-span-2 flex items-center gap-6 p-5 rounded-[20px] bg-white/[0.02] border border-white/5 mb-2">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-serif shrink-0 border-2 border-white/20">M</div>
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-serif shrink-0 border-2 border-white/20">
+                    {profile.initials}
+                  </div>
                   <div>
-                    <h3 className="text-xl font-serif text-white">Muno Nguyen</h3>
-                    <p className="text-sm text-white/40 mt-0.5">Student ID: HNV-2026-0847</p>
+                    <h3 className="text-xl font-serif text-white">{profile.name}</h3>
+                    <p className="text-sm text-white/40 mt-0.5">{profile.role} • {formatCreatedAt(profile.createdAt)}</p>
                   </div>
                 </div>
 
                 <div>
                   <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><Mail size={10} /> Email</label>
-                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">muno@hanova.edu</div>
+                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">{profile.email}</div>
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><Phone size={10} /> Phone</label>
-                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">+84 987 654 321</div>
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><User size={10} /> Account role</label>
+                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">{profile.role}</div>
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><Globe size={10} /> Timezone</label>
-                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">Indochina Time (GMT+7)</div>
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><Target size={10} /> {focusLabel}</label>
+                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">{focusValue}</div>
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><MapPin size={10} /> Location</label>
-                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">Ho Chi Minh City, Vietnam</div>
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><Globe size={10} /> {secondaryLabel}</label>
+                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">{secondaryValue}</div>
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><Bookmark size={10} /> Subjects</label>
+                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">
+                    {profile.subjects?.length ? profile.subjects.join(', ') : 'No subjects saved yet'}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-white/30 mb-2 flex items-center gap-2"><MapPin size={10} /> Member since</label>
+                  <div className="p-3.5 bg-black/20 rounded-[14px] border border-white/5 text-white/90 text-sm mt-2">{formatCreatedAt(profile.createdAt)}</div>
                 </div>
               </div>
             </motion.div>

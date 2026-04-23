@@ -18,7 +18,10 @@ import {
   Settings2,
   MapPin,
   DoorOpen,
-  BookOpen
+  BookOpen,
+  ExternalLink,
+  Video,
+  Link2,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -62,19 +65,42 @@ const mockTutorOffDays: Record<string, string[]> = {
    '2': ['Tue']
 };
 
-const mySessions = [
-  { id: 's1', tutorId: '1', title: 'Quantum Mechanics Review', type: 'Session', durationMinutes: 60, dayIndex: 0, startHour: 8, status: 'Confirmed', note: 'Review Chapter 3 before class.', isUpdated: false, location: 'Academic Plaza', room: 'A1-204', materials: 'Formula Sheet v2, Lab Goggles' },
-  { id: 's2', tutorId: '2', title: 'Syntax Analysis', type: 'Monthly', durationMinutes: 90, dayIndex: 2, startHour: 14, status: 'Rescheduled', note: 'No preparation note', isUpdated: true, location: 'Language Hub', room: 'B3-102', materials: 'IPA Chart, Syntax Workbook' },
-  { id: 's3', tutorId: '1', title: 'Thermodynamics Lab', type: 'Course', durationMinutes: 120, dayIndex: 4, startHour: 10, status: 'Cancelled', note: '', isUpdated: false, location: 'Science Wing', room: 'Lab 4', materials: 'None' },
-  { id: 's4', tutorId: '2', title: 'Phonetics Practice', type: 'Monthly', durationMinutes: 60, dayIndex: 3, startHour: 15, status: 'Confirmed', note: 'Read the handout on IPA', isUpdated: false, location: 'Digital Studio', room: 'Studio B', materials: 'Microphone, Handout 3' },
-  { id: 's5', tutorId: '3', title: 'Data Structures Intro', type: 'Course', durationMinutes: 120, dayIndex: 0, startHour: 13, status: 'Confirmed', note: 'Setup dev environment', isUpdated: false, location: 'Tech Tower', room: 'Lounge 1', materials: 'VS Code, Git installed' },
-  { id: 's6', tutorId: '1', title: 'Relativity Seminar', type: 'Session', durationMinutes: 60, dayIndex: 1, startHour: 9, status: 'Confirmed', note: 'Bring notes on Einstein', isUpdated: false, location: 'Academic Plaza', room: 'A1-405', materials: 'Field Journal' },
-  { id: 's7', tutorId: '2', title: 'Morphology Deep Dive', type: 'Monthly', durationMinutes: 90, dayIndex: 1, startHour: 16, status: 'Confirmed', note: '', isUpdated: false, location: 'Language Hub', room: 'B3-105', materials: 'Textbook' },
-  { id: 's8', tutorId: '3', title: 'Algorithm Complexity', type: 'Course', durationMinutes: 90, dayIndex: 3, startHour: 11, status: 'Confirmed', note: 'Review Big O notation', isUpdated: true, location: 'Tech Tower', room: 'Room 202', materials: 'Graph Paper' },
-  { id: 's9', tutorId: '1', title: 'Electromagnetism', type: 'Session', durationMinutes: 60, dayIndex: 5, startHour: 10, status: 'Rescheduled', note: '', isUpdated: true, location: 'Science Wing', room: 'Hall 1', materials: 'Calculator' },
-  { id: 's10', tutorId: '2', title: 'Semantics Tutorial', type: 'Session', durationMinutes: 60, dayIndex: 6, startHour: 14, status: 'Confirmed', note: '', isUpdated: false, location: 'Virtual', room: 'Zoom ID: 882-192', materials: 'Internet connection' },
-  { id: 's11', tutorId: '1', title: 'Advanced Quantum Physics', type: 'Course', durationMinutes: 120, dayIndex: 2, startHour: 19, status: 'Confirmed', note: 'Prepare for late night lab discussion', isUpdated: true, location: 'Science Wing', room: 'Lab 2', materials: 'Dark-room goggles' },
-  { id: 's12', tutorId: '3', title: 'AI Ethics', type: 'Session', durationMinutes: 90, dayIndex: 4, startHour: 20, status: 'Confirmed', note: 'Reading assignment on AI safety', isUpdated: false, location: 'Innovation Lab', room: 'Glass Hub', materials: 'iPad/Laptop' }
+type SessionDelivery = 'In-person' | 'Online';
+
+interface Session {
+  id: string;
+  tutorId: string;
+  title: string;
+  type: string;
+  durationMinutes: number;
+  dayIndex: number;
+  startHour: number;
+  status: 'Confirmed' | 'Rescheduled' | 'Cancelled';
+  note: string;
+  isUpdated: boolean;
+  location: string;
+  room: string;
+  materials: string;
+  delivery: SessionDelivery;
+  meetingPlatform?: string;
+  meetingLink?: string;
+  meetingCode?: string;
+  meetingPasscode?: string;
+}
+
+const mySessions: Session[] = [
+  { id: 's1', tutorId: '1', title: 'Quantum Mechanics Review', type: 'Session', durationMinutes: 60, dayIndex: 0, startHour: 8, status: 'Confirmed', note: 'Review Chapter 3 before class.', isUpdated: false, location: 'Academic Plaza', room: 'A1-204', materials: 'Formula Sheet v2, Lab Goggles', delivery: 'In-person' },
+  { id: 's2', tutorId: '2', title: 'Syntax Analysis', type: 'Monthly', durationMinutes: 90, dayIndex: 2, startHour: 14, status: 'Rescheduled', note: 'Use the shared sentence bank before joining the live parse walkthrough.', isUpdated: true, location: 'Virtual classroom', room: 'Meet Room Syntax-Lab', materials: 'IPA Chart, Syntax Workbook', delivery: 'Online', meetingPlatform: 'Google Meet', meetingLink: 'https://meet.google.com/lookup/hanova-syntax-lab', meetingCode: 'Syntax-Lab', meetingPasscode: 'HANOVA26' },
+  { id: 's3', tutorId: '1', title: 'Thermodynamics Lab', type: 'Course', durationMinutes: 120, dayIndex: 4, startHour: 10, status: 'Cancelled', note: '', isUpdated: false, location: 'Science Wing', room: 'Lab 4', materials: 'None', delivery: 'In-person' },
+  { id: 's4', tutorId: '2', title: 'Phonetics Practice', type: 'Monthly', durationMinutes: 60, dayIndex: 3, startHour: 15, status: 'Confirmed', note: 'Read the handout on IPA', isUpdated: false, location: 'Digital Studio', room: 'Studio B', materials: 'Microphone, Handout 3', delivery: 'In-person' },
+  { id: 's5', tutorId: '3', title: 'Data Structures Intro', type: 'Course', durationMinutes: 120, dayIndex: 0, startHour: 13, status: 'Confirmed', note: 'Setup dev environment', isUpdated: false, location: 'Tech Tower', room: 'Lounge 1', materials: 'VS Code, Git installed', delivery: 'In-person' },
+  { id: 's6', tutorId: '1', title: 'Relativity Seminar', type: 'Session', durationMinutes: 60, dayIndex: 1, startHour: 9, status: 'Confirmed', note: 'Bring notes on Einstein', isUpdated: false, location: 'Academic Plaza', room: 'A1-405', materials: 'Field Journal', delivery: 'In-person' },
+  { id: 's7', tutorId: '2', title: 'Morphology Deep Dive', type: 'Monthly', durationMinutes: 90, dayIndex: 1, startHour: 16, status: 'Confirmed', note: '', isUpdated: false, location: 'Language Hub', room: 'B3-105', materials: 'Textbook', delivery: 'In-person' },
+  { id: 's8', tutorId: '3', title: 'Algorithm Complexity', type: 'Course', durationMinutes: 90, dayIndex: 3, startHour: 11, status: 'Confirmed', note: 'Review Big O notation', isUpdated: true, location: 'Tech Tower', room: 'Room 202', materials: 'Graph Paper', delivery: 'In-person' },
+  { id: 's9', tutorId: '1', title: 'Electromagnetism', type: 'Session', durationMinutes: 60, dayIndex: 5, startHour: 10, status: 'Rescheduled', note: '', isUpdated: true, location: 'Science Wing', room: 'Hall 1', materials: 'Calculator', delivery: 'In-person' },
+  { id: 's10', tutorId: '2', title: 'Semantics Tutorial', type: 'Session', durationMinutes: 60, dayIndex: 6, startHour: 14, status: 'Confirmed', note: 'Keep your camera on for the small-group breakout analysis.', isUpdated: false, location: 'Virtual classroom', room: 'Zoom Room 882-192', materials: 'Internet connection', delivery: 'Online', meetingPlatform: 'Zoom', meetingLink: 'https://us06web.zoom.us/j/8821923321?pwd=hanovaSemantics', meetingCode: '882-192', meetingPasscode: 'Syntax24' },
+  { id: 's11', tutorId: '1', title: 'Advanced Quantum Physics', type: 'Course', durationMinutes: 120, dayIndex: 2, startHour: 19, status: 'Confirmed', note: 'Prepare for late night lab discussion', isUpdated: true, location: 'Virtual classroom', room: 'Teams Room Quantum-Night', materials: 'Dark-room goggles', delivery: 'Online', meetingPlatform: 'Microsoft Teams', meetingLink: 'https://teams.microsoft.com/l/meetup-join/19%3Ahanova-quantum-night%40thread.v2/0?context=%7B%22Tid%22%3A%22hanova-academy%22%2C%22Oid%22%3A%22physics-night%22%7D', meetingCode: 'Quantum-Night', meetingPasscode: 'Photon88' },
+  { id: 's12', tutorId: '3', title: 'AI Ethics', type: 'Session', durationMinutes: 90, dayIndex: 4, startHour: 20, status: 'Confirmed', note: 'Reading assignment on AI safety', isUpdated: false, location: 'Innovation Lab', room: 'Glass Hub', materials: 'iPad/Laptop', delivery: 'In-person' }
 ];
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -82,9 +108,18 @@ const startH = 7;
 const endH = 22;
 type ScheduleTab = 'All' | 'Active' | 'Completed';
 type Tutor = (typeof myTutors)[number];
-type Session = (typeof mySessions)[number];
 type SessionWithTutor = Session & { tutor: Tutor };
 const scheduleTabs: ScheduleTab[] = ['All', 'Active', 'Completed'];
+
+function formatTimeSlot(hourValue: number) {
+  const hour = Math.floor(hourValue);
+  const minute = Math.round((hourValue - hour) * 60);
+  return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+}
+
+function formatSessionRange(session: Session) {
+  return `${formatTimeSlot(session.startHour)} – ${formatTimeSlot(session.startHour + session.durationMinutes / 60)}`;
+}
 
 /* ═══════════════════════════════════════════════
    COMPONENT
@@ -134,9 +169,21 @@ export default function Schedule() {
     return mySessions;
   }, [selectedTutor]);
 
+  const onlineSessions = useMemo(() => {
+    return displaySessions
+      .filter((session) => session.delivery === 'Online' && session.status !== 'Cancelled' && session.meetingLink)
+      .map((session) => {
+        const tutor = myTutors.find((item) => item.id === session.tutorId);
+        return tutor ? { ...session, tutor } : null;
+      })
+      .filter((session): session is SessionWithTutor => Boolean(session))
+      .sort((left, right) => left.dayIndex - right.dayIndex || left.startHour - right.startHour);
+  }, [displaySessions]);
+
   // Insights
   const upcomingCount = displaySessions.filter(s => s.status !== 'Cancelled').length;
   const hasConflict = false;
+  const nextOnlineSession = onlineSessions[0] ?? null;
   
   const handleSlotClick = (session: SessionWithTutor) => {
     setSelectedModalSession(session);
@@ -292,6 +339,148 @@ export default function Schedule() {
 
         {/* ═══ RIGHT PANEL: TIMETABLE ═══ */}
         <div className="flex flex-col min-h-0">
+          <div className="mb-4 grid shrink-0 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+            <div className="rounded-[24px] border border-cyan-400/15 bg-[linear-gradient(135deg,rgba(12,19,34,0.92),rgba(8,31,44,0.7))] p-5 shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.08] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-100/75">
+                    <Video size={12} />
+                    Online classroom
+                  </div>
+                  <h3 className="mt-3 text-xl font-serif text-white">Remote lessons with instant join links</h3>
+                  <p className="mt-1 max-w-2xl text-sm leading-6 text-white/50">
+                    Jump into your next virtual room without opening chat history or notification threads.
+                  </p>
+                </div>
+                <div className="rounded-[18px] border border-white/10 bg-white/[0.04] px-4 py-3 md:min-w-[110px]">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Available rooms</p>
+                  <p className="mt-2 text-2xl font-serif text-white">{onlineSessions.length}</p>
+                </div>
+              </div>
+
+              {onlineSessions.length === 0 ? (
+                <div className="mt-4 rounded-[18px] border border-dashed border-white/10 bg-white/[0.03] px-5 py-6 text-center text-sm text-white/42">
+                  No online lessons in the current view. Choose another mentor or switch back to all sessions to reveal virtual rooms.
+                </div>
+              ) : (
+                <div className="mt-4 flex gap-3 overflow-x-auto pb-1 custom-scrollbar">
+                  {onlineSessions.slice(0, 3).map((session) => (
+                    <div
+                      key={session.id}
+                      className="min-w-[220px] flex-1 rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.015))] p-4 shadow-[0_14px_32px_rgba(0,0,0,0.22)]"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-cyan-100">
+                          <Video size={11} />
+                          {session.meetingPlatform}
+                        </span>
+                        <span className={`rounded-full border px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.16em] ${
+                          session.status === 'Rescheduled'
+                            ? 'border-amber-400/25 bg-amber-400/10 text-amber-300'
+                            : 'border-emerald-400/25 bg-emerald-400/10 text-emerald-300'
+                        }`}>
+                          {session.status}
+                        </span>
+                      </div>
+
+                      <h4 className="mt-3 font-serif text-lg leading-snug text-white">{session.title}</h4>
+                      <p className="mt-1 text-xs text-white/48">{session.tutor.name}</p>
+
+                      <div className="mt-3 space-y-2 text-[11px] text-white/58">
+                        <div className="flex items-center gap-2">
+                          <Clock size={12} className="text-cyan-200/70" />
+                          <span>{daysOfWeek[session.dayIndex]} • {formatSessionRange(session)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Link2 size={12} className="text-cyan-200/70" />
+                          <span>{session.meetingCode ?? session.room}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 flex items-center gap-2">
+                        <a
+                          href={session.meetingLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-bold text-black transition hover:bg-white/90"
+                        >
+                          Join room
+                          <ExternalLink size={14} />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedModalSession(session)}
+                          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-semibold text-white/72 transition hover:bg-white/[0.08] hover:text-white"
+                        >
+                          Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-[24px] border border-violet-400/15 bg-[linear-gradient(160deg,rgba(18,16,38,0.95),rgba(26,16,54,0.72))] p-5 shadow-[0_18px_45px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-violet-300/15 bg-violet-300/[0.08] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-100/75">
+                  <Sparkles size={12} />
+                  Next online room
+                </div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-white/30">
+                  {nextOnlineSession ? 'Ready to join' : 'No remote class'}
+                </div>
+              </div>
+
+              {nextOnlineSession ? (
+                <>
+                  <h3 className="mt-3 text-xl font-serif text-white">{nextOnlineSession.title}</h3>
+                  <p className="mt-1 text-sm leading-6 text-white/58">
+                    {nextOnlineSession.tutor.name} · {daysOfWeek[nextOnlineSession.dayIndex]} · {formatSessionRange(nextOnlineSession)}
+                  </p>
+
+                  <div className="mt-4 rounded-[18px] border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/34">Meeting access</p>
+                    <div className="mt-3 flex items-center gap-2 text-sm text-white/78">
+                      <Video size={14} className="text-violet-200/75" />
+                      <span>{nextOnlineSession.meetingPlatform}</span>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 text-sm text-white/58">
+                      <Link2 size={14} className="text-violet-200/75" />
+                      <span>{nextOnlineSession.meetingCode ?? nextOnlineSession.room}</span>
+                    </div>
+                    {nextOnlineSession.meetingPasscode && (
+                      <p className="mt-2 text-xs text-white/46">Passcode: {nextOnlineSession.meetingPasscode}</p>
+                    )}
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <a
+                      href={nextOnlineSession.meetingLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-violet-300 px-4 py-3 text-sm font-bold text-black transition hover:bg-violet-200"
+                    >
+                      Open meeting
+                      <ExternalLink size={14} />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedModalSession(nextOnlineSession)}
+                      className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white/72 transition hover:bg-white/[0.08] hover:text-white"
+                    >
+                      Review materials
+                      <BookOpen size={14} />
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="mt-4 rounded-[18px] border border-dashed border-white/10 bg-white/[0.03] px-5 py-8 text-center text-sm leading-6 text-white/42">
+                  Add or reschedule a virtual lesson and the join link will appear here automatically.
+                </div>
+              )}
+            </div>
+          </div>
           
           {/* Calendar Container */}
           <div className="rounded-[24px] border border-white/10 bg-white/[0.01] overflow-hidden shadow-2xl glass-panel flex-1 flex flex-col min-h-0">
@@ -515,6 +704,14 @@ export default function Schedule() {
                                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${isCancelled ? 'bg-red-500/50' : `bg-${tutor.color}-400`}`} />
                                    
                                    <div className="flex-1 overflow-hidden min-h-0 pl-1.5 relative z-10">
+                                      <div className="mb-1 flex items-center justify-between gap-2">
+                                        {session.delivery === 'Online' && (
+                                          <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.16em] text-cyan-100">
+                                            <Video size={9} />
+                                            Online
+                                          </span>
+                                        )}
+                                      </div>
                                       <h5 className={`font-serif text-[12px] leading-snug mb-0.5 truncate ${isCancelled ? 'text-red-400/90' : 'text-white'}`}>
                                          {session.title}
                                       </h5>
@@ -578,12 +775,16 @@ export default function Schedule() {
                            {/* Location & Room */}
                            <div className="flex flex-col gap-1.5 mb-4">
                               <div className="flex items-center gap-1.5 grayscale opacity-60">
-                                 <MapPin size={10} />
-                                 <span className="text-[10px] uppercase tracking-wider">{hoveredSession.location}</span>
+                                 {hoveredSession.delivery === 'Online' ? <Video size={10} /> : <MapPin size={10} />}
+                                 <span className="text-[10px] uppercase tracking-wider">
+                                   {hoveredSession.delivery === 'Online' ? `${hoveredSession.meetingPlatform} online room` : hoveredSession.location}
+                                 </span>
                               </div>
                               <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 w-max">
-                                 <DoorOpen size={12} className="text-indigo-400" />
-                                 <span className="text-[11px] font-bold text-white tracking-tight">Room {hoveredSession.room}</span>
+                                 {hoveredSession.delivery === 'Online' ? <Link2 size={12} className="text-cyan-400" /> : <DoorOpen size={12} className="text-indigo-400" />}
+                                 <span className="text-[11px] font-bold text-white tracking-tight">
+                                   {hoveredSession.delivery === 'Online' ? (hoveredSession.meetingCode ?? hoveredSession.room) : `Room ${hoveredSession.room}`}
+                                 </span>
                               </div>
                            </div>
 
@@ -591,7 +792,7 @@ export default function Schedule() {
                               <div>
                                 <p className="text-[9px] text-white/30 uppercase tracking-widest mb-0.5">Time</p>
                                 <p className="text-xs text-white/90 font-mono">
-                                  {hoveredSession.startHour.toString().padStart(2,'0')}:00 – {(hoveredSession.startHour + hoveredSession.durationMinutes/60).toString().padStart(2,'0')}:00
+                                  {formatSessionRange(hoveredSession)}
                                 </p>
                               </div>
                               <div>
@@ -619,6 +820,18 @@ export default function Schedule() {
                                     </div>
                                     <p className="text-[10px] leading-relaxed text-white/50">{hoveredSession.materials}</p>
                                  </div>
+                              )}
+
+                              {hoveredSession.delivery === 'Online' && hoveredSession.meetingLink && (
+                                 <a
+                                   href={hoveredSession.meetingLink}
+                                   target="_blank"
+                                   rel="noreferrer"
+                                   className="pointer-events-auto inline-flex items-center gap-2 rounded-[12px] border border-cyan-300/20 bg-cyan-300/[0.08] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-100 transition hover:bg-cyan-300/[0.14]"
+                                 >
+                                   Join meeting
+                                   <ExternalLink size={11} />
+                                 </a>
                               )}
                            </div>
                         </div>
@@ -666,16 +879,30 @@ export default function Schedule() {
                          <div className="flex items-center gap-2">
                             <Clock size={15} className="text-blue-400" />
                             <span className="text-sm font-medium text-white/90">
-                              {daysOfWeek[selectedModalSession.dayIndex]}, {selectedModalSession.startHour.toString().padStart(2,'0')}:00
+                              {daysOfWeek[selectedModalSession.dayIndex]}, {formatSessionRange(selectedModalSession)}
                             </span>
                          </div>
                       </div>
-                      <div className="rounded-[16px] bg-indigo-500/10 border border-indigo-500/20 p-4 flex flex-col justify-between shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
-                         <span className="block text-[9px] uppercase font-bold tracking-[0.2em] text-indigo-300/60 mb-2">Room Number</span>
+                      <div className={`rounded-[16px] p-4 flex flex-col justify-between shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] ${
+                        selectedModalSession.delivery === 'Online'
+                          ? 'bg-cyan-500/10 border border-cyan-500/20'
+                          : 'bg-indigo-500/10 border border-indigo-500/20'
+                      }`}>
+                         <span className={`block text-[9px] uppercase font-bold tracking-[0.2em] mb-2 ${
+                           selectedModalSession.delivery === 'Online' ? 'text-cyan-300/60' : 'text-indigo-300/60'
+                         }`}>
+                           {selectedModalSession.delivery === 'Online' ? 'Meeting Room' : 'Room Number'}
+                         </span>
                          <div className="flex items-center gap-2">
-                            <DoorOpen size={18} className="text-indigo-400" />
+                            {selectedModalSession.delivery === 'Online' ? (
+                              <Link2 size={18} className="text-cyan-400" />
+                            ) : (
+                              <DoorOpen size={18} className="text-indigo-400" />
+                            )}
                             <span className="text-xl font-bold text-white tracking-tighter">
-                               {selectedModalSession.room}
+                               {selectedModalSession.delivery === 'Online'
+                                 ? (selectedModalSession.meetingCode ?? selectedModalSession.room)
+                                 : selectedModalSession.room}
                             </span>
                          </div>
                       </div>
@@ -684,12 +911,17 @@ export default function Schedule() {
                    <div className="rounded-[16px] bg-white/[0.02] border border-white/5 p-4">
                       <span className="block text-[9px] uppercase font-bold tracking-[0.2em] text-white/30 mb-2">Location</span>
                       <div className="flex items-center gap-2">
-                         <MapPin size={14} className="text-emerald-400" />
+                         {selectedModalSession.delivery === 'Online' ? <Video size={14} className="text-cyan-400" /> : <MapPin size={14} className="text-emerald-400" />}
                          <span className="text-sm font-medium text-white/80">
-                            {selectedModalSession.location}
+                            {selectedModalSession.delivery === 'Online'
+                              ? `${selectedModalSession.meetingPlatform} virtual classroom`
+                              : selectedModalSession.location}
                          </span>
                       </div>
-                   </div>
+                      {selectedModalSession.delivery === 'Online' && selectedModalSession.meetingPasscode && (
+                        <p className="mt-3 text-xs text-white/42">Passcode: {selectedModalSession.meetingPasscode}</p>
+                      )}
+                    </div>
 
                    <div className="space-y-4">
                       {selectedModalSession.note && (
@@ -729,6 +961,18 @@ export default function Schedule() {
                       </p>
                    </div>
                    
+                   {selectedModalSession.delivery === 'Online' && selectedModalSession.meetingLink && (
+                     <a
+                       href={selectedModalSession.meetingLink}
+                       target="_blank"
+                       rel="noreferrer"
+                       className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/[0.12] px-4 py-3 text-sm font-bold text-cyan-50 transition hover:bg-cyan-300/[0.18]"
+                     >
+                       Join online classroom
+                       <ExternalLink size={15} />
+                     </a>
+                   )}
+
                    <div className="flex gap-3 pt-3 border-t border-white/5">
                       <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full border border-white/10 hover:bg-white/[0.03] transition-colors text-sm font-medium text-white/70">
                          <XCircle size={15} /> Cancel

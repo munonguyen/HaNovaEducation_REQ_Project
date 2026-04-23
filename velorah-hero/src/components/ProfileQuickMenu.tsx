@@ -12,48 +12,29 @@ import {
   Settings,
   User,
 } from 'lucide-react';
-
-interface StoredProfile {
-  name: string;
-  email: string;
-  initials: string;
-  role: string;
-  goal?: string;
-}
-
-const USER_KEY = 'hanova:user-profile';
+import {
+  USER_UPDATED_EVENT,
+  clearStoredUserProfile,
+  readStoredUserProfile,
+  type StoredUserProfile,
+} from '../utils/helpers';
 const authRoutes = ['/signin', '/signup', '/forgot-password', '/auth-success'];
-
-function readProfile() {
-  try {
-    const stored = window.localStorage.getItem(USER_KEY);
-    if (!stored) return null;
-    return JSON.parse(stored) as StoredProfile;
-  } catch {
-    return null;
-  }
-}
 
 export default function ProfileQuickMenu() {
   const location = useLocation();
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [profile, setProfile] = useState<StoredProfile | null>(() => readProfile());
+  const [profile, setProfile] = useState<StoredUserProfile | null>(() => readStoredUserProfile());
   const [open, setOpen] = useState(false);
   const currentTab = new URLSearchParams(location.search).get('tab');
 
   useEffect(() => {
-    setProfile(readProfile());
-    setOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const syncProfile = () => setProfile(readProfile());
+    const syncProfile = () => setProfile(readStoredUserProfile());
     window.addEventListener('storage', syncProfile);
-    window.addEventListener('hanova:user-updated', syncProfile);
+    window.addEventListener(USER_UPDATED_EVENT, syncProfile);
     return () => {
       window.removeEventListener('storage', syncProfile);
-      window.removeEventListener('hanova:user-updated', syncProfile);
+      window.removeEventListener(USER_UPDATED_EVENT, syncProfile);
     };
   }, []);
 
@@ -210,7 +191,7 @@ export default function ProfileQuickMenu() {
           <button
             type="button"
             onClick={() => {
-              window.localStorage.removeItem(USER_KEY);
+              clearStoredUserProfile();
               setProfile(null);
               setOpen(false);
               navigate('/signin');
