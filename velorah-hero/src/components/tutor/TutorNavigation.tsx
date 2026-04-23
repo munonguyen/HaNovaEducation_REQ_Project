@@ -61,7 +61,7 @@ export default function TutorNavigation() {
   const location = useLocation();
   const activeTab = location.pathname;
   // Initialize to 3 to skip the heavy intro animation (which only happens on the main app load)
-  const [phase, setPhase] = useState(3);
+  const phase: number = 3;
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {

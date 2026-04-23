@@ -46,7 +46,8 @@ function PageLoader() {
 
 export default function App() {
   const location = useLocation();
-  const isTutorRoute = location.pathname.startsWith('/tutor');
+  const isTutorRoute = location.pathname === '/tutor' || location.pathname.startsWith('/tutor/');
+  const isAuthRoute = ['/signin', '/signup', '/forgot-password', '/auth-success'].includes(location.pathname);
   const [introDone, setIntroDone] = useState(false);
 
   useEffect(() => {
@@ -60,15 +61,15 @@ export default function App() {
       <div
         className="fixed inset-0 z-[997] bg-[#020205] pointer-events-none"
         style={{
-          opacity: (introDone || isTutorRoute) ? 0 : 1,
+          opacity: (introDone || isTutorRoute || isAuthRoute) ? 0 : 1,
           transition: 'opacity 0.7s cubic-bezier(0.22,1,0.36,1)',
         }}
       />
 
-      {!isTutorRoute && <Navigation />}
+      {!isTutorRoute && !isAuthRoute && <Navigation />}
 
       <div style={{
-        opacity: (introDone || isTutorRoute) ? 1 : 0,
+        opacity: (introDone || isTutorRoute || isAuthRoute) ? 1 : 0,
         transition: 'opacity 0.8s cubic-bezier(0.22,1,0.36,1)',
       }}>
         {isTutorRoute ? (

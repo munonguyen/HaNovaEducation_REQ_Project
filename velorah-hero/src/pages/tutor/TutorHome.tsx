@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Calendar, Clock, Video, Check, X } from 'lucide-react';
+import { Play, Clock, Video, Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const TutorHome: React.FC = () => {

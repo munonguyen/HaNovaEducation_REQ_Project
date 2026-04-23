@@ -1,6 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, CreditCard, Shield, Edit2, Bookmark, ChevronRight, Globe, Moon, Bell, CheckCircle2, LogOut, Camera, Mail, Phone, MapPin } from 'lucide-react';
+
+type ProfileTab = 'personal' | 'preferences' | 'billing' | 'security';
+
+const DEFAULT_TAB: ProfileTab = 'personal';
+
+const tabs = [
+  { id: 'personal' as const, label: 'Personal Details', icon: User, desc: 'Name, email, timezone' },
+  { id: 'preferences' as const, label: 'Learning Preferences', icon: Bookmark, desc: 'Notifications & study habits' },
+  { id: 'billing' as const, label: 'Billing & Plans', icon: CreditCard, desc: 'Subscription & payment' },
+  { id: 'security' as const, label: 'Security', icon: Shield, desc: 'Password & 2FA' },
+];
+
+function isProfileTab(value: string | null): value is ProfileTab {
+  return tabs.some((tab) => tab.id === value);
+}
 
 function ToggleSwitch({ enabled, onClick }: { enabled: boolean; onClick: () => void }) {
   return (
@@ -24,7 +40,9 @@ function ToggleSwitch({ enabled, onClick }: { enabled: boolean; onClick: () => v
 }
 
 export default function Profile() {
-  const [activeTab, setActiveTab] = useState('personal');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<ProfileTab>(isProfileTab(requestedTab) ? requestedTab : DEFAULT_TAB);
   const [toggles, setToggles] = useState({
     reminders: true,
     studyGroups: true,
@@ -32,16 +50,18 @@ export default function Profile() {
     emailDigest: true,
   });
 
+  useEffect(() => {
+    setActiveTab(isProfileTab(requestedTab) ? requestedTab : DEFAULT_TAB);
+  }, [requestedTab]);
+
   const toggle = (key: keyof typeof toggles) => {
     setToggles(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const tabs = [
-    { id: 'personal', label: 'Personal Details', icon: User, desc: 'Name, email, timezone' },
-    { id: 'preferences', label: 'Learning Preferences', icon: Bookmark, desc: 'Notifications & study habits' },
-    { id: 'billing', label: 'Billing & Plans', icon: CreditCard, desc: 'Subscription & payment' },
-    { id: 'security', label: 'Security', icon: Shield, desc: 'Password & 2FA' },
-  ];
+  const handleTabChange = (tab: ProfileTab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
 
   return (
     <motion.div 
@@ -87,7 +107,7 @@ export default function Profile() {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => handleTabChange(tab.id)}
                     className={`w-full flex items-center gap-3.5 px-4 py-3.5 rounded-[16px] transition-all duration-300 text-left ${
                       isActive ? 'bg-white/[0.08] shadow-lg border border-white/15' : 'border border-transparent text-white/40 hover:bg-white/[0.03] hover:text-white/80'
                     }`}

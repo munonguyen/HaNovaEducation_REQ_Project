@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import ProfileQuickMenu from './ProfileQuickMenu';
 
 const E = 'cubic-bezier(0.16, 1, 0.3, 1)';
+const USER_KEY = 'hanova:user-profile';
 
 const links = [
   { path: '/', label: 'Home' },
@@ -58,12 +60,21 @@ function LogoMark({ size, glow }: { size: number; glow?: boolean }) {
   );
 }
 
+function readIsAuthenticated() {
+  try {
+    return Boolean(window.localStorage.getItem(USER_KEY));
+  } catch {
+    return false;
+  }
+}
+
 export default function Navigation() {
   const location = useLocation();
   const activeTab = location.pathname;
   const [phase, setPhase] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [introIn, setIntroIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => readIsAuthenticated());
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
@@ -79,12 +90,24 @@ export default function Navigation() {
     return () => { clearTimeout(t0); t.forEach(clearTimeout); };
   }, []);
 
+  useEffect(() => {
+    const syncAuth = () => setIsAuthenticated(readIsAuthenticated());
+    window.addEventListener('storage', syncAuth);
+    window.addEventListener('hanova:user-updated', syncAuth);
+    return () => {
+      window.removeEventListener('storage', syncAuth);
+      window.removeEventListener('hanova:user-updated', syncAuth);
+    };
+  }, []);
+
   const isIntro = phase === 0;
   const isPill = phase >= 2;
   const isReady = phase >= 3;
 
   return (
     <>
+      <ProfileQuickMenu />
+
       <style>{`
         @keyframes introReveal {
           from { opacity: 0; letter-spacing: 0.5em; }
@@ -275,16 +298,31 @@ export default function Navigation() {
                   <a href="#" className="text-[9px] text-white/25 hover:text-white/50 uppercase tracking-widest transition-colors">About</a>
                   <a href="#" className="text-[9px] text-white/25 hover:text-white/50 uppercase tracking-widest transition-colors">Help</a>
                 </div>
-                <button 
-                  onClick={() => {
-                    setIsOpen(false);
-                    window.location.href = '/signin';
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-all border border-red-500/20"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                  <span className="text-[10px] uppercase tracking-widest font-bold">Log Out</span>
-                </button>
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      window.localStorage.removeItem(USER_KEY);
+                      window.dispatchEvent(new Event('hanova:user-updated'));
+                      setIsOpen(false);
+                      window.location.href = '/signin';
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-all border border-red-500/20"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span className="text-[10px] uppercase tracking-widest font-bold">Log Out</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      window.location.href = '/signin';
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-300/10 hover:bg-cyan-300/15 text-cyan-100 hover:text-white transition-all border border-cyan-200/25 shadow-[0_0_18px_rgba(34,211,238,0.1)]"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span className="text-[10px] uppercase tracking-widest font-bold">Log In</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

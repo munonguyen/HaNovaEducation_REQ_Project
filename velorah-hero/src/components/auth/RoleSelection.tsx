@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { User, GraduationCap, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 

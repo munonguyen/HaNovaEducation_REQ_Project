@@ -458,9 +458,9 @@ export default function Tutors() {
                     <p className="mb-6 min-h-[42px] line-clamp-2 text-sm text-white/62">{tutor.headline}</p>
 
                     <div className="mb-5 flex flex-wrap gap-2">
-                      {tutor.expertise.slice(0, 2).map((item) => (
+                      {tutor.expertise.slice(0, 2).map((item, itemIndex) => (
                         <span
-                          key={item}
+                          key={`${tutor.id}-${item}-${itemIndex}`}
                           className="rounded-full border border-blue-400/25 bg-blue-500/10 px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-blue-200"
                         >
                           {item}
