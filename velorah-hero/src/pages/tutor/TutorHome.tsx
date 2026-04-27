@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Bell,
@@ -9,6 +10,7 @@ import {
   Send,
   ShieldCheck,
   UsersRound,
+  WalletCards,
   X,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -20,9 +22,9 @@ const todaySessions = [
   { time: '19:30', student: 'Group A3', subject: 'University entrance review', mode: 'Online', status: 'Booked' },
 ];
 
-const pendingRequests = [
-  { student: 'Thanh Truc', subject: 'Chemistry 11', time: 'Fri 24 Apr, 18:00', note: 'Needs a recurring Friday evening slot.' },
-  { student: 'Duc Huy', subject: 'SAT Math', time: 'Sat 25 Apr, 09:00', note: 'Parent asks for a trial lesson first.' },
+const initialPendingRequests = [
+  { student: 'Thanh Truc', subject: 'Chemistry 11', time: 'Fri 24 Apr, 18:00', note: 'Needs a recurring Friday evening slot.', status: 'Pending' },
+  { student: 'Duc Huy', subject: 'SAT Math', time: 'Sat 25 Apr, 09:00', note: 'Parent asks for a trial lesson first.', status: 'Pending' },
 ];
 
 const notifications = [
@@ -38,7 +40,24 @@ const stats = [
   { value: '92%', label: 'Auto-booking coverage', note: 'Zalo/Excel work reduced' },
 ];
 
+const monthlyRevenue = {
+  total: '12,800,000 VND',
+  received: '11,450,000 VND received',
+  pending: '1,350,000 VND pending',
+  payout: 'Next payout: 30 Apr 2026',
+};
+
 export default function TutorHome() {
+  const [pendingRequests, setPendingRequests] = useState(initialPendingRequests);
+  const [feedback, setFeedback] = useState('Realtime tutor workspace is synced with schedule, bookings, payments, and reminders.');
+
+  const updateRequest = (student: string, status: string) => {
+    setPendingRequests((current) =>
+      current.map((request) => (request.student === student ? { ...request, status } : request)),
+    );
+    setFeedback(`${student}: ${status === 'Accepted' ? 'booking accepted and schedule synced.' : status === 'Suggested' ? 'new time suggestion sent.' : 'request rejected and student notified.'}`);
+  };
+
   return (
     <motion.div
       className="tutor-page"
@@ -70,6 +89,14 @@ export default function TutorHome() {
         </div>
       </section>
 
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><ShieldCheck size={19} /></div>
+        <div>
+          <strong>Flow status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
+
       <div className="home-layout">
         <div className="home-main">
           <section className="tutor-card">
@@ -98,7 +125,12 @@ export default function TutorHome() {
                       {session.status}
                     </span>
                     {session.status === 'Next' && (
-                      <button className="compact-btn primary"><PlayCircle size={15} /> Enter</button>
+                      <button
+                        className="compact-btn primary"
+                        onClick={() => setFeedback('Opening Lan Anh online lesson room. Payment, materials, and notes are ready.')}
+                      >
+                        <PlayCircle size={15} /> Enter
+                      </button>
                     )}
                   </div>
                 </div>
@@ -126,13 +158,15 @@ export default function TutorHome() {
                         <span>{request.subject} - {request.time}</span>
                       </div>
                     </div>
-                    <span className="tutor-chip warning">Pending</span>
+                    <span className={`tutor-chip ${request.status === 'Accepted' ? 'success' : request.status === 'Rejected' ? 'danger' : request.status === 'Suggested' ? 'info' : 'warning'}`}>
+                      {request.status}
+                    </span>
                   </div>
                   <p className="request-message">{request.note}</p>
                   <div className="request-actions">
-                    <button className="compact-btn success"><Check size={14} /> Accept</button>
-                    <button className="compact-btn"><Send size={14} /> Suggest time</button>
-                    <button className="compact-btn danger"><X size={14} /> Reject</button>
+                    <button className="compact-btn success" onClick={() => updateRequest(request.student, 'Accepted')} disabled={request.status !== 'Pending'}><Check size={14} /> Accept</button>
+                    <button className="compact-btn" onClick={() => updateRequest(request.student, 'Suggested')} disabled={request.status !== 'Pending'}><Send size={14} /> Suggest time</button>
+                    <button className="compact-btn danger" onClick={() => updateRequest(request.student, 'Rejected')} disabled={request.status !== 'Pending'}><X size={14} /> Reject</button>
                   </div>
                 </article>
               ))}
@@ -149,6 +183,22 @@ export default function TutorHome() {
                 <span className="stat-note">{stat.note}</span>
               </div>
             ))}
+          </section>
+
+          <section className="tutor-card revenue-card">
+            <div className="revenue-card-head">
+              <div className="tutor-soft-icon green"><WalletCards size={19} /></div>
+              <div>
+                <h2 className="tutor-section-title">Monthly Revenue</h2>
+                <p className="tutor-section-copy">VNPay and MoMo lesson payments synced for April 2026.</p>
+              </div>
+            </div>
+            <strong className="revenue-total">{monthlyRevenue.total}</strong>
+            <div className="revenue-lines">
+              <span>{monthlyRevenue.received}</span>
+              <span>{monthlyRevenue.pending}</span>
+              <span>{monthlyRevenue.payout}</span>
+            </div>
           </section>
 
           <section className="insight-panel">
