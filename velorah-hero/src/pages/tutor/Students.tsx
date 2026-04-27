@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const students = [
+const initialStudents = [
   {
     id: 's1',
     name: 'Lan Anh',
@@ -50,14 +50,38 @@ const students = [
   },
 ];
 
-const groups = [
+const initialGroups = [
   { name: 'Group A3', members: '6 members', next: 'Today, 19:30', plan: 'Entrance Exam Roadmap' },
   { name: 'IELTS Evening', members: '4 members', next: 'Thu, 20:00', plan: 'Speaking Routine' },
   { name: 'Math 12 Weekend', members: '8 members', next: 'Sat, 08:30', plan: 'Problem Solving Sprint' },
 ];
 
 export default function Students() {
+  const [students, setStudents] = useState(initialStudents);
+  const [groups, setGroups] = useState(initialGroups);
   const [selected, setSelected] = useState(students[0]);
+  const [feedback, setFeedback] = useState('Student and group workspace is synced with lessons, plans, progress, and notes.');
+
+  const addStudent = () => {
+    const newStudent = {
+      id: `s${students.length + 1}`,
+      name: 'New Student',
+      activePlan: 'Needs plan assignment',
+      nextSession: 'No confirmed session',
+      progress: 0,
+      history: ['Student profile created from tutor workspace'],
+      notes: 'Add notes after the first diagnostic lesson.',
+    };
+    setStudents((current) => [newStudent, ...current]);
+    setSelected(newStudent);
+    setFeedback('New student profile created. Assign a plan or schedule a diagnostic lesson.');
+  };
+
+  const createGroup = () => {
+    const newGroup = { name: `New Group ${groups.length + 1}`, members: '0 members', next: 'No session yet', plan: 'Needs roadmap' };
+    setGroups((current) => [newGroup, ...current]);
+    setFeedback('New group created. Add members, assign a plan, then schedule the first session.');
+  };
 
   return (
     <motion.div
@@ -75,10 +99,18 @@ export default function Students() {
           </p>
         </div>
         <div className="tutor-actions">
-          <button className="tutor-btn"><UserPlus size={16} /> Add student</button>
-          <button className="tutor-btn primary"><Plus size={16} /> Create group</button>
+          <button className="tutor-btn" onClick={addStudent}><UserPlus size={16} /> Add student</button>
+          <button className="tutor-btn primary" onClick={createGroup}><Plus size={16} /> Create group</button>
         </div>
       </div>
+
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><UsersRound size={19} /></div>
+        <div>
+          <strong>Students action status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
 
       <section className="tutor-card" style={{ padding: 22 }}>
         <div className="group-strip">
@@ -90,8 +122,8 @@ export default function Students() {
                 <span><CalendarDays size={13} style={{ display: 'inline', marginRight: 4 }} /> {group.next}</span>
               </div>
               <div className="request-actions">
-                <button className="compact-btn primary">Assign session</button>
-                <button className="compact-btn">Members</button>
+                <button className="compact-btn primary" onClick={() => setFeedback(`${group.name}: group session assigned and reminders queued.`)}>Assign session</button>
+                <button className="compact-btn" onClick={() => setFeedback(`${group.name}: member management panel opened.`)}>Members</button>
               </div>
             </article>
           ))}
@@ -180,9 +212,9 @@ export default function Students() {
             </div>
 
             <div className="request-actions">
-              <button className="compact-btn primary"><MessageSquare size={14} /> Message</button>
-              <button className="compact-btn">Assign plan</button>
-              <button className="compact-btn">Schedule lesson</button>
+              <button className="compact-btn primary" onClick={() => setFeedback(`${selected.name}: message composer opened.`)}><MessageSquare size={14} /> Message</button>
+              <button className="compact-btn" onClick={() => setFeedback(`${selected.name}: active study plan assignment started.`)}>Assign plan</button>
+              <button className="compact-btn" onClick={() => setFeedback(`${selected.name}: lesson scheduling flow opened with conflict check.`)}>Schedule lesson</button>
             </div>
           </div>
         </aside>
