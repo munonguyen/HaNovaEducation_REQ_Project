@@ -98,6 +98,7 @@ export default function MyLessons() {
   const [activeTab, setActiveTab] = useState<LessonStatus>('upcoming');
   const [query, setQuery] = useState('');
   const [lessons, setLessons] = useState(initialLessons);
+  const [feedback, setFeedback] = useState('Lesson list is synced with booking requests, payment status, and reminders.');
 
   const filteredLessons = useMemo(() => {
     return lessons.filter((lesson) => {
@@ -121,12 +122,16 @@ export default function MyLessons() {
 
   const markNextCompleted = () => {
     const nextLesson = lessons.find((lesson) => lesson.status === 'upcoming' && !lesson.locked) ?? lessons.find((lesson) => lesson.status === 'upcoming');
-    if (!nextLesson) return;
+    if (!nextLesson) {
+      setFeedback('No upcoming lessons available to mark completed.');
+      return;
+    }
     updateLesson(nextLesson.id, {
       status: 'completed',
       locked: true,
       note: 'Completed from tutor workspace. Notes are ready for student review and study plan follow-up.',
     });
+    setFeedback(`${nextLesson.student}: lesson marked completed and notes are ready for the student.`);
     setActiveTab('completed');
   };
 
@@ -146,10 +151,18 @@ export default function MyLessons() {
           </p>
         </div>
         <div className="tutor-actions">
-          <button className="tutor-btn" onClick={() => setLessons(initialLessons)}><RefreshCw size={16} /> Sync lessons</button>
+          <button className="tutor-btn" onClick={() => { setLessons(initialLessons); setFeedback('Lessons re-synced from schedule.'); }}><RefreshCw size={16} /> Sync lessons</button>
           <button className="tutor-btn primary" onClick={markNextCompleted}><CheckCircle2 size={16} /> Mark completed</button>
         </div>
       </div>
+
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><CheckCircle2 size={19} /></div>
+        <div>
+          <strong>Lesson action status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
 
       <div className="lesson-toolbar">
         <div className="tab-bar" aria-label="Lesson tabs">
@@ -184,7 +197,7 @@ export default function MyLessons() {
                   <h3>{lesson.student}</h3>
                   <p>{lesson.subject}</p>
                 </div>
-                <button className="compact-btn" aria-label="More actions"><MoreHorizontal size={16} /></button>
+                <button className="compact-btn" aria-label="More actions" onClick={() => setFeedback(`${lesson.student}: action menu opened for lesson rules and payment-safe actions.`)}><MoreHorizontal size={16} /></button>
               </div>
 
               <div className="lesson-meta-grid">
@@ -202,39 +215,50 @@ export default function MyLessons() {
               <div className="lesson-actions">
                 {isUpcoming ? (
                   <>
-                    <button className="compact-btn primary">{lesson.mode === 'Online' ? 'Enter session' : 'Open details'}</button>
                     <button
-                      className="compact-btn"
-                      disabled={lesson.locked}
-                      onClick={() => updateLesson(lesson.id, {
-                        time: 'Suggested: Thu 23 Apr, 18:00-19:30',
-                        note: 'Reschedule suggestion sent. Original slot stays locked until the student confirms.',
-                      })}
+                      className="compact-btn primary"
+                      onClick={() => setFeedback(`${lesson.student}: ${lesson.mode === 'Online' ? 'online room opened' : 'offline lesson details opened'}.`)}
+                    >
+                      {lesson.mode === 'Online' ? 'Enter session' : 'Open details'}
+                    </button>
+	                    <button
+	                      className="compact-btn"
+	                      disabled={lesson.locked}
+	                      onClick={() => {
+	                        updateLesson(lesson.id, {
+	                          time: 'Suggested: Thu 23 Apr, 18:00-19:30',
+	                          note: 'Reschedule suggestion sent. Original slot stays locked until the student confirms.',
+	                        });
+	                        setFeedback(`${lesson.student}: reschedule suggestion sent and original slot remains locked.`);
+	                      }}
                     >
                       Reschedule
                     </button>
-                    <button
-                      className="compact-btn danger"
-                      disabled={lesson.locked}
-                      onClick={() => updateLesson(lesson.id, {
-                        status: 'cancelled',
-                        payment: 'Refund queued',
-                        note: 'Cancelled by tutor. Slot returned to availability and notification sent to student.',
-                        locked: true,
-                      })}
+	                    <button
+	                      className="compact-btn danger"
+	                      disabled={lesson.locked}
+	                      onClick={() => {
+	                        updateLesson(lesson.id, {
+	                          status: 'cancelled',
+	                          payment: 'Refund queued',
+	                          note: 'Cancelled by tutor. Slot returned to availability and notification sent to student.',
+	                          locked: true,
+	                        });
+	                        setFeedback(`${lesson.student}: lesson cancelled, slot reopened, refund/notification queued.`);
+	                      }}
                     >
                       Cancel
                     </button>
                   </>
                 ) : lesson.status === 'completed' ? (
                   <>
-                    <button className="compact-btn primary">View notes</button>
-                    <button className="compact-btn">Assign task</button>
+                    <button className="compact-btn primary" onClick={() => setFeedback(`${lesson.student}: completed lesson notes opened.`)}>View notes</button>
+                    <button className="compact-btn" onClick={() => setFeedback(`${lesson.student}: follow-up task assigned to active study plan.`)}>Assign task</button>
                     <button className="compact-btn" disabled><Ban size={14} /> Cannot cancel</button>
                   </>
                 ) : (
                   <>
-                    <button className="compact-btn primary">Create replacement slot</button>
+                    <button className="compact-btn primary" onClick={() => setFeedback(`${lesson.student}: replacement availability slot created from cancelled lesson.`)}>Create replacement slot</button>
                     <button className="compact-btn" disabled><Ban size={14} /> Payment locked</button>
                   </>
                 )}
