@@ -40,6 +40,7 @@ const ManagerDashboard = lazy(() => import('./pages/manager/Dashboard'));
 const TutorManagement = lazy(() => import('./pages/manager/TutorManagement'));
 const BookingMonitoring = lazy(() => import('./pages/manager/BookingMonitoring'));
 const PaymentsRevenue = lazy(() => import('./pages/manager/PaymentsRevenue'));
+const ReviewsRatings = lazy(() => import('./pages/manager/ReviewsRatings'));
 
 /** Minimal dark-theme fallback shown while a lazy chunk loads */
 function PageLoader() {
@@ -107,6 +108,7 @@ export default function App() {
                 <Route path="/manager/tutors" element={<TutorManagement />} />
                 <Route path="/manager/bookings" element={<BookingMonitoring />} />
                 <Route path="/manager/payments" element={<PaymentsRevenue />} />
+                <Route path="/manager/reviews" element={<ReviewsRatings />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
                 <Route path="/manager/*" element={<ManagerDashboard />} />
               </Routes>
