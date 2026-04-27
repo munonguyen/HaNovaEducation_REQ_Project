@@ -921,6 +921,10 @@
   background: linear-gradient(135deg, #2563eb, #4f46e5);
 }
 
+.manager-revenue-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 @keyframes manager-pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(0.72); opacity: 0.65; }
@@ -939,6 +943,10 @@
   .manager-stat-grid,
   .manager-flow-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manager-revenue-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .manager-dashboard-grid {
@@ -980,7 +988,8 @@
   }
 
   .manager-stat-grid,
-  .manager-flow-grid {
+  .manager-flow-grid,
+  .manager-revenue-grid {
     grid-template-columns: 1fr;
   }
 
