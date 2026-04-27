@@ -29,6 +29,7 @@ const pageMotion = {
 
 export function Notifications() {
   const [readTitles, setReadTitles] = useState<string[]>([]);
+  const [channels, setChannels] = useState({ push: true, email: true, zalo: true });
   const groups = [
     {
       title: 'New bookings',
@@ -113,7 +114,7 @@ export function Notifications() {
                 <strong>Mobile push</strong>
                 <span>Booking and reminder alerts</span>
               </div>
-              <span className="toggle" />
+              <button className="toggle" aria-label="Toggle mobile push" aria-pressed={channels.push} onClick={() => setChannels((current) => ({ ...current, push: !current.push }))} />
             </div>
             <div className="settings-item">
               <div className="tutor-soft-icon green"><Mail size={17} /></div>
@@ -121,7 +122,7 @@ export function Notifications() {
                 <strong>Email summary</strong>
                 <span>Daily schedule at 06:30</span>
               </div>
-              <span className="toggle" />
+              <button className="toggle" aria-label="Toggle email summary" aria-pressed={channels.email} onClick={() => setChannels((current) => ({ ...current, email: !current.email }))} />
             </div>
             <div className="settings-item">
               <div className="tutor-soft-icon amber"><MessageSquare size={17} /></div>
@@ -129,7 +130,7 @@ export function Notifications() {
                 <strong>Zalo fallback</strong>
                 <span>Used when student prefers Zalo</span>
               </div>
-              <span className="toggle" />
+              <button className="toggle" aria-label="Toggle Zalo fallback" aria-pressed={channels.zalo} onClick={() => setChannels((current) => ({ ...current, zalo: !current.zalo }))} />
             </div>
           </div>
         </aside>
@@ -139,6 +140,9 @@ export function Notifications() {
 }
 
 export function Profile() {
+  const [feedback, setFeedback] = useState('Tutor profile is approved and visible to students.');
+  const [publicVisible, setPublicVisible] = useState(true);
+
   return (
     <motion.div className="tutor-page" {...pageMotion}>
       <div className="tutor-page-header">
@@ -151,9 +155,17 @@ export function Profile() {
         </div>
         <div className="tutor-actions">
           <span className="tutor-chip success"><BadgeCheck size={13} /> Approved</span>
-          <button className="tutor-btn primary">Save profile</button>
+          <button className="tutor-btn primary" onClick={() => setFeedback('Profile changes saved. Student-facing search will refresh after review checks.')}>Save profile</button>
         </div>
       </div>
+
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><ShieldCheck size={19} /></div>
+        <div>
+          <strong>Profile action status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
 
       <div className="profile-layout">
         <section className="tutor-card">
@@ -196,7 +208,9 @@ export function Profile() {
                     <span>PDF, PNG, JPG up to 10MB. Approval team reviews changes.</span>
                   </div>
                 </div>
-                <button className="tutor-btn"><FileUp size={16} /> Upload</button>
+                <button className="tutor-btn" onClick={() => setFeedback('Certificate upload queued for academic approval review.')}>
+                  <FileUp size={16} /> Upload
+                </button>
               </div>
             </div>
           </div>
@@ -217,15 +231,15 @@ export function Profile() {
                   <strong>Profile photo</strong>
                   <span>Warm, professional headshot</span>
                 </div>
-                <button className="compact-btn">Change</button>
+                <button className="compact-btn" onClick={() => setFeedback('Profile photo picker opened. New image will be reviewed before replacing the public photo.')}>Change</button>
               </div>
               <div className="settings-item">
                 <div className="tutor-soft-icon green"><CheckCircle2 size={17} /></div>
                 <div>
                   <strong>Student-facing profile</strong>
-                  <span>Visible in booking search</span>
+                  <span>{publicVisible ? 'Visible in booking search' : 'Hidden from new booking search'}</span>
                 </div>
-                <span className="toggle" />
+                <button className="toggle" aria-label="Toggle student-facing profile" aria-pressed={publicVisible} onClick={() => { setPublicVisible((current) => !current); setFeedback(publicVisible ? 'Student-facing profile hidden from new searches.' : 'Student-facing profile restored to booking search.'); }} />
               </div>
             </div>
           </div>
@@ -236,6 +250,13 @@ export function Profile() {
 }
 
 export function Settings() {
+  const [feedback, setFeedback] = useState('Settings are active. Availability, notifications, and payments are connected.');
+  const [notificationToggles, setNotificationToggles] = useState({
+    'Booking requests': true,
+    Confirmations: true,
+    '24h reminders': true,
+  });
+
   return (
     <motion.div className="tutor-page" {...pageMotion}>
       <div className="tutor-page-header">
@@ -246,8 +267,16 @@ export function Settings() {
             Configure availability preferences, notification channels, payment setup, and schedule rules.
           </p>
         </div>
-        <button className="tutor-btn primary">Save settings</button>
+        <button className="tutor-btn primary" onClick={() => setFeedback('Settings saved. Booking rules, notification rules, and payment preferences are synced.')}>Save settings</button>
       </div>
+
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><SlidersHorizontal size={19} /></div>
+        <div>
+          <strong>Settings action status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
 
       <div className="settings-layout">
         <section className="tutor-card">
@@ -333,7 +362,18 @@ export function Settings() {
                   <strong>{title}</strong>
                   <span>{detail}</span>
                 </div>
-                <span className="toggle" />
+                <button
+                  className="toggle"
+                  aria-label={`Toggle ${title}`}
+                  aria-pressed={notificationToggles[title as keyof typeof notificationToggles]}
+                  onClick={() => {
+                    setNotificationToggles((current) => ({
+                      ...current,
+                      [title]: !current[title as keyof typeof current],
+                    }));
+                    setFeedback(`${title} notification rule updated.`);
+                  }}
+                />
               </div>
             ))}
           </div>
