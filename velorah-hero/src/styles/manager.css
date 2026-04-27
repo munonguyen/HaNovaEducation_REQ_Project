@@ -788,6 +788,139 @@
   background: #fff1f2;
 }
 
+.manager-control-grid {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.35fr) minmax(260px, 1fr) minmax(180px, 0.3fr);
+  align-items: end;
+}
+
+.manager-field,
+.manager-dialog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.manager-field span,
+.manager-dialog-field span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.manager-field input,
+.manager-field select,
+.manager-search-box,
+.manager-dialog-field textarea {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 13px;
+  padding: 0 12px;
+  color: #172033;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+}
+
+.manager-field input:focus,
+.manager-field select:focus,
+.manager-dialog-field textarea:focus,
+.manager-search-box:focus-within {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.manager-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 11px;
+}
+
+.manager-search-box input {
+  min-height: 38px;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.manager-dialog-field {
+  margin: 14px 0 4px;
+}
+
+.manager-dialog-field textarea {
+  min-height: 112px;
+  padding: 12px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.manager-booking-row.conflict {
+  border-color: rgba(244, 63, 94, 0.32);
+  background: linear-gradient(90deg, #fff1f2, #fff);
+}
+
+.manager-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.manager-info-grid div {
+  border-radius: 15px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.manager-info-grid span,
+.manager-info-grid strong {
+  display: block;
+}
+
+.manager-info-grid span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.manager-info-grid strong {
+  margin-top: 5px;
+  color: #172033;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.manager-state-ladder {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.manager-state-ladder span {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: #64748b;
+  background: #f1f5f9;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.manager-state-ladder span.active {
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
 @keyframes manager-pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(0.72); opacity: 0.65; }
@@ -813,6 +946,10 @@
   }
 
   .manager-two-column {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-control-grid {
     grid-template-columns: 1fr;
   }
 
@@ -867,5 +1004,10 @@
 
   .manager-metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manager-info-grid,
+  .manager-state-ladder {
+    grid-template-columns: 1fr;
   }
 }
