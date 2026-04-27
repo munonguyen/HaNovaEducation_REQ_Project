@@ -1,117 +1,195 @@
-import React from 'react';
-import { Plus, Brain, User, CheckCircle2, ChevronRight, FileText } from 'lucide-react';
+import { useState } from 'react';
+import {
+  BookMarked,
+  CheckCircle2,
+  ClipboardList,
+  Edit3,
+  FileText,
+  GraduationCap,
+  Plus,
+  Send,
+  Target,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const StudyPlans: React.FC = () => {
-  const plans = [
-    { student: 'Alexander Sterling', topic: 'Quantum Foundations', progress: 65, sessions: 12, completed: 8, lastUpdate: '2 days ago' },
-    { student: 'Sophia Chen', topic: 'Linear Algebra Intensive', progress: 40, sessions: 8, completed: 3, lastUpdate: 'Yesterday' },
-    { student: 'Julian Thorne', topic: 'General Relativity Prep', progress: 10, sessions: 15, completed: 1, lastUpdate: 'Just now' },
-  ];
+const initialPlans = [
+  { id: 'p1', student: 'Lan Anh', title: 'Grade 12 Math Sprint', progress: 62, sessions: 12, next: 'Integrals checkpoint' },
+  { id: 'p2', student: 'Minh Quan', title: 'IELTS Writing Band 6.5', progress: 48, sessions: 10, next: 'Coherence drills' },
+  { id: 'p3', student: 'Group A3', title: 'Entrance Exam Roadmap', progress: 35, sessions: 18, next: 'Mixed problem set' },
+];
+
+const phases = [
+  {
+    title: 'Diagnostic and goal setting',
+    copy: 'Review current level, define target score, and choose the right lesson cadence.',
+    sessions: '2 sessions',
+    tasks: 'Baseline quiz, parent note',
+    material: 'Diagnostic worksheet',
+    status: 'Done',
+  },
+  {
+    title: 'Core concept repair',
+    copy: 'Close gaps in algebra manipulation and integral setup before timed practice.',
+    sessions: '5 sessions',
+    tasks: 'Weekly problem log',
+    material: 'Chapter summary pack',
+    status: 'Active',
+  },
+  {
+    title: 'Exam simulation',
+    copy: 'Run timed lessons with quick feedback and targeted homework after each session.',
+    sessions: '4 sessions',
+    tasks: 'Mock tests, review notes',
+    material: 'Past exam bank',
+    status: 'Planned',
+  },
+  {
+    title: 'Final mentoring review',
+    copy: 'Stabilize confidence, prepare day-before routine, and hand off a self-study plan.',
+    sessions: '1 session',
+    tasks: 'Checklist, reflection',
+    material: 'Final review sheet',
+    status: 'Planned',
+  },
+];
+
+export default function StudyPlans() {
+  const [plans, setPlans] = useState(initialPlans);
+  const [selectedPlan, setSelectedPlan] = useState(initialPlans[0]);
+  const [feedback, setFeedback] = useState('Study plan roadmap is ready for editing, assignment, tasks, and materials.');
+
+  const createPlan = () => {
+    const draft = { id: `p${plans.length + 1}`, student: 'New student', title: 'New mentoring roadmap', progress: 0, sessions: 8, next: 'Define diagnostic phase' };
+    setPlans((current) => [draft, ...current]);
+    setSelectedPlan(draft);
+    setFeedback('New study plan draft created. Add phases, sessions, tasks, and materials before assigning.');
+  };
+
+  const updateSelectedPlan = (message: string, patch?: Partial<typeof selectedPlan>) => {
+    if (patch) {
+      const nextPlan = { ...selectedPlan, ...patch };
+      setSelectedPlan(nextPlan);
+      setPlans((current) => current.map((plan) => (plan.id === nextPlan.id ? nextPlan : plan)));
+    }
+    setFeedback(message);
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      className="tutor-page"
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.45 }}
     >
-      <div className="flex justify-between items-end mb-10">
+      <div className="tutor-page-header">
         <div>
-          <h1 className="text-4xl font-serif text-white mb-2">Study Plans</h1>
-          <p className="text-white/50 tracking-wide">Design and track personalized learning paths for your students.</p>
+          <span className="tutor-eyebrow"><GraduationCap size={16} /> UC-07 study planning</span>
+          <h1 className="tutor-page-title">Study Plans</h1>
+          <p className="tutor-page-subtitle">
+            Create, edit, and assign structured learning roadmaps with phases, sessions, tasks, and materials.
+          </p>
         </div>
-        <button className="glass-button-primary px-6 py-3 rounded-xl flex items-center gap-2 text-sm font-semibold">
-          <Plus size={16} /> Create New Plan
-        </button>
+        <div className="tutor-actions">
+          <button className="tutor-btn" onClick={() => updateSelectedPlan(`${selectedPlan.title} assigned to ${selectedPlan.student}. Sessions are ready to sync.`)}><Send size={16} /> Assign to student</button>
+          <button className="tutor-btn primary" onClick={createPlan}><Plus size={16} /> Create plan</button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        {plans.map((plan, i) => (
-          <motion.div 
-            key={i} 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-panel p-6 rounded-3xl group hover:border-indigo-500/50 transition-all cursor-pointer relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/0 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-            
-            <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.1)] group-hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-shadow">
-                <Brain size={32} />
-              </div>
-              
-              <div className="flex-1 w-full">
-                <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2">
-                  <User size={12} /> {plan.student}
-                </div>
-                <h3 className="text-xl font-serif text-white mb-5">{plan.topic}</h3>
-                
-                <div className="flex flex-col md:flex-row md:items-center gap-8">
-                  <div className="flex-1">
-                    <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold mb-2">
-                      <span className="text-white/40">Progress</span>
-                      <span className="text-indigo-300">{plan.progress}%</span>
-                    </div>
-                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${plan.progress}%` }}
-                        transition={{ duration: 1, delay: 0.5 + i * 0.1, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-blue-400 to-violet-500 rounded-full shadow-[0_0_10px_rgba(139,92,246,0.6)]"
-                      ></motion.div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-8">
-                    <div className="text-center">
-                      <div className="text-lg font-serif text-white">{plan.sessions}</div>
-                      <div className="text-[9px] text-white/40 uppercase tracking-widest font-bold">Total</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-lg font-serif text-emerald-300 flex items-center justify-center gap-1.5">
-                        <CheckCircle2 size={14} className="text-emerald-400" />
-                        {plan.completed}
-                      </div>
-                      <div className="text-[9px] text-white/40 uppercase tracking-widest font-bold">Done</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><CheckCircle2 size={19} /></div>
+        <div>
+          <strong>Study plan action status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
 
-              <div className="flex items-center gap-6 md:border-l border-white/10 md:pl-8 mt-4 md:mt-0 w-full md:w-auto justify-between md:justify-end">
-                <div className="text-left md:text-right">
-                  <div className="text-[9px] text-white/30 uppercase tracking-widest font-bold mb-1">Last update</div>
-                  <div className="text-sm text-white/70 font-medium">{plan.lastUpdate}</div>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 group-hover:bg-indigo-500/20 group-hover:text-indigo-300 group-hover:border-indigo-500/40 transition-all">
-                  <ChevronRight size={18} />
-                </div>
-              </div>
+      <div className="plans-layout">
+        <aside className="tutor-card">
+          <div className="tutor-card-header">
+            <div>
+              <h2 className="tutor-section-title">Active Plans</h2>
+              <p className="tutor-section-copy">Pick a student plan to edit its roadmap.</p>
             </div>
-          </motion.div>
-        ))}
+          </div>
+          <div className="plan-list">
+            {plans.map((plan) => (
+              <button
+                className={`plan-item${selectedPlan.id === plan.id ? ' is-active' : ''}`}
+                key={plan.id}
+                onClick={() => setSelectedPlan(plan)}
+              >
+                <strong>{plan.title}</strong>
+                <span>{plan.student} - {plan.sessions} planned sessions</span>
+                <div className="progress-bar" aria-label={`${plan.progress}% complete`}>
+                  <span style={{ width: `${plan.progress}%` }} />
+                </div>
+                <span>Next: {plan.next}</span>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        <section className="tutor-card roadmap">
+          <div className="roadmap-header">
+            <div>
+              <span className="tutor-chip indigo">{selectedPlan.student}</span>
+              <h2 className="tutor-section-title" style={{ marginTop: 12 }}>{selectedPlan.title}</h2>
+              <p className="tutor-section-copy">Timeline view for mentoring flow, lesson planning, and homework follow-up.</p>
+            </div>
+            <div className="tutor-actions">
+              <button className="tutor-btn" onClick={() => updateSelectedPlan(`${selectedPlan.title} is in edit mode. Timeline changes are staged.`)}><Edit3 size={16} /> Edit plan</button>
+              <button
+                className="tutor-btn"
+                onClick={() => updateSelectedPlan('New task added to the active phase and queued for student homework.', {
+                  progress: Math.min(100, selectedPlan.progress + 4),
+                  next: 'New homework task added',
+                })}
+              >
+                <ClipboardList size={16} /> Add task
+              </button>
+            </div>
+          </div>
+
+          <div className="phase-list">
+            {phases.map((phase, index) => (
+              <article className="phase-step" key={phase.title}>
+                <div className="phase-index">{index + 1}</div>
+                <div>
+                  <h3>{phase.title}</h3>
+                  <p>{phase.copy}</p>
+                  <div className="phase-tags">
+                    <span className="tutor-chip info">{phase.sessions}</span>
+                    <span className="tutor-chip"><Target size={13} /> {phase.tasks}</span>
+                    <span className="tutor-chip"><BookMarked size={13} /> {phase.material}</span>
+                  </div>
+                </div>
+                <span className={`tutor-chip ${phase.status === 'Done' ? 'success' : phase.status === 'Active' ? 'info' : ''}`}>
+                  {phase.status === 'Done' && <CheckCircle2 size={13} />}
+                  {phase.status}
+                </span>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="mt-12 p-10 border border-dashed border-white/20 rounded-[2rem] text-center bg-white/5 hover:bg-white/[0.07] transition-colors cursor-pointer group"
-      >
-        <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white/30 group-hover:text-white/60 transition-colors group-hover:scale-110 duration-300">
-          <FileText size={32} />
+      <div className="schedule-side-grid">
+        <div className="side-note">
+          <div className="tutor-soft-icon"><Plus size={18} /></div>
+          <strong style={{ marginTop: 12 }}>Create plan</strong>
+          <p>Start from a goal, subject, exam date, and expected number of mentoring sessions.</p>
         </div>
-        <h3 className="text-xl font-serif text-white mb-3">Build a new roadmap</h3>
-        <p className="text-white/40 text-sm mb-8 max-w-sm mx-auto leading-relaxed">
-          Start by selecting a student and defining their learning objectives for the next term.
-        </p>
-        <button className="px-6 py-3 rounded-xl text-sm font-semibold border border-white/10 text-white hover:bg-white/10 transition-colors">
-          Get Started
-        </button>
-      </motion.div>
+        <div className="side-note">
+          <div className="tutor-soft-icon green"><Send size={18} /></div>
+          <strong style={{ marginTop: 12 }}>Assign plan</strong>
+          <p>Assign to one student or a group, then sync sessions to the lesson list.</p>
+        </div>
+        <div className="side-note">
+          <div className="tutor-soft-icon amber"><FileText size={18} /></div>
+          <strong style={{ marginTop: 12 }}>Materials</strong>
+          <p>Attach worksheets, links, notes, and homework tasks to each phase.</p>
+        </div>
+      </div>
     </motion.div>
   );
-};
-
-export default StudyPlans;
+}
