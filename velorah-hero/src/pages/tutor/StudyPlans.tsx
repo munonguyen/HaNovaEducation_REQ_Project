@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const plans = [
+const initialPlans = [
   { id: 'p1', student: 'Lan Anh', title: 'Grade 12 Math Sprint', progress: 62, sessions: 12, next: 'Integrals checkpoint' },
   { id: 'p2', student: 'Minh Quan', title: 'IELTS Writing Band 6.5', progress: 48, sessions: 10, next: 'Coherence drills' },
   { id: 'p3', student: 'Group A3', title: 'Entrance Exam Roadmap', progress: 35, sessions: 18, next: 'Mixed problem set' },
@@ -54,7 +54,25 @@ const phases = [
 ];
 
 export default function StudyPlans() {
-  const [selectedPlan, setSelectedPlan] = useState(plans[0]);
+  const [plans, setPlans] = useState(initialPlans);
+  const [selectedPlan, setSelectedPlan] = useState(initialPlans[0]);
+  const [feedback, setFeedback] = useState('Study plan roadmap is ready for editing, assignment, tasks, and materials.');
+
+  const createPlan = () => {
+    const draft = { id: `p${plans.length + 1}`, student: 'New student', title: 'New mentoring roadmap', progress: 0, sessions: 8, next: 'Define diagnostic phase' };
+    setPlans((current) => [draft, ...current]);
+    setSelectedPlan(draft);
+    setFeedback('New study plan draft created. Add phases, sessions, tasks, and materials before assigning.');
+  };
+
+  const updateSelectedPlan = (message: string, patch?: Partial<typeof selectedPlan>) => {
+    if (patch) {
+      const nextPlan = { ...selectedPlan, ...patch };
+      setSelectedPlan(nextPlan);
+      setPlans((current) => current.map((plan) => (plan.id === nextPlan.id ? nextPlan : plan)));
+    }
+    setFeedback(message);
+  };
 
   return (
     <motion.div
@@ -72,10 +90,18 @@ export default function StudyPlans() {
           </p>
         </div>
         <div className="tutor-actions">
-          <button className="tutor-btn"><Send size={16} /> Assign to student</button>
-          <button className="tutor-btn primary"><Plus size={16} /> Create plan</button>
+          <button className="tutor-btn" onClick={() => updateSelectedPlan(`${selectedPlan.title} assigned to ${selectedPlan.student}. Sessions are ready to sync.`)}><Send size={16} /> Assign to student</button>
+          <button className="tutor-btn primary" onClick={createPlan}><Plus size={16} /> Create plan</button>
         </div>
       </div>
+
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><CheckCircle2 size={19} /></div>
+        <div>
+          <strong>Study plan action status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
 
       <div className="plans-layout">
         <aside className="tutor-card">
@@ -111,8 +137,16 @@ export default function StudyPlans() {
               <p className="tutor-section-copy">Timeline view for mentoring flow, lesson planning, and homework follow-up.</p>
             </div>
             <div className="tutor-actions">
-              <button className="tutor-btn"><Edit3 size={16} /> Edit plan</button>
-              <button className="tutor-btn"><ClipboardList size={16} /> Add task</button>
+              <button className="tutor-btn" onClick={() => updateSelectedPlan(`${selectedPlan.title} is in edit mode. Timeline changes are staged.`)}><Edit3 size={16} /> Edit plan</button>
+              <button
+                className="tutor-btn"
+                onClick={() => updateSelectedPlan('New task added to the active phase and queued for student homework.', {
+                  progress: Math.min(100, selectedPlan.progress + 4),
+                  next: 'New homework task added',
+                })}
+              >
+                <ClipboardList size={16} /> Add task
+              </button>
             </div>
           </div>
 
