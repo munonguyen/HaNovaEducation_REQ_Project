@@ -37,6 +37,7 @@ const TutorSettings  = lazy(() => import('./pages/tutor/TutorPlaceholders').then
 // Manager Pages
 const ManagerLayout = lazy(() => import('./layout/ManagerLayout'));
 const ManagerDashboard = lazy(() => import('./pages/manager/Dashboard'));
+const TutorManagement = lazy(() => import('./pages/manager/TutorManagement'));
 
 /** Minimal dark-theme fallback shown while a lazy chunk loads */
 function PageLoader() {
@@ -101,6 +102,7 @@ export default function App() {
             <ManagerLayout>
               <Routes location={location} key={location.pathname}>
                 <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+                <Route path="/manager/tutors" element={<TutorManagement />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
                 <Route path="/manager/*" element={<ManagerDashboard />} />
               </Routes>
