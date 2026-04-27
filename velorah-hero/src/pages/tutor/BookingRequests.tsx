@@ -64,6 +64,8 @@ const initialRequests: Array<{
 
 export default function BookingRequests() {
   const [requests, setRequests] = useState(initialRequests);
+  const [activeBucket, setActiveBucket] = useState<'pending' | 'suggested' | 'accepted'>('pending');
+  const [feedback, setFeedback] = useState('Booking requests are synced with schedule locks and payment holds.');
 
   const counts = useMemo(() => {
     const pending = requests.filter((request) => request.status === 'Clear' || request.status === 'Conflict').length;
@@ -102,6 +104,7 @@ export default function BookingRequests() {
         return { ...request, status };
       }),
     );
+    setFeedback(`${student}: ${status === 'Accepted' ? 'accepted, payment verified, schedule booked, notification queued.' : status === 'Suggested' ? 'new time suggestion sent to student.' : status === 'Rejected' ? 'request rejected with no charge.' : 'status updated.'}`);
   };
 
   const acceptClearRequests = () => {
@@ -117,7 +120,21 @@ export default function BookingRequests() {
           : request,
       ),
     );
+    setActiveBucket('accepted');
+    setFeedback('All clear requests accepted. Schedule lock, payment verification, and confirmations were triggered.');
   };
+
+  const syncRequests = () => {
+    setRequests(initialRequests);
+    setActiveBucket('pending');
+    setFeedback('Requests re-synced from booking queue.');
+  };
+
+  const visibleRequests = requests.filter((request) => {
+    if (activeBucket === 'pending') return request.status === 'Clear' || request.status === 'Conflict' || request.status === 'Rejected';
+    if (activeBucket === 'suggested') return request.status === 'Suggested';
+    return request.status === 'Accepted';
+  });
 
   return (
     <motion.div
@@ -135,16 +152,24 @@ export default function BookingRequests() {
           </p>
         </div>
         <div className="tutor-actions">
-          <button className="tutor-btn"><RefreshCw size={16} /> Sync now</button>
+          <button className="tutor-btn" onClick={syncRequests}><RefreshCw size={16} /> Sync now</button>
           <button className="tutor-btn primary" onClick={acceptClearRequests}><Check size={16} /> Accept clear requests</button>
         </div>
       </div>
 
+      <section className="insight-panel">
+        <div className="tutor-soft-icon green"><ShieldCheck size={19} /></div>
+        <div>
+          <strong>Booking action status</strong>
+          <p>{feedback}</p>
+        </div>
+      </section>
+
       <div className="requests-toolbar">
         <div className="tab-bar">
-          <button className="tab-button is-active">Pending {counts.pending}</button>
-          <button className="tab-button">Suggested {counts.suggested}</button>
-          <button className="tab-button">Accepted today {counts.accepted}</button>
+          <button className={`tab-button${activeBucket === 'pending' ? ' is-active' : ''}`} onClick={() => setActiveBucket('pending')}>Pending {counts.pending}</button>
+          <button className={`tab-button${activeBucket === 'suggested' ? ' is-active' : ''}`} onClick={() => setActiveBucket('suggested')}>Suggested {counts.suggested}</button>
+          <button className={`tab-button${activeBucket === 'accepted' ? ' is-active' : ''}`} onClick={() => setActiveBucket('accepted')}>Accepted today {counts.accepted}</button>
         </div>
         <div className="tutor-actions">
           <span className="tutor-chip success"><ShieldCheck size={13} /> Live schedule lock on</span>
@@ -154,7 +179,7 @@ export default function BookingRequests() {
 
       <div className="requests-layout">
         <section className="requests-list-large">
-          {requests.map((request) => {
+          {visibleRequests.map((request) => {
             const hasConflict = request.status === 'Conflict';
             const isAccepted = request.status === 'Accepted';
             const isSuggested = request.status === 'Suggested';
@@ -229,6 +254,12 @@ export default function BookingRequests() {
               </article>
             );
           })}
+          {visibleRequests.length === 0 && (
+            <section className="tutor-card" style={{ padding: 24 }}>
+              <h2 className="tutor-section-title">No requests in this queue</h2>
+              <p className="tutor-section-copy">Switch tabs or sync to refresh the booking queue.</p>
+            </section>
+          )}
         </section>
 
         <aside className="tutor-card">
