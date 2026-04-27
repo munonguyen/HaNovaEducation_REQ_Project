@@ -228,12 +228,12 @@ export default function BookingModal({
         >
           <motion.div
             variants={modalVariants}
-            className="relative w-full max-w-5xl overflow-hidden rounded-[34px] border border-moonlight-gray/20 bg-soft-charcoal/95 shadow-[0_45px_120px_rgba(0,0,0,0.65)] glass-panel"
+            className="relative flex h-[calc(100vh-2rem)] max-h-[760px] w-full max-w-5xl flex-col overflow-hidden rounded-[34px] border border-moonlight-gray/20 bg-soft-charcoal/95 shadow-[0_45px_120px_rgba(0,0,0,0.65)] glass-panel"
           >
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(212,163,91,0.08),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.08),transparent_40%)]" />
 
             {/* Header */}
-            <div className="relative flex items-center justify-between border-b border-white/10 px-8 py-6">
+            <div className="relative flex shrink-0 items-center justify-between border-b border-white/10 px-8 py-6">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.3em] text-moonlight-gray/70">Secure Booking Process</p>
                 <h3 className="mt-2 text-2xl font-serif text-white">Reserve your learning path</h3>
@@ -253,7 +253,7 @@ export default function BookingModal({
             </div>
 
             {/* Progress Bar */}
-            <div className="relative border-b border-white/10 px-8 py-4 bg-white/[0.01]">
+            <div className="relative shrink-0 border-b border-white/10 px-8 py-4 bg-white/[0.01]">
               <div className="grid grid-cols-4 gap-3">
                 {['Schedule', 'Learning Plan', 'Payment Review', 'Confirmed'].map((label, index) => {
                   const current = index + 1;
@@ -278,7 +278,7 @@ export default function BookingModal({
             </div>
 
             {/* Main Content Area */}
-            <div className="relative w-full h-[600px] min-h-[600px] overflow-hidden overflow-y-auto custom-scrollbar">
+            <div className="relative min-h-0 w-full flex-1 overflow-hidden overflow-y-auto custom-scrollbar">
               <AnimatePresence custom={1} mode="wait">
                 
                 {/* STEP 1: SCHEDULE */}
@@ -582,10 +582,20 @@ export default function BookingModal({
                          </AnimatePresence>
                          
                          <label className="flex items-start gap-3 p-5 border-t border-white/5 bg-white/[0.01] cursor-pointer group">
-                            <div className={`mt-0.5 w-5 h-5 rounded-[6px] border flex items-center justify-center transition-colors ${policyAgreed ? 'bg-amber-400 border-amber-400' : 'bg-transparent border-white/30 group-hover:border-white/50'}`}>
-                               {policyAgreed && <CheckCircle2 size={14} className="text-black" />}
-                            </div>
-                            <input type="checkbox" className="hidden" checked={policyAgreed} onChange={(e) => setPolicyAgreed(e.target.checked)} />
+                            <span className="relative mt-0.5 h-5 w-5 shrink-0">
+                              <input
+                                type="checkbox"
+                                className="peer absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                                checked={policyAgreed}
+                                onChange={(event) => setPolicyAgreed(event.target.checked)}
+                              />
+                              <span
+                                aria-hidden="true"
+                                className={`pointer-events-none flex h-5 w-5 items-center justify-center rounded-[6px] border transition-colors ${policyAgreed ? 'border-amber-400 bg-amber-400' : 'border-white/30 bg-transparent peer-focus-visible:ring-2 peer-focus-visible:ring-amber-300/60 group-hover:border-white/50'}`}
+                              >
+                                {policyAgreed && <CheckCircle2 size={14} className="text-black" />}
+                              </span>
+                            </span>
                             <span className="text-sm text-white/80 select-none">I have read and agree to the Cancellation & Refund Policy.</span>
                          </label>
                       </div>
@@ -647,7 +657,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center"
+                    className="absolute inset-0 flex flex-col items-center justify-center overflow-y-auto px-8 py-8 text-center custom-scrollbar"
                   >
                     <div className="flex h-24 w-24 items-center justify-center rounded-[32px] bg-gradient-to-br from-emerald-400/20 to-teal-500/10 border border-emerald-500/30 mb-8 shadow-[0_0_50px_rgba(16,185,129,0.15)] relative">
                       <motion.div
@@ -695,7 +705,7 @@ export default function BookingModal({
             </div>
 
             {/* Footer Actions */}
-            <div className="relative flex items-center justify-between border-t border-white/10 bg-black/20 px-8 py-6">
+            <div className="relative flex shrink-0 items-center justify-between border-t border-white/10 bg-black/20 px-8 py-6">
               {step > 1 && step < 4 ? (
                 <button onClick={prevStep} className="text-sm font-medium text-white/50 transition-colors hover:text-white">
                   Go Back
