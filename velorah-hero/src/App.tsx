@@ -34,6 +34,10 @@ const TutorNotifications = lazy(() => import('./pages/tutor/TutorPlaceholders').
 const TutorSelfProfile   = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Profile })));
 const TutorSettings  = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Settings })));
 
+// Manager Pages
+const ManagerLayout = lazy(() => import('./layout/ManagerLayout'));
+const ManagerDashboard = lazy(() => import('./pages/manager/Dashboard'));
+
 /** Minimal dark-theme fallback shown while a lazy chunk loads */
 function PageLoader() {
   return (
@@ -49,6 +53,7 @@ function PageLoader() {
 export default function App() {
   const location = useLocation();
   const isTutorRoute = location.pathname === '/tutor' || location.pathname.startsWith('/tutor/');
+  const isManagerRoute = location.pathname === '/manager' || location.pathname.startsWith('/manager/');
   const isAuthRoute = ['/signin', '/signup', '/forgot-password', '/auth-success'].includes(location.pathname);
   const [introDone, setIntroDone] = useState(false);
 
@@ -63,15 +68,15 @@ export default function App() {
       <div
         className="fixed inset-0 z-[997] bg-[#020205] pointer-events-none"
         style={{
-          opacity: (introDone || isTutorRoute || isAuthRoute) ? 0 : 1,
+          opacity: (introDone || isTutorRoute || isManagerRoute || isAuthRoute) ? 0 : 1,
           transition: 'opacity 0.7s cubic-bezier(0.22,1,0.36,1)',
         }}
       />
 
-      {!isTutorRoute && !isAuthRoute && <Navigation />}
+      {!isTutorRoute && !isManagerRoute && !isAuthRoute && <Navigation />}
 
       <div style={{
-        opacity: (introDone || isTutorRoute || isAuthRoute) ? 1 : 0,
+        opacity: (introDone || isTutorRoute || isManagerRoute || isAuthRoute) ? 1 : 0,
         transition: 'opacity 0.8s cubic-bezier(0.22,1,0.36,1)',
       }}>
         {isTutorRoute ? (
@@ -90,6 +95,16 @@ export default function App() {
                 <Route path="/tutor/*"           element={<TutorHome />} />
               </Routes>
             </TutorLayout>
+          </Suspense>
+        ) : isManagerRoute ? (
+          <Suspense fallback={<PageLoader />}>
+            <ManagerLayout>
+              <Routes location={location} key={location.pathname}>
+                <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+                <Route path="/manager" element={<ManagerDashboard />} />
+                <Route path="/manager/*" element={<ManagerDashboard />} />
+              </Routes>
+            </ManagerLayout>
           </Suspense>
         ) : (
           <Layout>
