@@ -42,6 +42,9 @@ const BookingMonitoring = lazy(() => import('./pages/manager/BookingMonitoring')
 const PaymentsRevenue = lazy(() => import('./pages/manager/PaymentsRevenue'));
 const ReviewsRatings = lazy(() => import('./pages/manager/ReviewsRatings'));
 const Complaints = lazy(() => import('./pages/manager/Complaints'));
+const ManagerNotifications = lazy(() => import('./pages/manager/Notifications'));
+const SystemInsights = lazy(() => import('./pages/manager/SystemInsights'));
+const ManagerSettings = lazy(() => import('./pages/manager/Settings'));
 
 /** Minimal dark-theme fallback shown while a lazy chunk loads */
 function PageLoader() {
@@ -111,6 +114,9 @@ export default function App() {
                 <Route path="/manager/payments" element={<PaymentsRevenue />} />
                 <Route path="/manager/reviews" element={<ReviewsRatings />} />
                 <Route path="/manager/complaints" element={<Complaints />} />
+                <Route path="/manager/notifications" element={<ManagerNotifications />} />
+                <Route path="/manager/insights" element={<SystemInsights />} />
+                <Route path="/manager/settings" element={<ManagerSettings />} />
                 <Route path="/manager" element={<ManagerDashboard />} />
                 <Route path="/manager/*" element={<ManagerDashboard />} />
               </Routes>
