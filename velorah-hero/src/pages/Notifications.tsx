@@ -1,361 +1,489 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Calendar, MessageSquare, BookOpen, AlertCircle, Check, CheckCircle2, Video, Clock, Award, Zap, ChevronRight } from 'lucide-react';
+import { useMemo, useState, type ReactNode } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  AlertTriangle,
+  Bell,
+  BellRing,
+  Building2,
+  CalendarClock,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  GraduationCap,
+  Megaphone,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
+  UsersRound,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react';
+import { readStoredUserProfile } from '../utils/helpers';
 
-const categories = [
-  { id: 'all', label: 'All', icon: Bell },
-  { id: 'unread', label: 'Unread', icon: AlertCircle },
-  { id: 'sessions', label: 'Sessions', icon: Calendar },
-  { id: 'academic', label: 'Academic', icon: BookOpen },
-  { id: 'messages', label: 'Messages', icon: MessageSquare },
-  { id: 'system', label: 'System', icon: Zap },
-];
+type NotificationRole = 'student' | 'tutor' | 'manager' | 'admin';
+type Priority = 'critical' | 'high' | 'normal';
+type Category = 'schedule' | 'booking' | 'learning' | 'finance' | 'system';
 
-const initialNotifications = [
-  {
-    id: 1,
-    type: 'session',
-    title: 'Session Starting in 45 Minutes',
-    description: 'Advanced Calculus: Limits & Continuity with Dr. Jane Smith. Your virtual studio is ready.',
-    time: '45 min ago',
-    date: 'Today',
-    unread: true,
-    actionText: 'Join Studio',
-    actionType: 'primary' as const,
-    accent: 'blue',
-  },
-  {
-    id: 2,
-    type: 'message',
-    title: 'Emma Farooq sent you a message',
-    description: '"I have uploaded the handout for our Phonetics practice session. Please review it before tomorrow\'s class — particularly pages 12-18."',
-    time: '2h ago',
-    date: 'Today',
-    unread: true,
-    actionText: 'Reply',
-    actionType: 'secondary' as const,
-    accent: 'emerald',
-  },
-  {
-    id: 3,
-    type: 'academic',
-    title: 'Assignment Graded: Syntax Trees',
-    description: 'Your essay was graded by Emma Farooq. Score: 92/100. "Excellent structural analysis — your tree diagrams are particularly well drawn."',
-    time: '5h ago',
-    date: 'Today',
-    unread: true,
-    actionText: 'View Feedback',
-    actionType: 'secondary' as const,
-    accent: 'amber',
-  },
-  {
-    id: 4,
-    type: 'session',
-    title: 'Session Rescheduled',
-    description: 'Your "Thermodynamics Lab" session with Dr. Jane Smith has been moved from Oct 16 to Oct 18, 10:00 AM. Reason: Tutor personal leave.',
-    time: 'Yesterday',
-    date: 'Oct 20',
-    unread: false,
-    accent: 'orange',
-  },
-  {
-    id: 5,
-    type: 'academic',
-    title: 'New Milestone Unlocked',
-    description: 'You\'ve completed 4 out of 6 topics in "Midterm Prep Mastery". Keep up the excellent momentum — only 2 topics remaining!',
-    time: 'Yesterday',
-    date: 'Oct 20',
-    unread: false,
-    accent: 'purple',
-  },
-  {
-    id: 6,
-    type: 'system',
-    title: 'Platform Update: Dark Mode Enhanced',
-    description: 'We\'ve improved contrast ratios across all pages for better readability. Your settings have been preserved.',
-    time: '2 days ago',
-    date: 'Oct 19',
-    unread: false,
-    accent: 'slate',
-  },
-  {
-    id: 7,
-    type: 'session',
-    title: 'Session Completed',
-    description: 'Your "Algorithm Complexity" session with Prof. David Chen was marked as completed. Don\'t forget to review the recording.',
-    time: '3 days ago',
-    date: 'Oct 18',
-    unread: false,
-    actionText: 'View Recording',
-    actionType: 'secondary' as const,
-    accent: 'purple',
-  },
-  {
-    id: 8,
-    type: 'message',
-    title: 'Dr. Jane Smith shared a resource',
-    description: '"Here\'s the supplementary reading on Special Relativity. Focus on chapters 2 and 4 for our next session."',
-    time: '3 days ago',
-    date: 'Oct 18',
-    unread: false,
-    actionText: 'Download',
-    actionType: 'secondary' as const,
-    accent: 'emerald',
-  },
-];
+interface RoleMeta {
+  label: string;
+  subtitle: string;
+  icon: LucideIcon;
+  accent: string;
+  pulse: string;
+}
 
-const accentColors: Record<string, { icon: string; bg: string; border: string; glow: string }> = {
-  blue:    { icon: 'text-blue-400',    bg: 'bg-blue-500/10',    border: 'border-blue-500/20',    glow: 'shadow-[0_0_20px_rgba(59,130,246,0.15)]' },
-  emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', glow: 'shadow-[0_0_20px_rgba(16,185,129,0.15)]' },
-  amber:   { icon: 'text-amber-400',   bg: 'bg-amber-500/10',   border: 'border-amber-500/20',   glow: 'shadow-[0_0_20px_rgba(245,158,11,0.15)]' },
-  orange:  { icon: 'text-orange-400',  bg: 'bg-orange-500/10',  border: 'border-orange-500/20',  glow: 'shadow-[0_0_20px_rgba(249,115,22,0.15)]' },
-  purple:  { icon: 'text-purple-400',  bg: 'bg-purple-500/10',  border: 'border-purple-500/20',  glow: 'shadow-[0_0_20px_rgba(168,85,247,0.15)]' },
-  slate:   { icon: 'text-slate-400',   bg: 'bg-slate-500/10',   border: 'border-slate-500/20',   glow: '' },
+interface RoleNotification {
+  id: string;
+  role: NotificationRole;
+  category: Category;
+  priority: Priority;
+  title: string;
+  detail: string;
+  time: string;
+  target: string;
+  action: string;
+  unread: boolean;
+}
+
+const roleMeta: Record<NotificationRole, RoleMeta> = {
+  student: {
+    label: 'Student',
+    subtitle: 'Class changes, homework, tutor messages',
+    icon: GraduationCap,
+    accent: 'from-cyan-400 to-blue-500',
+    pulse: 'bg-cyan-400',
+  },
+  tutor: {
+    label: 'Tutor',
+    subtitle: 'Bookings, tagged students, leave notices',
+    icon: UserRound,
+    accent: 'from-amber-300 to-orange-500',
+    pulse: 'bg-amber-300',
+  },
+  manager: {
+    label: 'Manager',
+    subtitle: 'Academic operations and coverage risk',
+    icon: UsersRound,
+    accent: 'from-emerald-300 to-teal-500',
+    pulse: 'bg-emerald-300',
+  },
+  admin: {
+    label: 'Admin',
+    subtitle: 'Security, system health, audit controls',
+    icon: ShieldCheck,
+    accent: 'from-fuchsia-300 to-violet-500',
+    pulse: 'bg-fuchsia-300',
+  },
 };
 
+const categoryLabels: Record<Category, string> = {
+  schedule: 'Schedule',
+  booking: 'Booking',
+  learning: 'Learning',
+  finance: 'Finance',
+  system: 'System',
+};
+
+const priorityLabels: Record<Priority, string> = {
+  critical: 'Critical',
+  high: 'Needs action',
+  normal: 'FYI',
+};
+
+const initialNotifications: RoleNotification[] = [
+  {
+    id: 'student-leave-lananh',
+    role: 'student',
+    category: 'schedule',
+    priority: 'critical',
+    title: 'Math class changed to leave mode',
+    detail: 'Dr. Nguyen Lan Anh marked Thu 18:00 as nghỉ học. Reason: school meeting. A make-up slot is waiting for confirmation.',
+    time: 'Now',
+    target: '@lananh',
+    action: 'Pick make-up slot',
+    unread: true,
+  },
+  {
+    id: 'student-homework-minhquan',
+    role: 'student',
+    category: 'learning',
+    priority: 'high',
+    title: 'Writing task returned with notes',
+    detail: 'Your IELTS Writing Task 2 draft has 3 focus comments and one follow-up exercise due before Friday.',
+    time: '12m',
+    target: '@minhquan',
+    action: 'View feedback',
+    unread: true,
+  },
+  {
+    id: 'student-booking-baochau',
+    role: 'student',
+    category: 'booking',
+    priority: 'normal',
+    title: 'Suggested time accepted',
+    detail: 'Bao Chau accepted Tue 20:00. The booking is waiting for tutor confirmation and payment hold refresh.',
+    time: '1h',
+    target: '@baochau',
+    action: 'Open booking',
+    unread: false,
+  },
+  {
+    id: 'tutor-tag-groupa3',
+    role: 'tutor',
+    category: 'schedule',
+    priority: 'critical',
+    title: 'Tagged students need schedule notice',
+    detail: '@group-a3 was tagged in a new Hybrid lesson. Send the confirmation before the 24h reminder window starts.',
+    time: 'Now',
+    target: '@group-a3',
+    action: 'Send notice',
+    unread: true,
+  },
+  {
+    id: 'tutor-booking-thanhtruc',
+    role: 'tutor',
+    category: 'booking',
+    priority: 'high',
+    title: 'New booking request',
+    detail: 'Thanh Truc requested Chemistry 11 for Fri 18:00. No conflict detected and MoMo hold is ready.',
+    time: '7m',
+    target: '@thanhtruc',
+    action: 'Review request',
+    unread: true,
+  },
+  {
+    id: 'tutor-leave-reason',
+    role: 'tutor',
+    category: 'schedule',
+    priority: 'normal',
+    title: 'Leave reason delivered',
+    detail: 'Your nghỉ học notice for @lananh was delivered by in-app push and email. Zalo fallback is queued.',
+    time: '28m',
+    target: '@lananh',
+    action: 'View delivery',
+    unread: false,
+  },
+  {
+    id: 'manager-coverage-risk',
+    role: 'manager',
+    category: 'schedule',
+    priority: 'critical',
+    title: 'Coverage risk after tutor leave',
+    detail: 'Two Grade 12 Math sessions need replacement coverage because a tutor marked leave with a school-meeting reason.',
+    time: 'Now',
+    target: 'Grade 12 Math',
+    action: 'Assign substitute',
+    unread: true,
+  },
+  {
+    id: 'manager-payment-review',
+    role: 'manager',
+    category: 'finance',
+    priority: 'high',
+    title: 'Refund queue needs approval',
+    detail: 'Bao Chau cancellation is inside the 24h window. Review refund policy before releasing payment.',
+    time: '18m',
+    target: 'Refund queue',
+    action: 'Review refund',
+    unread: true,
+  },
+  {
+    id: 'manager-quality',
+    role: 'manager',
+    category: 'learning',
+    priority: 'normal',
+    title: 'Weekly progress summary ready',
+    detail: '8 active study plans have updated progress notes. Parent summaries can be released today.',
+    time: '2h',
+    target: 'Academic ops',
+    action: 'Open summary',
+    unread: false,
+  },
+  {
+    id: 'admin-security',
+    role: 'admin',
+    category: 'system',
+    priority: 'critical',
+    title: 'New admin session detected',
+    detail: 'A privileged admin session started from a new device. Confirm it or revoke access from the audit panel.',
+    time: 'Now',
+    target: 'Access control',
+    action: 'Open audit',
+    unread: true,
+  },
+  {
+    id: 'admin-integrations',
+    role: 'admin',
+    category: 'system',
+    priority: 'high',
+    title: 'Notification gateway degraded',
+    detail: 'Email delivery is healthy, but Zalo fallback latency crossed the 95th percentile threshold.',
+    time: '9m',
+    target: 'Gateway health',
+    action: 'Inspect gateway',
+    unread: true,
+  },
+  {
+    id: 'admin-policy',
+    role: 'admin',
+    category: 'finance',
+    priority: 'normal',
+    title: 'Payment policy synced',
+    detail: 'VNPay and MoMo settlement rules were updated for the new workspace policy set.',
+    time: '3h',
+    target: 'Payment config',
+    action: 'View config',
+    unread: false,
+  },
+];
+
+const categoryIcons: Record<Category, LucideIcon> = {
+  schedule: CalendarClock,
+  booking: BellRing,
+  learning: GraduationCap,
+  finance: Building2,
+  system: Zap,
+};
+
+function getInitialRole(): NotificationRole {
+  const profile = readStoredUserProfile();
+  if (profile?.accountRole === 'tutor') return 'tutor';
+  if (profile?.accountRole === 'admin') return 'admin';
+  return 'student';
+}
+
+function priorityClass(priority: Priority) {
+  if (priority === 'critical') return 'border-rose-400/30 bg-rose-500/10 text-rose-200';
+  if (priority === 'high') return 'border-amber-300/30 bg-amber-400/10 text-amber-100';
+  return 'border-white/10 bg-white/[0.04] text-white/48';
+}
+
+function NotificationMetric({ label, value, icon }: { label: string; value: string; icon: ReactNode }) {
+  return (
+    <div className="rounded-[20px] border border-white/10 bg-white/[0.025] p-4">
+      <div className="mb-3 flex items-center justify-between text-white/34">
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em]">{label}</span>
+        {icon}
+      </div>
+      <strong className="font-serif text-2xl text-white">{value}</strong>
+    </div>
+  );
+}
+
 export default function Notifications() {
-  const [activeTab, setActiveTab] = useState('all');
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [activeRole, setActiveRole] = useState<NotificationRole>(() => getInitialRole());
+  const [activeCategory, setActiveCategory] = useState<Category | 'all'>('all');
+  const [readIds, setReadIds] = useState<string[]>([]);
 
-  const filteredNotifications = notifications.filter(n => {
-    if (activeTab === 'all') return true;
-    if (activeTab === 'unread') return n.unread;
-    if (activeTab === 'sessions') return n.type === 'session';
-    if (activeTab === 'academic') return n.type === 'academic';
-    if (activeTab === 'messages') return n.type === 'message';
-    if (activeTab === 'system') return n.type === 'system';
-    return true;
-  });
+  const roleNotifications = useMemo(
+    () => initialNotifications.filter((item) => item.role === activeRole),
+    [activeRole],
+  );
+  const visibleNotifications = useMemo(
+    () => roleNotifications.filter((item) => activeCategory === 'all' || item.category === activeCategory),
+    [activeCategory, roleNotifications],
+  );
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = roleNotifications.filter((item) => item.unread && !readIds.includes(item.id)).length;
+  const urgentCount = roleNotifications.filter((item) => item.priority === 'critical').length;
+  const actionCount = roleNotifications.filter((item) => item.priority !== 'normal').length;
+  const meta = roleMeta[activeRole];
+  const RoleIcon = meta.icon;
 
-  const markAsRead = (id: number) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
-  };
-  
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
-  };
-
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'session': return <Video size={18} />;
-      case 'message': return <MessageSquare size={18} />;
-      case 'academic': return <Award size={18} />;
-      case 'system': return <Zap size={18} />;
-      default: return <Bell size={18} />;
-    }
-  };
-
-  const getCategoryCount = (catId: string) => {
-    if (catId === 'all') return notifications.length;
-    if (catId === 'unread') return unreadCount;
-    if (catId === 'sessions') return notifications.filter(n => n.type === 'session').length;
-    if (catId === 'academic') return notifications.filter(n => n.type === 'academic').length;
-    if (catId === 'messages') return notifications.filter(n => n.type === 'message').length;
-    if (catId === 'system') return notifications.filter(n => n.type === 'system').length;
-    return 0;
-  };
-
-  // Group notifications by date for the feed
-  const grouped = filteredNotifications.reduce<Record<string, typeof filteredNotifications>>((acc, n) => {
-    const key = n.date;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(n);
-    return acc;
-  }, {});
+  const markRead = (id: string) => setReadIds((current) => (current.includes(id) ? current : [...current, id]));
+  const markAllRead = () => setReadIds((current) => Array.from(new Set([...current, ...roleNotifications.map((item) => item.id)])));
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen pt-[120px] pb-32 px-8 max-w-[1500px] mx-auto text-white font-sans"
+      exit={{ opacity: 0, filter: 'blur(10px)' }}
+      className="mx-auto flex min-h-screen w-full max-w-[1500px] flex-col px-6 pb-28 pt-[120px] text-white"
     >
-      {/* Header */}
-      <div className="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+      <div className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
         <div>
-          <h1 className="text-4xl lg:text-5xl font-serif text-white tracking-tight">Notifications</h1>
-          <p className="text-white/50 text-lg max-w-2xl mt-3">
-            Stay updated on sessions, grades, and messages from your mentors.
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
+            <Sparkles size={14} /> Smart notification center
+          </p>
+          <h1 className="font-serif text-4xl tracking-tight text-white lg:text-6xl">Notifications</h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-white/54">
+            Role-specific alerts for students, tutors, managers, and admins. Manager operations and admin controls are separated.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          {unreadCount > 0 && (
-            <span className="px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-bold uppercase tracking-widest">
-              {unreadCount} unread
-            </span>
-          )}
-          <button 
-            onClick={markAllAsRead}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition-all text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white backdrop-blur-sm"
-          >
-            <CheckCircle2 size={14} /> Mark All Read
-          </button>
-        </div>
+
+        <button
+          onClick={markAllRead}
+          disabled={unreadCount === 0}
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white/58 transition hover:bg-white/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <CheckCircle2 size={15} /> Mark role read
+        </button>
       </div>
 
-      <div className="grid lg:grid-cols-[260px_1fr] gap-8 h-[calc(100vh-260px)] min-h-[500px]">
-        
-        {/* LEFT PANEL: CATEGORIES */}
-        <div className="flex flex-col h-full">
-          <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),transparent)] p-5 shadow-2xl glass-panel flex flex-col h-full">
-            
-            <h4 className="text-[10px] uppercase font-bold tracking-widest text-white/30 px-3 mb-4">Categories</h4>
-            
-            <div className="space-y-1 flex-1">
-              {categories.map(cat => {
-                const isActive = activeTab === cat.id;
-                const count = getCategoryCount(cat.id);
-                const hasUnread = cat.id === 'unread' && count > 0;
-
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveTab(cat.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 ${
-                      isActive 
-                       ? 'bg-white/[0.08] shadow-lg border border-white/15' 
-                       : 'border border-transparent hover:bg-white/[0.03]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <cat.icon size={16} className={isActive ? 'text-white' : 'text-white/30'} />
-                      <span className={`text-sm font-medium ${isActive ? 'text-white' : 'text-white/50'}`}>{cat.label}</span>
-                    </div>
-                    <span className={`min-w-[24px] h-[24px] flex items-center justify-center rounded-full text-[10px] font-bold ${
-                      hasUnread 
-                        ? 'bg-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
-                        : isActive 
-                          ? 'bg-white/15 text-white' 
-                          : 'bg-white/5 text-white/30'
-                    }`}>
+      <div className="grid gap-6 lg:grid-cols-[330px_minmax(0,1fr)]">
+        <aside className="space-y-4">
+          <div className="rounded-[28px] border border-white/10 bg-white/[0.025] p-3 backdrop-blur-xl">
+            {Object.entries(roleMeta).map(([role, roleInfo]) => {
+              const Icon = roleInfo.icon;
+              const count = initialNotifications.filter((item) => item.role === role && item.unread && !readIds.includes(item.id)).length;
+              const active = activeRole === role;
+              return (
+                <button
+                  key={role}
+                  onClick={() => {
+                    setActiveRole(role as NotificationRole);
+                    setActiveCategory('all');
+                  }}
+                  className={`group relative mb-2 flex w-full items-center gap-4 rounded-[22px] border p-4 text-left transition-all last:mb-0 ${
+                    active ? 'border-white/16 bg-white/[0.08]' : 'border-transparent hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <span className={`grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${roleInfo.accent} text-black shadow-[0_0_24px_rgba(255,255,255,0.08)]`}>
+                    <Icon size={19} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <strong className="block text-sm text-white">{roleInfo.label}</strong>
+                    <em className="mt-1 block truncate text-xs not-italic text-white/36">{roleInfo.subtitle}</em>
+                  </span>
+                  {count > 0 && (
+                    <span className="relative grid h-7 min-w-7 place-items-center rounded-full bg-white text-xs font-black text-black">
+                      <span className={`absolute inset-0 rounded-full ${roleInfo.pulse} opacity-30 blur-md`} />
                       {count}
                     </span>
-                  </button>
-                )
-              })}
-            </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-            {/* Quick Stats */}
-            <div className="mt-5 pt-5 border-t border-white/5">
-              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock size={12} className="text-white/30" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-white/30">This Week</span>
+          <div className="grid grid-cols-3 gap-3 lg:grid-cols-1">
+            <NotificationMetric label="Unread" value={`${unreadCount}`} icon={<Bell size={15} />} />
+            <NotificationMetric label="Urgent" value={`${urgentCount}`} icon={<AlertTriangle size={15} />} />
+            <NotificationMetric label="Actions" value={`${actionCount}`} icon={<Megaphone size={15} />} />
+          </div>
+        </aside>
+
+        <main className="min-w-0 overflow-hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.018))] shadow-[0_28px_90px_rgba(0,0,0,0.32)] backdrop-blur-xl">
+          <div className="relative overflow-hidden border-b border-white/10 p-6">
+            <div className={`absolute -right-12 -top-20 h-44 w-44 rounded-full bg-gradient-to-br ${meta.accent} opacity-20 blur-[70px]`} />
+            <div className="relative flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
+              <div className="flex items-center gap-4">
+                <div className={`relative grid h-14 w-14 place-items-center rounded-[22px] bg-gradient-to-br ${meta.accent} text-black`}>
+                  <RoleIcon size={24} />
+                  {unreadCount > 0 && <span className={`absolute -right-1 -top-1 h-4 w-4 rounded-full ${meta.pulse} ring-4 ring-[#090b14] animate-pulse`} />}
                 </div>
-                <p className="text-sm text-white/70">{notifications.filter(n => n.type === 'session').length} session alerts</p>
-                <p className="text-sm text-white/70">{notifications.filter(n => n.type === 'academic').length} academic updates</p>
+                <div>
+                  <h2 className="font-serif text-3xl text-white">{meta.label} alerts</h2>
+                  <p className="mt-1 text-sm text-white/44">{meta.subtitle}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {(['all', 'schedule', 'booking', 'learning', 'finance', 'system'] as Array<Category | 'all'>).map((category) => {
+                  const count = category === 'all'
+                    ? roleNotifications.length
+                    : roleNotifications.filter((item) => item.category === category).length;
+                  if (count === 0 && category !== 'all') return null;
+                  const active = activeCategory === category;
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => setActiveCategory(category)}
+                      className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.13em] transition ${
+                        active ? 'border-white/22 bg-white text-black' : 'border-white/10 bg-white/[0.035] text-white/48 hover:bg-white/[0.075] hover:text-white'
+                      }`}
+                    >
+                      {category === 'all' ? 'All' : categoryLabels[category]} {count}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* RIGHT PANEL: FEED */}
-        <div className="flex flex-col h-full min-h-0">
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.01] overflow-hidden shadow-2xl glass-panel flex-1 flex flex-col min-h-0">
-            
-            {/* Feed Header */}
-            <div className="px-8 py-5 border-b border-white/5 bg-black/10 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3">
-                <h3 className="text-lg font-serif tracking-wide">{categories.find(c => c.id === activeTab)?.label}</h3>
-                <span className="text-[10px] bg-white/5 px-2.5 py-1 rounded-full font-bold text-white/30 uppercase tracking-widest">{filteredNotifications.length}</span>
-              </div>
-            </div>
-
-            {/* Feed Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
-              <AnimatePresence mode="popLayout">
-                {filteredNotifications.length === 0 && (
-                  <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="h-full flex flex-col items-center justify-center text-center py-20"
+          <div className="max-h-[680px] overflow-y-auto p-5 custom-scrollbar">
+            <AnimatePresence mode="popLayout">
+              {visibleNotifications.map((notification, index) => {
+                const Icon = categoryIcons[notification.category];
+                const read = !notification.unread || readIds.includes(notification.id);
+                return (
+                  <motion.article
+                    key={notification.id}
+                    layout
+                    initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -24 }}
+                    transition={{ duration: 0.34, delay: index * 0.04 }}
+                    className={`group relative mb-3 overflow-hidden rounded-[24px] border p-5 transition last:mb-0 ${
+                      read ? 'border-white/8 bg-white/[0.018]' : 'border-white/14 bg-white/[0.055] shadow-[0_18px_60px_rgba(0,0,0,0.24)]'
+                    }`}
                   >
-                    <div className="w-20 h-20 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center mb-6">
-                      <Bell size={32} className="text-white/10" />
-                    </div>
-                    <h4 className="text-xl font-serif text-white/50 mb-2">You're all caught up!</h4>
-                    <p className="text-sm text-white/25 max-w-xs">No notifications in this category. Check back later.</p>
-                  </motion.div>
-                )}
+                    {!read && (
+                      <motion.span
+                        className={`absolute inset-y-4 left-0 w-1 rounded-full bg-gradient-to-b ${meta.accent}`}
+                        animate={{ opacity: [0.48, 1, 0.48] }}
+                        transition={{ duration: 1.8, repeat: Infinity }}
+                      />
+                    )}
 
-                {Object.entries(grouped).map(([date, items]) => (
-                  <div key={date} className="mb-6 last:mb-0">
-                    <div className="flex items-center gap-3 mb-3 px-2">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-white/20">{date}</span>
-                      <div className="flex-1 h-px bg-white/5" />
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {items.map((notif, i) => {
-                        const colors = accentColors[notif.accent] || accentColors.slate;
-                        return (
-                          <motion.div
-                            layout
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3, delay: i * 0.04 }}
-                            key={notif.id}
-                            className={`relative group rounded-[20px] border p-5 flex gap-5 items-start transition-all duration-300 cursor-pointer
-                              ${notif.unread 
-                                ? `bg-white/[0.04] border-white/10 ${colors.glow} hover:bg-white/[0.07]` 
-                                : 'bg-white/[0.01] border-white/5 hover:bg-white/[0.04]'
-                              }`}
-                          >
-                            {/* Unread accent bar */}
-                            {notif.unread && (
-                              <div className={`absolute left-0 top-4 bottom-4 w-[3px] rounded-full ${colors.bg.replace('/10', '')} opacity-80`} />
-                            )}
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start">
+                      <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-[18px] border ${priorityClass(notification.priority)}`}>
+                        <Icon size={19} />
+                      </div>
 
-                            {/* Icon */}
-                            <div className={`w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 ${colors.bg} ${colors.border} border`}>
-                              <div className={colors.icon}>{getIcon(notif.type)}</div>
-                            </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
+                          <span className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${priorityClass(notification.priority)}`}>
+                            {priorityLabels[notification.priority]}
+                          </span>
+                          <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">
+                            {categoryLabels[notification.category]}
+                          </span>
+                          <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">
+                            {notification.target}
+                          </span>
+                        </div>
 
-                            {/* Content */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-3 mb-1.5">
-                                <h4 className={`text-[15px] font-semibold leading-snug ${notif.unread ? 'text-white' : 'text-white/65'}`}>{notif.title}</h4>
-                                <span className="text-[10px] text-white/25 uppercase tracking-widest whitespace-nowrap mt-0.5 shrink-0">{notif.time}</span>
-                              </div>
-                              <p className={`text-[13px] leading-relaxed mb-3 ${notif.unread ? 'text-white/60' : 'text-white/40'}`}>
-                                {notif.description}
-                              </p>
-                              
-                              {/* Actions */}
-                              <div className="flex items-center gap-2">
-                                {notif.actionText && (
-                                  <button className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all ${
-                                    notif.actionType === 'primary' 
-                                      ? `${colors.bg} ${colors.icon} ${colors.border} border hover:brightness-125`
-                                      : 'bg-white/5 text-white/60 border border-white/8 hover:bg-white/10'
-                                  }`}>
-                                    {notif.actionText} <ChevronRight size={12} />
-                                  </button>
-                                )}
-                                
-                                {notif.unread && (
-                                  <button 
-                                    onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
-                                    className="ml-auto w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100"
-                                    title="Mark as read"
-                                  >
-                                    <Check size={12} />
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
+                        <h3 className={`text-lg font-semibold leading-snug ${read ? 'text-white/64' : 'text-white'}`}>{notification.title}</h3>
+                        <p className={`mt-2 max-w-3xl text-sm leading-6 ${read ? 'text-white/36' : 'text-white/58'}`}>{notification.detail}</p>
+                      </div>
+
+                      <div className="flex shrink-0 items-center justify-between gap-3 md:flex-col md:items-end">
+                        <span className="text-xs font-bold uppercase tracking-[0.16em] text-white/30">{notification.time}</span>
+                        <div className="flex items-center gap-2">
+                          {!read && (
+                            <button
+                              onClick={() => markRead(notification.id)}
+                              className="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/42 transition hover:bg-white/[0.09] hover:text-white"
+                              aria-label={`Mark ${notification.title} read`}
+                            >
+                              <Check size={14} />
+                            </button>
+                          )}
+                          <button className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-black transition hover:bg-cyan-50">
+                            {notification.action} <ChevronRight size={13} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                  </motion.article>
+                );
+              })}
+            </AnimatePresence>
+
+            {visibleNotifications.length === 0 && (
+              <div className="grid min-h-[320px] place-items-center text-center">
+                <div>
+                  <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full border border-white/10 bg-white/[0.035] text-white/24">
+                    <Bell size={26} />
                   </div>
-                ))}
-              </AnimatePresence>
-            </div>
+                  <h3 className="font-serif text-2xl text-white/70">No alerts in this lane</h3>
+                  <p className="mt-2 text-sm text-white/36">Try another role or category.</p>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-
+        </main>
       </div>
     </motion.div>
   );
