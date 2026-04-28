@@ -6,6 +6,7 @@ import {
   complaintFlow,
   managerNotifications,
   managerStats,
+  operationalFlows,
   systemAlerts,
   tutorFlow,
 } from '../../data/manager';
@@ -102,6 +103,29 @@ export default function ManagerDashboard() {
             ))}
           </div>
         </aside>
+      </section>
+
+      <section className="manager-panel">
+        <div className="manager-panel-header">
+          <div>
+            <span className="manager-eyebrow">Flow integration</span>
+            <h2>Student and tutor actions become manager queues</h2>
+          </div>
+          <StatusPill tone="indigo">No dead ends</StatusPill>
+        </div>
+        <div className="manager-flow-card-grid">
+          {operationalFlows.map(({ id, source, trigger, managerVisibility, actionLabel, targetPath, icon: Icon }) => (
+            <article className="manager-flow-card" key={id}>
+              <span className="manager-flow-card-icon"><Icon size={18} /></span>
+              <div>
+                <StatusPill tone={source === 'Student' ? 'blue' : source === 'Tutor' ? 'green' : 'amber'}>{source}</StatusPill>
+                <strong>{trigger}</strong>
+                <p>{managerVisibility}</p>
+                <Link to={targetPath} className="manager-inline-link">{actionLabel}</Link>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="manager-flow-grid">
