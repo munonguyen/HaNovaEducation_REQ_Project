@@ -12,6 +12,8 @@ import {
   Star,
   UsersRound,
 } from 'lucide-react';
+import StarfieldCanvas from '../components/StarfieldCanvas';
+import backgroundVideo from '../assets/videos/background-video.mp4';
 import '../styles/manager.css';
 
 const managerNav = [
@@ -29,6 +31,11 @@ const managerNav = [
 export default function ManagerLayout({ children }: { children: ReactNode }) {
   return (
     <div className="manager-shell">
+      <StarfieldCanvas />
+      <div className="manager-video-overlay" aria-hidden="true">
+        <video autoPlay loop muted playsInline src={backgroundVideo} />
+      </div>
+
       <header className="manager-topbar">
         <NavLink to="/manager/dashboard" className="manager-brand" aria-label="HaNova Manager dashboard">
           <span className="manager-brand-mark"><ShieldCheck size={21} /></span>
