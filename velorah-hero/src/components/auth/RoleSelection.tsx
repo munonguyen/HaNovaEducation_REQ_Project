@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, GraduationCap, Building2 } from 'lucide-react';
+import { User, GraduationCap, Building2, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface RoleSelectionProps {
@@ -22,10 +22,16 @@ const RoleSelection: React.FC<RoleSelectionProps> = ({ onSelect, selectedRole })
       icon: <User size={20} />
     },
     {
-      id: 'admin',
-      name: 'Manager / Admin',
-      description: 'I represent an institution or organization.',
+      id: 'manager',
+      name: 'Manager',
+      description: 'I run tutor, booking, payment, review, and complaint operations.',
       icon: <Building2 size={20} />
+    },
+    {
+      id: 'admin',
+      name: 'Admin',
+      description: 'I govern users, roles, security, audit logs, and system configuration.',
+      icon: <ShieldCheck size={20} />
     }
   ];
 

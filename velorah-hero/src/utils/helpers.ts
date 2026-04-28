@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export type DemoAccountRole = "student" | "tutor" | "admin"
+export type DemoAccountRole = "student" | "tutor" | "manager" | "admin"
 
 export interface DemoAccount {
   role: DemoAccountRole
@@ -73,14 +73,24 @@ export const demoAccounts: DemoAccount[] = [
     redirectTo: "/tutor/dashboard",
   },
   {
-    role: "admin",
-    label: "Manager / Admin",
-    email: "admin@hanova.vn",
-    password: "Admin123A",
+    role: "manager",
+    label: "Manager",
+    email: "manager@hanova.vn",
+    password: "Manager123A",
     name: "Tran Minh Quan",
     initials: "MQ",
     goal: "Manage academic operations",
-    redirectTo: "/dashboard?workspace=organization",
+    redirectTo: "/manager/dashboard",
+  },
+  {
+    role: "admin",
+    label: "Admin",
+    email: "admin@hanova.vn",
+    password: "Admin123A",
+    name: "Pham Gia Bao",
+    initials: "GB",
+    goal: "Administer platform access and system governance",
+    redirectTo: "/admin/dashboard",
   },
 ]
 

@@ -101,6 +101,36 @@ export default function ManagerDashboard() {
         </article>
       </section>
 
+      <section className="manager-panel">
+        <div className="manager-panel-header">
+          <div>
+            <span className="manager-eyebrow">Role separation</span>
+            <h2>Manager is operations, Admin is platform governance</h2>
+          </div>
+          <StatusPill tone="indigo">Separated access</StatusPill>
+        </div>
+        <div className="manager-flow-card-grid manager-role-boundary-grid">
+          <article className="manager-flow-card">
+            <span className="manager-flow-card-icon"><UsersRound size={18} /></span>
+            <div>
+              <StatusPill tone="green">Manager</StatusPill>
+              <strong>Owns tutor, student, booking, payment, review, and complaint operations.</strong>
+              <p>Valid next actions stay inside operational queues: approve tutors, resolve overlaps, moderate reviews, refund by policy, and close complaints with notes.</p>
+              <ManagerActionLink to="/manager/settings" variant="quiet">Review manager rules</ManagerActionLink>
+            </div>
+          </article>
+          <article className="manager-flow-card">
+            <span className="manager-flow-card-icon"><AlertTriangle size={18} /></span>
+            <div>
+              <StatusPill tone="amber">Admin</StatusPill>
+              <strong>Owns users, roles, security, audit logs, and platform configuration.</strong>
+              <p>When a case needs privileged access, the manager escalates instead of changing admin-only settings directly.</p>
+              <ManagerActionLink to="/admin/dashboard" variant="quiet">Open admin console</ManagerActionLink>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section className="manager-dashboard-grid">
         <div className="manager-panel manager-panel-wide">
           <div className="manager-panel-header">

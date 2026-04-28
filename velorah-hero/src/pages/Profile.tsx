@@ -48,13 +48,15 @@ function formatCreatedAt(createdAt?: string) {
 
 function getAccountSummary(profile: StoredUserProfile) {
   if (profile.accountRole === 'tutor') return 'Tutor profile • Teaching account';
-  if (profile.accountRole === 'admin') return 'Manager profile • Workspace access';
+  if (profile.accountRole === 'manager') return 'Manager profile • Operations workspace';
+  if (profile.accountRole === 'admin') return 'Admin profile • Platform governance';
   return 'Student profile • Learning account';
 }
 
 function getFocusLabel(profile: StoredUserProfile) {
   if (profile.accountRole === 'tutor') return 'Teaching focus';
-  if (profile.accountRole === 'admin') return 'Workspace scope';
+  if (profile.accountRole === 'manager') return 'Operations scope';
+  if (profile.accountRole === 'admin') return 'Administration scope';
   return 'Current goal';
 }
 
@@ -63,8 +65,12 @@ function getFocusValue(profile: StoredUserProfile) {
     return profile.tutorProfile?.qualification || profile.goal || 'Teaching profile active';
   }
 
-  if (profile.accountRole === 'admin') {
+  if (profile.accountRole === 'manager') {
     return profile.organization?.name || profile.goal || 'Workspace management active';
+  }
+
+  if (profile.accountRole === 'admin') {
+    return profile.organization?.name || profile.goal || 'Platform administration active';
   }
 
   return profile.goal || 'No study goal saved yet';
@@ -72,7 +78,8 @@ function getFocusValue(profile: StoredUserProfile) {
 
 function getSecondaryLabel(profile: StoredUserProfile) {
   if (profile.accountRole === 'tutor') return 'Formats';
-  if (profile.accountRole === 'admin') return 'Organization role';
+  if (profile.accountRole === 'manager') return 'Organization role';
+  if (profile.accountRole === 'admin') return 'Admin role';
   return 'Learning style';
 }
 
@@ -81,7 +88,7 @@ function getSecondaryValue(profile: StoredUserProfile) {
     return profile.tutorProfile?.teachingFormats?.join(', ') || 'Teaching formats not set';
   }
 
-  if (profile.accountRole === 'admin') {
+  if (profile.accountRole === 'manager' || profile.accountRole === 'admin') {
     return profile.organization?.role || 'Workspace owner';
   }
 

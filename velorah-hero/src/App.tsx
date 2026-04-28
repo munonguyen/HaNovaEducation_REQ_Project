@@ -46,6 +46,10 @@ const ManagerNotifications = lazy(() => import('./pages/manager/Notifications'))
 const SystemInsights = lazy(() => import('./pages/manager/SystemInsights'));
 const ManagerSettings = lazy(() => import('./pages/manager/Settings'));
 
+// Admin Pages
+const AdminLayout = lazy(() => import('./layout/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+
 /** Minimal dark-theme fallback shown while a lazy chunk loads */
 function PageLoader() {
   return (
@@ -62,6 +66,7 @@ export default function App() {
   const location = useLocation();
   const isTutorRoute = location.pathname === '/tutor' || location.pathname.startsWith('/tutor/');
   const isManagerRoute = location.pathname === '/manager' || location.pathname.startsWith('/manager/');
+  const isAdminRoute = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
   const isAuthRoute = ['/signin', '/signup', '/forgot-password', '/auth-success'].includes(location.pathname);
   const [introDone, setIntroDone] = useState(false);
 
@@ -76,15 +81,15 @@ export default function App() {
       <div
         className="fixed inset-0 z-[997] bg-[#020205] pointer-events-none"
         style={{
-          opacity: (introDone || isTutorRoute || isManagerRoute || isAuthRoute) ? 0 : 1,
+          opacity: (introDone || isTutorRoute || isManagerRoute || isAdminRoute || isAuthRoute) ? 0 : 1,
           transition: 'opacity 0.7s cubic-bezier(0.22,1,0.36,1)',
         }}
       />
 
-      {!isTutorRoute && !isManagerRoute && !isAuthRoute && <Navigation />}
+      {!isTutorRoute && !isManagerRoute && !isAdminRoute && !isAuthRoute && <Navigation />}
 
       <div style={{
-        opacity: (introDone || isTutorRoute || isManagerRoute || isAuthRoute) ? 1 : 0,
+        opacity: (introDone || isTutorRoute || isManagerRoute || isAdminRoute || isAuthRoute) ? 1 : 0,
         transition: 'opacity 0.8s cubic-bezier(0.22,1,0.36,1)',
       }}>
         {isTutorRoute ? (
@@ -121,6 +126,20 @@ export default function App() {
                 <Route path="/manager/*" element={<ManagerDashboard />} />
               </Routes>
             </ManagerLayout>
+          </Suspense>
+        ) : isAdminRoute ? (
+          <Suspense fallback={<PageLoader />}>
+            <AdminLayout>
+              <Routes location={location} key={location.pathname}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<AdminDashboard />} />
+                <Route path="/admin/security" element={<AdminDashboard />} />
+                <Route path="/admin/audit" element={<AdminDashboard />} />
+                <Route path="/admin/config" element={<AdminDashboard />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/*" element={<AdminDashboard />} />
+              </Routes>
+            </AdminLayout>
           </Suspense>
         ) : (
           <Layout>

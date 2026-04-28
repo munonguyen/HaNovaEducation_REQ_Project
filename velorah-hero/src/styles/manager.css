@@ -813,6 +813,10 @@
   gap: 12px;
 }
 
+.manager-role-boundary-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .manager-flow-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -1896,6 +1900,7 @@
   .manager-stat-grid,
   .manager-flow-grid,
   .manager-flow-card-grid,
+  .manager-role-boundary-grid,
   .manager-revenue-grid {
     grid-template-columns: 1fr;
   }

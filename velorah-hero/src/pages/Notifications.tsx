@@ -248,6 +248,7 @@ const categoryIcons: Record<Category, LucideIcon> = {
 function getInitialRole(): NotificationRole {
   const profile = readStoredUserProfile();
   if (profile?.accountRole === 'tutor') return 'tutor';
+  if (profile?.accountRole === 'manager') return 'manager';
   if (profile?.accountRole === 'admin') return 'admin';
   return 'student';
 }

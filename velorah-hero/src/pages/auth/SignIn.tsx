@@ -7,7 +7,8 @@ import { demoAccounts, findDemoAccount, type DemoAccountRole, writeStoredUserPro
 const roleIcons: Record<DemoAccountRole, LucideIcon> = {
   student: GraduationCap,
   tutor: School,
-  admin: Building2,
+  manager: Building2,
+  admin: ShieldCheck,
 };
 
 function SignIn() {

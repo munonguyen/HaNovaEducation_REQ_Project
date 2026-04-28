@@ -96,7 +96,7 @@ export default function ManagerLayout({ children }: { children: ReactNode }) {
           <span className="manager-live-dot" />
           <span>
             <strong>Live operations</strong>
-            <em>Student, tutor, booking and payment flows are synced.</em>
+            <em>Manager handles operations. Admin handles roles, security and audit.</em>
           </span>
         </div>
       </nav>
