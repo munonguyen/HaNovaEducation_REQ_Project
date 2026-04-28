@@ -9,7 +9,9 @@ import {
 import {
   ActionLog,
   DecisionDialog,
+  ManagerBarChart,
   ManagerActionButton,
+  ManagerDonutChart,
   ManagerPageHeader,
   StatusPill,
 } from '../../components/manager/ManagerUI';
@@ -64,6 +66,25 @@ export default function BookingMonitoring() {
     });
     return ids;
   }, [records]);
+
+  const bookingStatusItems = useMemo(
+    () => [
+      { label: 'Requested', value: records.filter((booking) => booking.status === 'requested').length, tone: 'amber' as const },
+      { label: 'Confirmed', value: records.filter((booking) => booking.status === 'confirmed').length, tone: 'blue' as const },
+      { label: 'Completed', value: records.filter((booking) => booking.status === 'completed').length, tone: 'green' as const },
+      { label: 'Cancelled', value: records.filter((booking) => booking.status === 'cancelled').length, tone: 'rose' as const },
+    ],
+    [records],
+  );
+
+  const bookingRiskItems = useMemo(
+    () => [
+      { label: 'Overlap risks', value: conflictIds.size, tone: 'rose' as const, detail: 'Same tutor, date, and overlapping time' },
+      { label: 'Flagged issues', value: records.filter((booking) => Boolean(booking.issue)).length, tone: 'amber' as const, detail: 'Needs manager follow-up note' },
+      { label: 'Waiting requests', value: records.filter((booking) => booking.status === 'requested').length, tone: 'blue' as const, detail: 'Confirm, cancel, or propose substitute' },
+    ],
+    [conflictIds, records],
+  );
 
   const filteredBookings = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
@@ -198,6 +219,30 @@ export default function BookingMonitoring() {
       />
 
       <ActionLog message={notice} />
+
+      <section className="manager-chart-grid" aria-label="Booking monitoring charts">
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Booking state mix</span>
+              <h2>Lesson pipeline</h2>
+            </div>
+            <StatusPill tone="blue">{records.length} bookings</StatusPill>
+          </div>
+          <ManagerDonutChart items={bookingStatusItems} centerValue={`${records.length}`} centerLabel="Bookings" />
+        </article>
+
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Conflict pressure</span>
+              <h2>Risks to resolve</h2>
+            </div>
+            <StatusPill tone={conflictIds.size ? 'rose' : 'green'}>{conflictIds.size ? `${conflictIds.size} conflicts` : 'Clear'}</StatusPill>
+          </div>
+          <ManagerBarChart items={bookingRiskItems} />
+        </article>
+      </section>
 
       <section className="manager-filter-bar manager-control-grid manager-booking-filter-grid" aria-label="Booking filters">
         <label className="manager-field">

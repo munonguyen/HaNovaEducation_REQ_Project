@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import { ArrowRight, Info, X } from 'lucide-react';
@@ -41,6 +41,22 @@ interface DecisionDialogProps {
 interface ActionLogProps {
   message: string;
 }
+
+interface ChartDatum {
+  label: string;
+  value: number;
+  tone?: ManagerTone;
+  detail?: string;
+}
+
+const chartToneColors: Record<ManagerTone, string> = {
+  blue: '#2563eb',
+  green: '#059669',
+  amber: '#d97706',
+  rose: '#e11d48',
+  indigo: '#4f46e5',
+  neutral: '#64748b',
+};
 
 export function ManagerPageHeader({ eyebrow, title, description, actions }: PageHeaderProps) {
   return (
@@ -95,6 +111,82 @@ export function ActionLog({ message }: ActionLogProps) {
     <div className="manager-action-log" role="status" aria-live="polite">
       <Info size={17} />
       <span>{message}</span>
+    </div>
+  );
+}
+
+export function ManagerDonutChart({
+  items,
+  centerLabel,
+  centerValue,
+}: {
+  items: ChartDatum[];
+  centerLabel: string;
+  centerValue: string;
+}) {
+  const total = items.reduce((sum, item) => sum + item.value, 0);
+  let cursor = 0;
+  const gradient = total > 0
+    ? items
+        .map((item) => {
+          const start = cursor;
+          const next = cursor + (item.value / total) * 100;
+          cursor = next;
+          return `${chartToneColors[item.tone ?? 'neutral']} ${start}% ${next}%`;
+        })
+        .join(', ')
+    : '#e2e8f0 0% 100%';
+
+  return (
+    <div className="manager-chart-donut-wrap">
+      <div className="manager-donut" style={{ background: `conic-gradient(${gradient})` }} aria-label={`${centerLabel}: ${centerValue}`}>
+        <span>
+          <strong>{centerValue}</strong>
+          <small>{centerLabel}</small>
+        </span>
+      </div>
+      <div className="manager-chart-legend">
+        {items.map((item) => (
+          <div className="manager-chart-legend-row" key={item.label}>
+            <span className="manager-chart-swatch" style={{ background: chartToneColors[item.tone ?? 'neutral'] }} />
+            <strong>{item.label}</strong>
+            <em>{item.value}</em>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ManagerBarChart({
+  items,
+  valueSuffix = '',
+}: {
+  items: ChartDatum[];
+  valueSuffix?: string;
+}) {
+  const max = Math.max(1, ...items.map((item) => item.value));
+
+  return (
+    <div className="manager-chart-bars">
+      {items.map((item) => {
+        const width = `${Math.max(7, (item.value / max) * 100)}%`;
+        return (
+          <div className="manager-chart-bar-row" key={item.label}>
+            <div className="manager-chart-bar-copy">
+              <strong>{item.label}</strong>
+              <em>{item.value}{valueSuffix}</em>
+            </div>
+            <div className="manager-chart-track" aria-label={`${item.label}: ${item.value}${valueSuffix}`}>
+              <span
+                className={`manager-chart-fill manager-chart-fill-${item.tone ?? 'neutral'}`}
+                style={{ '--manager-chart-width': width } as CSSProperties}
+              />
+            </div>
+            {item.detail && <small>{item.detail}</small>}
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -2,17 +2,24 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CalendarSearch, MessageSquareWarning, UsersRound } from 'lucide-react';
 import {
+  bookings,
   bookingFlow,
+  complaints,
   complaintFlow,
   managerNotifications,
   managerStats,
   operationalFlows,
+  reviews,
   systemAlerts,
+  transactions,
   tutorFlow,
+  tutors,
 } from '../../data/manager';
 import {
   FlowStrip,
+  ManagerBarChart,
   ManagerActionLink,
+  ManagerDonutChart,
   ManagerPageHeader,
   StatusPill,
 } from '../../components/manager/ManagerUI';
@@ -24,6 +31,20 @@ function alertTone(priority: string) {
 }
 
 export default function ManagerDashboard() {
+  const bookingStateItems = [
+    { label: 'Requested', value: bookings.filter((booking) => booking.status === 'requested').length, tone: 'amber' as const },
+    { label: 'Confirmed', value: bookings.filter((booking) => booking.status === 'confirmed').length, tone: 'blue' as const },
+    { label: 'Completed', value: bookings.filter((booking) => booking.status === 'completed').length, tone: 'green' as const },
+    { label: 'Cancelled', value: bookings.filter((booking) => booking.status === 'cancelled').length, tone: 'rose' as const },
+  ];
+  const riskLoadItems = [
+    { label: 'Critical alerts', value: systemAlerts.filter((alert) => alert.priority === 'critical').length, tone: 'rose' as const, detail: 'Needs manager action now' },
+    { label: 'Open complaints', value: complaints.filter((complaint) => complaint.status !== 'resolved').length, tone: 'amber' as const, detail: 'Owner, response, or note required' },
+    { label: 'Pending tutors', value: tutors.filter((tutor) => tutor.status === 'pending').length, tone: 'blue' as const, detail: 'Certificate review queue' },
+    { label: 'Refund queue', value: transactions.filter((transaction) => transaction.status === 'refund_requested').length, tone: 'indigo' as const, detail: 'Policy decision required' },
+    { label: 'Reviews waiting', value: reviews.filter((review) => review.decision === 'flagged').length, tone: 'green' as const, detail: 'Moderation can keep or hide' },
+  ];
+
   return (
     <motion.div
       className="manager-page"
@@ -52,6 +73,32 @@ export default function ManagerDashboard() {
             <p>{detail}</p>
           </article>
         ))}
+      </section>
+
+      <section className="manager-chart-grid" aria-label="Operational visual summary">
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Booking state mix</span>
+              <h2>Live lesson pipeline</h2>
+            </div>
+            <StatusPill tone="blue">{bookings.length} bookings</StatusPill>
+          </div>
+          <ManagerDonutChart items={bookingStateItems} centerValue={`${bookings.length}`} centerLabel="Bookings" />
+          <ManagerActionLink to="/manager/bookings" icon={CalendarSearch} variant="quiet">Resolve booking states</ManagerActionLink>
+        </article>
+
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Operational pressure</span>
+              <h2>Queues needing decisions</h2>
+            </div>
+            <StatusPill tone="rose">Risk view</StatusPill>
+          </div>
+          <ManagerBarChart items={riskLoadItems} />
+          <ManagerActionLink to="/manager/notifications" variant="quiet">Open notification stream</ManagerActionLink>
+        </article>
       </section>
 
       <section className="manager-dashboard-grid">

@@ -10,7 +10,9 @@ import {
 import {
   ActionLog,
   DecisionDialog,
+  ManagerBarChart,
   ManagerActionButton,
+  ManagerDonutChart,
   ManagerPageHeader,
   StatusPill,
 } from '../../components/manager/ManagerUI';
@@ -51,6 +53,30 @@ export default function PaymentsRevenue() {
     const refundQueue = records.filter((transaction) => transaction.status === 'refund_requested').reduce((sum, transaction) => sum + transaction.amount, 0);
     return { paid, holds, refundQueue };
   }, [records]);
+
+  const paymentStatusItems = useMemo(
+    () => [
+      { label: 'Paid', value: records.filter((transaction) => transaction.status === 'paid').length, tone: 'green' as const },
+      { label: 'Hold', value: records.filter((transaction) => transaction.status === 'hold').length, tone: 'blue' as const },
+      { label: 'Refund requested', value: records.filter((transaction) => transaction.status === 'refund_requested').length, tone: 'amber' as const },
+      { label: 'Refunded', value: records.filter((transaction) => transaction.status === 'refunded').length, tone: 'indigo' as const },
+      { label: 'Failed', value: records.filter((transaction) => transaction.status === 'failed').length, tone: 'rose' as const },
+    ],
+    [records],
+  );
+
+  const gatewayRevenueItems = useMemo(
+    () => (['VNPay', 'MoMo'] as const).map((method) => {
+      const amount = records.filter((transaction) => transaction.method === method).reduce((sum, transaction) => sum + transaction.amount, 0);
+      return {
+        label: method,
+        value: Number((amount / 1000000).toFixed(2)),
+        tone: method === 'VNPay' ? 'blue' as const : 'indigo' as const,
+        detail: formatVnd(amount),
+      };
+    }),
+    [records],
+  );
 
   const approveRefund = (transaction: TransactionRecord) => {
     setRecords((current) =>
@@ -175,6 +201,30 @@ export default function PaymentsRevenue() {
           <strong>{formatVnd(revenue.refundQueue)}</strong>
           <span>Refund queue</span>
           <p>Requests waiting for manager policy confirmation.</p>
+        </article>
+      </section>
+
+      <section className="manager-chart-grid" aria-label="Payment visual summary">
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Settlement mix</span>
+              <h2>Payment states</h2>
+            </div>
+            <StatusPill tone="blue">{records.length} records</StatusPill>
+          </div>
+          <ManagerDonutChart items={paymentStatusItems} centerValue={`${records.length}`} centerLabel="Payments" />
+        </article>
+
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Gateway volume</span>
+              <h2>Revenue by method</h2>
+            </div>
+            <StatusPill tone="indigo">VNPay / MoMo</StatusPill>
+          </div>
+          <ManagerBarChart items={gatewayRevenueItems} valueSuffix="M" />
         </article>
       </section>
 

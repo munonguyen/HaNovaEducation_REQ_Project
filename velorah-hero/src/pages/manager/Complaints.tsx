@@ -9,7 +9,9 @@ import {
 import {
   ActionLog,
   DecisionDialog,
+  ManagerBarChart,
   ManagerActionButton,
+  ManagerDonutChart,
   ManagerPageHeader,
   StatusPill,
 } from '../../components/manager/ManagerUI';
@@ -46,6 +48,24 @@ export default function Complaints() {
   }, [records, statusFilter]);
 
   const selectedComplaint = records.find((complaint) => complaint.id === selectedId) ?? records[0];
+
+  const complaintStatusItems = useMemo(
+    () => [
+      { label: 'Open', value: records.filter((complaint) => complaint.status === 'open').length, tone: 'rose' as const },
+      { label: 'In progress', value: records.filter((complaint) => complaint.status === 'in_progress').length, tone: 'amber' as const },
+      { label: 'Resolved', value: records.filter((complaint) => complaint.status === 'resolved').length, tone: 'green' as const },
+    ],
+    [records],
+  );
+
+  const complaintPriorityItems = useMemo(
+    () => [
+      { label: 'Critical', value: records.filter((complaint) => complaint.priority === 'critical').length, tone: 'rose' as const, detail: 'Immediate manager owner required' },
+      { label: 'High', value: records.filter((complaint) => complaint.priority === 'high').length, tone: 'amber' as const, detail: 'Response and follow-up needed' },
+      { label: 'Normal', value: records.filter((complaint) => complaint.priority === 'normal').length, tone: 'blue' as const, detail: 'Keep within standard SLA' },
+    ],
+    [records],
+  );
 
   const updateComplaint = (complaintId: string, patch: Partial<ComplaintRecord>, message: string) => {
     setRecords((current) => current.map((complaint) => (complaint.id === complaintId ? { ...complaint, ...patch } : complaint)));
@@ -154,6 +174,30 @@ export default function Complaints() {
       />
 
       <ActionLog message={notice} />
+
+      <section className="manager-chart-grid" aria-label="Complaint case charts">
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Case state mix</span>
+              <h2>Complaint lifecycle</h2>
+            </div>
+            <StatusPill tone="rose">{records.filter((complaint) => complaint.status !== 'resolved').length} active</StatusPill>
+          </div>
+          <ManagerDonutChart items={complaintStatusItems} centerValue={`${records.length}`} centerLabel="Cases" />
+        </article>
+
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Priority load</span>
+              <h2>Escalation pressure</h2>
+            </div>
+            <StatusPill tone="amber">SLA view</StatusPill>
+          </div>
+          <ManagerBarChart items={complaintPriorityItems} />
+        </article>
+      </section>
 
       <section className="manager-filter-bar" aria-label="Complaint filters">
         {(['all', 'open', 'in_progress', 'resolved'] as const).map((status) => (
