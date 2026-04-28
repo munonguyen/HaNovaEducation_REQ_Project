@@ -43,7 +43,7 @@ export default function BookingMonitoring() {
   const [selectedId, setSelectedId] = useState(initialBookings[0]?.id ?? '');
   const [statusFilter, setStatusFilter] = useState<'all' | BookingStatus>('all');
   const [query, setQuery] = useState('');
-  const [dateFilter, setDateFilter] = useState('2026-04-27');
+  const [dateFilter, setDateFilter] = useState('');
   const [notice, setNotice] = useState('Student bookings are visible here as soon as they are requested. Conflict detection is running on tutor, date, and time.');
   const [dialog, setDialog] = useState<BookingDialog>(null);
   const [cancelReason, setCancelReason] = useState('Manager force cancel: schedule conflict requires immediate student notification.');
