@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CalendarCheck2, Eye, Flag, RefreshCw, Search, XCircle } from 'lucide-react';
+import { AlertTriangle, CalendarCheck2, CheckCircle2, Eye, Flag, RefreshCw, Search, XCircle } from 'lucide-react';
 import {
   bookings as initialBookings,
   type BookingRecord,
@@ -17,6 +17,7 @@ import {
 type BookingDialog =
   | { type: 'cancel'; booking: BookingRecord }
   | { type: 'confirm'; booking: BookingRecord }
+  | { type: 'complete'; booking: BookingRecord }
   | null;
 
 function statusTone(status: BookingStatus) {
@@ -42,6 +43,8 @@ export default function BookingMonitoring() {
   const [records, setRecords] = useState<BookingRecord[]>(initialBookings);
   const [selectedId, setSelectedId] = useState(initialBookings[0]?.id ?? '');
   const [statusFilter, setStatusFilter] = useState<'all' | BookingStatus>('all');
+  const [tutorFilter, setTutorFilter] = useState('all');
+  const [studentFilter, setStudentFilter] = useState('all');
   const [query, setQuery] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [notice, setNotice] = useState('Student bookings are visible here as soon as they are requested. Conflict detection is running on tutor, date, and time.');
@@ -67,15 +70,20 @@ export default function BookingMonitoring() {
     return records.filter((booking) => {
       const matchStatus = statusFilter === 'all' || booking.status === statusFilter;
       const matchDate = !dateFilter || booking.date === dateFilter;
+      const matchTutor = tutorFilter === 'all' || booking.tutor === tutorFilter;
+      const matchStudent = studentFilter === 'all' || booking.student === studentFilter;
       const matchQuery =
         !cleanQuery ||
         booking.tutor.toLowerCase().includes(cleanQuery) ||
         booking.student.toLowerCase().includes(cleanQuery) ||
         booking.studentNick.toLowerCase().includes(cleanQuery) ||
         booking.subject.toLowerCase().includes(cleanQuery);
-      return matchStatus && matchDate && matchQuery;
+      return matchStatus && matchDate && matchTutor && matchStudent && matchQuery;
     });
-  }, [dateFilter, query, records, statusFilter]);
+  }, [dateFilter, query, records, statusFilter, studentFilter, tutorFilter]);
+
+  const tutorOptions = useMemo(() => Array.from(new Set(records.map((booking) => booking.tutor))).sort(), [records]);
+  const studentOptions = useMemo(() => Array.from(new Set(records.map((booking) => booking.student))).sort(), [records]);
 
   const selectedBooking = records.find((booking) => booking.id === selectedId) ?? records[0];
 
@@ -99,6 +107,9 @@ export default function BookingMonitoring() {
           <ManagerActionButton icon={CalendarCheck2} variant="primary" onClick={() => setDialog({ type: 'confirm', booking })}>
             Confirm
           </ManagerActionButton>
+          <ManagerActionButton icon={XCircle} variant="danger" onClick={() => setDialog({ type: 'cancel', booking })}>
+            Force cancel
+          </ManagerActionButton>
           <ManagerActionButton icon={Flag} onClick={() => flagIssue(booking)}>
             Flag issue
           </ManagerActionButton>
@@ -121,6 +132,9 @@ export default function BookingMonitoring() {
           <ManagerActionButton icon={XCircle} variant="danger" onClick={() => setDialog({ type: 'cancel', booking })}>
             Force cancel
           </ManagerActionButton>
+          <ManagerActionButton icon={CheckCircle2} variant="primary" onClick={() => setDialog({ type: 'complete', booking })}>
+            Mark completed
+          </ManagerActionButton>
           <ManagerActionButton icon={Flag} onClick={() => flagIssue(booking)}>
             Flag issue
           </ManagerActionButton>
@@ -130,24 +144,34 @@ export default function BookingMonitoring() {
 
     if (booking.status === 'completed') {
       return (
-        <ManagerActionButton
-          icon={CalendarCheck2}
-          variant="primary"
-          onClick={() => setNotice(`${booking.id}: review request released to ${booking.studentNick}. Review moderation will only show it after lesson completion.`)}
-        >
-          Release review
-        </ManagerActionButton>
+        <>
+          <ManagerActionButton
+            icon={CalendarCheck2}
+            variant="primary"
+            onClick={() => setNotice(`${booking.id}: review request released to ${booking.studentNick}. Review moderation will only show it after lesson completion.`)}
+          >
+            Release review
+          </ManagerActionButton>
+          <ManagerActionButton icon={Flag} onClick={() => flagIssue(booking)}>
+            Flag issue
+          </ManagerActionButton>
+        </>
       );
     }
 
     return (
-      <ManagerActionButton
-        icon={RefreshCw}
-        variant="primary"
-        onClick={() => setNotice(`${booking.id}: replacement flow opened. Choose another tutor, propose a new time, and notify student ${booking.studentNick}.`)}
-      >
-        Assign replacement
-      </ManagerActionButton>
+      <>
+        <ManagerActionButton
+          icon={RefreshCw}
+          variant="primary"
+          onClick={() => setNotice(`${booking.id}: replacement flow opened. Choose another tutor, propose a new time, and notify student ${booking.studentNick}.`)}
+        >
+          Assign replacement
+        </ManagerActionButton>
+        <ManagerActionButton icon={Flag} onClick={() => flagIssue(booking)}>
+          Flag issue
+        </ManagerActionButton>
+      </>
     );
   };
 
@@ -175,16 +199,30 @@ export default function BookingMonitoring() {
 
       <ActionLog message={notice} />
 
-      <section className="manager-filter-bar manager-control-grid" aria-label="Booking filters">
+      <section className="manager-filter-bar manager-control-grid manager-booking-filter-grid" aria-label="Booking filters">
         <label className="manager-field">
           <span>Date</span>
           <input type="date" value={dateFilter} onChange={(event) => setDateFilter(event.target.value)} />
         </label>
+        <label className="manager-field">
+          <span>Tutor</span>
+          <select value={tutorFilter} onChange={(event) => setTutorFilter(event.target.value)}>
+            <option value="all">All tutors</option>
+            {tutorOptions.map((tutor) => <option value={tutor} key={tutor}>{tutor}</option>)}
+          </select>
+        </label>
+        <label className="manager-field">
+          <span>Student</span>
+          <select value={studentFilter} onChange={(event) => setStudentFilter(event.target.value)}>
+            <option value="all">All students</option>
+            {studentOptions.map((student) => <option value={student} key={student}>{student}</option>)}
+          </select>
+        </label>
         <label className="manager-field manager-field-wide">
-          <span>Tutor, student, nick, subject</span>
+          <span>Nick or subject</span>
           <div className="manager-search-box">
             <Search size={16} />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search @nick or booking owner" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search @nick, subject, or owner" />
           </div>
         </label>
         <label className="manager-field">
@@ -274,19 +312,31 @@ export default function BookingMonitoring() {
 
       <DecisionDialog
         open={Boolean(dialog)}
-        title={dialog?.type === 'cancel' ? `Force cancel ${dialog.booking.id}` : `Confirm ${dialog?.booking.id ?? 'booking'}`}
+        title={
+          dialog?.type === 'cancel'
+            ? `Force cancel ${dialog.booking.id}`
+            : dialog?.type === 'complete'
+              ? `Complete ${dialog.booking.id}`
+              : `Confirm ${dialog?.booking.id ?? 'booking'}`
+        }
         description={
           dialog?.type === 'cancel'
             ? 'Manager cancellation requires a reason. The reason is sent to student, tutor, payment hold, and notification logs.'
+            : dialog?.type === 'complete'
+              ? 'Completing this booking records attendance, releases review eligibility, and prepares payment settlement.'
             : 'Confirming this booking checks tutor availability, keeps payment hold, and makes the lesson visible to both student and tutor.'
         }
-        confirmLabel={dialog?.type === 'cancel' ? 'Cancel with reason' : 'Confirm booking'}
+        confirmLabel={dialog?.type === 'cancel' ? 'Cancel with reason' : dialog?.type === 'complete' ? 'Mark completed' : 'Confirm booking'}
         onClose={() => setDialog(null)}
         onConfirm={() => {
           if (!dialog) return;
           if (dialog.type === 'cancel') {
             const reason = cancelReason.trim() || 'Manager force cancel: operational conflict.';
             updateBooking(dialog.booking.id, { status: 'cancelled', issue: reason }, `${dialog.booking.id}: cancelled with reason "${reason}" and both sides were notified.`);
+            return;
+          }
+          if (dialog.type === 'complete') {
+            updateBooking(dialog.booking.id, { status: 'completed' }, `${dialog.booking.id}: marked completed. Review moderation, payment settlement, and tutor performance metrics were updated.`);
             return;
           }
           updateBooking(dialog.booking.id, { status: 'confirmed' }, `${dialog.booking.id}: confirmed. Tutor, student, payment hold, and reminders are synced.`);
