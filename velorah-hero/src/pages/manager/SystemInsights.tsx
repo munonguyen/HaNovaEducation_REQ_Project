@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BarChart3, CalendarSearch, GraduationCap, TrendingUp, UsersRound } from 'lucide-react';
-import { bookings, tutors } from '../../data/manager';
+import { bookings, complaints, tutors } from '../../data/manager';
 import {
   ActionLog,
   ManagerActionButton,
@@ -20,6 +20,15 @@ const bookingTrend = [
   { day: 'Sun', value: 18 },
 ];
 
+function hasOverlap(bookingId: string) {
+  const booking = bookings.find((item) => item.id === bookingId);
+  if (!booking || booking.status === 'cancelled') return false;
+  return bookings.some((candidate) => {
+    if (candidate.id === booking.id || candidate.status === 'cancelled') return false;
+    return candidate.date === booking.date && candidate.tutorId === booking.tutorId && booking.start < candidate.end && candidate.start < booking.end;
+  });
+}
+
 export default function SystemInsights() {
   const [notice, setNotice] = useState('Insights stay light: booking trend, tutor ranking, student return rate, and operational next steps.');
   const topTutors = useMemo(
@@ -29,6 +38,9 @@ export default function SystemInsights() {
   const maxTrend = Math.max(...bookingTrend.map((item) => item.value));
   const confirmedBookings = bookings.filter((booking) => booking.status === 'confirmed').length;
   const completedBookings = bookings.filter((booking) => booking.status === 'completed').length;
+  const overlapCount = bookings.filter((booking) => hasOverlap(booking.id)).length;
+  const pendingTutorCount = tutors.filter((tutor) => tutor.status === 'pending').length;
+  const openComplaintCount = complaints.filter((complaint) => complaint.status !== 'resolved').length;
 
   return (
     <motion.div
@@ -136,13 +148,13 @@ export default function SystemInsights() {
         </article>
         <article className="manager-panel">
           <div className="manager-insight-icon"><CalendarSearch size={20} /></div>
-          <h2>2 overlap risks</h2>
-          <p className="manager-risk-note">IELTS Writing has same-tutor overlap tonight. Booking Monitoring already has the next actions.</p>
+          <h2>{overlapCount} overlap risks</h2>
+          <p className="manager-risk-note">Grade 12 Math has same-tutor overlap. Booking Monitoring already has confirm, cancel, complete, and flag actions.</p>
         </article>
         <article className="manager-panel">
           <div className="manager-insight-icon"><UsersRound size={20} /></div>
-          <h2>5 pending tutors</h2>
-          <p className="manager-suggestion">Approval aging is visible in Tutor Management with certificate-level reasons.</p>
+          <h2>{pendingTutorCount} pending tutors</h2>
+          <p className="manager-suggestion">Approval aging is visible in Tutor Management with certificate-level reasons. {openComplaintCount} complaint cases still affect quality decisions.</p>
         </article>
       </section>
     </motion.div>

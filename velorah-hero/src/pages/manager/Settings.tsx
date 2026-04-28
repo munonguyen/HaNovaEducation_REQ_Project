@@ -16,6 +16,14 @@ export default function ManagerSettings() {
   const [momoEnabled, setMomoEnabled] = useState(true);
   const [holdFirst, setHoldFirst] = useState(true);
 
+  const saveSettings = () => {
+    if (!vnpayEnabled && !momoEnabled) {
+      setNotice('Payment configuration was not published because both VNPay and MoMo are off. Next step: enable at least one gateway or keep bookings in trial-only mode.');
+      return;
+    }
+    setNotice(`Settings saved. Cancellation window: ${cancelWindow}h. VNPay ${vnpayEnabled ? 'on' : 'off'}, MoMo ${momoEnabled ? 'on' : 'off'}, hold-first ${holdFirst ? 'on' : 'off'}.`);
+  };
+
   return (
     <motion.div
       className="manager-page"
@@ -31,7 +39,7 @@ export default function ManagerSettings() {
           <ManagerActionButton
             icon={Save}
             variant="primary"
-            onClick={() => setNotice(`Settings saved. Cancellation window: ${cancelWindow}h. VNPay ${vnpayEnabled ? 'on' : 'off'}, MoMo ${momoEnabled ? 'on' : 'off'}, hold-first ${holdFirst ? 'on' : 'off'}.`)}
+            onClick={saveSettings}
           >
             Save settings
           </ManagerActionButton>

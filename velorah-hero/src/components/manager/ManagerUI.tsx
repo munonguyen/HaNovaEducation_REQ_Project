@@ -33,7 +33,7 @@ interface DecisionDialogProps {
   title: string;
   description: string;
   confirmLabel: string;
-  onConfirm: () => void;
+  onConfirm: () => void | false;
   onClose: () => void;
   children?: ReactNode;
 }
@@ -76,7 +76,7 @@ export function ManagerActionButton({
     >
       {Icon && <Icon size={16} />}
       <span>{children}</span>
-      {reason && <small>{reason}</small>}
+      {reason && <small>{alternative ? `${reason}. Next: ${alternative}.` : reason}</small>}
     </button>
   );
 }
@@ -133,8 +133,8 @@ export function DecisionDialog({
           <ManagerActionButton
             variant="primary"
             onClick={() => {
-              onConfirm();
-              onClose();
+              const shouldClose = onConfirm();
+              if (shouldClose !== false) onClose();
             }}
           >
             {confirmLabel}

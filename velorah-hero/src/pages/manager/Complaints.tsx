@@ -251,7 +251,7 @@ export default function Complaints() {
           const note = resolutionNote.trim();
           if (!note) {
             setNotice(`${resolveTarget.id}: resolution note is required. Case remains in progress; add the outcome before resolving.`);
-            return;
+            return false;
           }
           updateComplaint(resolveTarget.id, { status: 'resolved', resolutionNote: note }, `${resolveTarget.id}: resolved with manager note and follow-up reminder scheduled.`);
         }}
