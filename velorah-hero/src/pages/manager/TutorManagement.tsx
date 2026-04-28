@@ -35,6 +35,14 @@ function statusLabel(status: TutorStatus) {
   return 'Suspended';
 }
 
+function rejectAction(tutor: TutorRecord): TutorAction {
+  return {
+    tutorId: tutor.id,
+    label: `Reject ${tutor.name}`,
+    description: 'The tutor application will be rejected and the tutor receives a clear reason plus re-apply guidance.',
+  };
+}
+
 function hasVerifiedCertificates(tutor: TutorRecord) {
   return tutor.certificates.every((certificate) => certificate.verified);
 }
@@ -257,13 +265,7 @@ export default function TutorManagement() {
                     <ManagerActionButton
                       icon={UserX}
                       variant="danger"
-                      onClick={() =>
-                        requestStatusChange({
-                          tutorId: tutor.id,
-                          label: `Reject ${tutor.name}`,
-                          description: 'The tutor application will be rejected and the tutor receives a clear reason plus re-apply guidance.',
-                        })
-                      }
+                      onClick={() => requestStatusChange(rejectAction(tutor))}
                     >
                       Reject
                     </ManagerActionButton>
@@ -323,8 +325,22 @@ export default function TutorManagement() {
               {selectedTutor.riskNote && <p className="manager-risk-note">{selectedTutor.riskNote}</p>}
             </div>
 
+            <div className="manager-detail-section">
+              <h3>Tutor lifecycle</h3>
+              <div className="manager-state-ladder">
+                {(['pending', 'approved', 'active', 'suspended'] as TutorStatus[]).map((status) => (
+                  <span key={status} className={selectedTutor.status === status ? 'active' : ''}>{statusLabel(status)}</span>
+                ))}
+              </div>
+            </div>
+
             <div className="manager-detail-actions">
               {renderPrimaryAction(selectedTutor)}
+              {(selectedTutor.status === 'pending' || selectedTutor.status === 'approved') && (
+                <ManagerActionButton icon={UserX} variant="danger" onClick={() => requestStatusChange(rejectAction(selectedTutor))}>
+                  Reject
+                </ManagerActionButton>
+              )}
               <ManagerActionButton
                 variant="quiet"
                 onClick={() => setNotice(`${selectedTutor.name}: details shared with Booking Monitoring so manager can inspect affected sessions.`)}

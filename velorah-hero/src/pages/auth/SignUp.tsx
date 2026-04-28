@@ -28,7 +28,7 @@ import {
 import { writeStoredUserProfile } from '../../utils/helpers';
 
 type StepId = 'account' | 'goals' | 'preferences' | 'profile' | 'review';
-type Role = 'student' | 'tutor' | 'admin';
+type Role = 'student' | 'tutor' | 'manager' | 'admin';
 type Level = 'Beginner' | 'Intermediate' | 'Advanced';
 type LearningStyle = 'Structured plan' | 'Flexible sessions';
 
@@ -81,12 +81,19 @@ const roleSteps: Record<Role, Array<{ id: StepId; label: string; eyebrow: string
     { id: 'profile', label: 'Tutor Profile', eyebrow: 'Public presence' },
     { id: 'review', label: 'Review & Apply', eyebrow: 'Tutor onboarding' },
   ],
-  admin: [
+  manager: [
     { id: 'account', label: 'Account', eyebrow: 'Manager access' },
     { id: 'goals', label: 'Organization', eyebrow: 'Institution setup' },
     { id: 'preferences', label: 'Management Needs', eyebrow: 'Operations' },
     { id: 'profile', label: 'Contact Profile', eyebrow: 'Trusted owner' },
     { id: 'review', label: 'Review & Create', eyebrow: 'Workspace ready' },
+  ],
+  admin: [
+    { id: 'account', label: 'Account', eyebrow: 'Admin access' },
+    { id: 'goals', label: 'Platform Scope', eyebrow: 'Governance setup' },
+    { id: 'preferences', label: 'Admin Needs', eyebrow: 'Security and audit' },
+    { id: 'profile', label: 'Admin Profile', eyebrow: 'Account owner' },
+    { id: 'review', label: 'Review & Create', eyebrow: 'Console ready' },
   ],
 };
 
@@ -104,10 +111,16 @@ const roleOptions = [
     icon: School,
   },
   {
-    id: 'admin',
-    title: 'Manager / Admin',
-    desc: 'Manage learners, tutors, schedules, and institutional workflows.',
+    id: 'manager',
+    title: 'Manager',
+    desc: 'Run tutor approvals, bookings, payments, reviews, and complaints.',
     icon: Building2,
+  },
+  {
+    id: 'admin',
+    title: 'Admin',
+    desc: 'Govern users, roles, security, audit logs, and platform configuration.',
+    icon: ShieldCheck,
   },
 ] satisfies Array<{ id: Role; title: string; desc: string; icon: LucideIcon }>;
 
@@ -157,6 +170,7 @@ const levelOptions: Level[] = ['Beginner', 'Intermediate', 'Advanced'];
 const teachingFormatOptions = ['1:1 Online', 'Group class', 'Exam prep', 'Homework review'];
 const organizationSizeOptions = ['Under 100 learners', '100-500 learners', '500+ learners', 'Pilot program'];
 const organizationNeedOptions = ['Tutor operations', 'Student progress', 'Scheduling', 'Payments & invoices'];
+const adminNeedOptions = ['Users & roles', 'Security policy', 'Audit logs', 'System configuration'];
 
 const initialData: OnboardingData = {
   role: 'student',
@@ -241,24 +255,31 @@ function SignUp() {
   const selectedRole = roleOptions.find((role) => role.id === data.role) ?? roleOptions[0];
   const SelectedRoleIcon = selectedRole.icon;
   const roleDisplay = selectedRole.title;
+  const isOrganizationRole = data.role === 'manager' || data.role === 'admin';
   const accountSummary =
     data.role === 'student'
       ? goalSummary
       : data.role === 'tutor'
         ? `${data.subjects.slice(0, 2).join(', ') || 'Academic'} tutor • ${data.hourlyRate}`
-        : `${data.organizationName || 'Organization'} • ${data.organizationNeed}`;
+        : data.role === 'manager'
+          ? `${data.organizationName || 'Organization'} • ${data.organizationNeed || 'Operations'}`
+          : `${data.organizationName || 'HaNova platform'} • ${data.organizationNeed || 'Governance'}`;
   const sidebarTitle =
     data.role === 'student'
       ? "Let's start your learning journey with a clear first step."
       : data.role === 'tutor'
         ? 'Create a trusted tutor account for students to book.'
-        : 'Set up an academic workspace for your organization.';
+        : data.role === 'manager'
+          ? 'Set up an academic operations workspace for your organization.'
+          : 'Set up a platform administration console.';
   const sidebarDescription =
     data.role === 'student'
       ? 'Tell us your goal so HaNova can recommend tutors, draft a study plan, suggest available slots, and keep your booking flow ready for VNPay or MoMo checkout.'
       : data.role === 'tutor'
         ? 'Share your expertise, availability, and teaching profile so HaNova can verify you and route the right students to your schedule.'
-        : 'Create a manager account for coordinating tutors, learners, schedules, notifications, and payment operations across your institution.';
+        : data.role === 'manager'
+          ? 'Create a manager account for coordinating tutors, learners, schedules, notifications, and payment operations across your institution.'
+          : 'Create an admin account for governing users, roles, security, audit logs, and platform-level configuration.';
 
   const accountValidation = useMemo(() => {
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
@@ -287,7 +308,7 @@ function SignUp() {
       return Boolean(data.organizationName.trim() && data.organizationRole.trim());
     }
     if (activeStep === 2) {
-      if (data.role === 'admin') return Boolean(data.organizationSize && data.organizationNeed);
+      if (data.role === 'manager' || data.role === 'admin') return Boolean(data.organizationSize && data.organizationNeed);
       return data.subjects.length > 0 && data.studyTimes.length > 0 && data.preferredDays.length > 0;
     }
     if (activeStep === 3) return Boolean(data.fullName.trim());
@@ -359,7 +380,8 @@ function SignUp() {
 
   const resolveDestination = (intent: 'discover' | 'booking') => {
     if (data.role === 'tutor') return '/tutor/dashboard';
-    if (data.role === 'admin') return '/dashboard?workspace=organization';
+    if (data.role === 'manager') return '/manager/dashboard';
+    if (data.role === 'admin') return '/admin/dashboard';
     if (intent === 'discover') return '/tutors?recommended=true&source=onboarding';
     if (selectedSession) return `/schedule?resumeSession=${encodeURIComponent(selectedSession)}&next=payment`;
     if (returnTo) return returnTo;
@@ -375,7 +397,9 @@ function SignUp() {
         ? goalSummary
         : data.role === 'tutor'
           ? `Teach ${data.subjects.slice(0, 2).join(', ') || 'academic subjects'}`
-          : `Manage ${data.organizationName || 'HaNova workspace'}`;
+          : data.role === 'manager'
+            ? `Manage ${data.organizationName || 'HaNova workspace'} operations`
+            : `Administer ${data.organizationName || 'HaNova platform'}`;
 
     const userProfile = {
       name: profileName,
@@ -398,7 +422,7 @@ function SignUp() {
             }
           : undefined,
       organization:
-        data.role === 'admin'
+        isOrganizationRole
           ? {
               name: data.organizationName,
               role: data.organizationRole,
@@ -728,14 +752,18 @@ function SignUp() {
                       ? 'What do you want to achieve?'
                       : data.role === 'tutor'
                         ? 'What do you teach?'
-                        : 'Tell us about your organization'
+                        : data.role === 'manager'
+                          ? 'Tell us about your organization'
+                          : 'Tell us about your admin scope'
                   }
                   subtitle={
                     data.role === 'student'
                       ? 'This becomes the first input for tutor matching and Study Plan generation.'
                       : data.role === 'tutor'
                         ? 'These details help HaNova verify your expertise and match you with the right learners.'
-                        : 'This creates the workspace context for schedules, tutors, learners, and reporting.'
+                        : data.role === 'manager'
+                          ? 'This creates the workspace context for schedules, tutors, learners, and reporting.'
+                          : 'This creates the platform context for users, roles, security policy, and audit ownership.'
                   }
                 >
                   {data.role === 'student' ? (
@@ -868,12 +896,12 @@ function SignUp() {
                   </>
                   ) : (
                   <>
-                    <Field icon={Building2} label="Organization name">
+	                    <Field icon={Building2} label={data.role === 'manager' ? 'Organization name' : 'Platform or organization name'}>
                       <input
                         value={data.organizationName}
                         onChange={(event) => update('organizationName', event.target.value)}
                         className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/[0.24]"
-                        placeholder="HaNova Academy, school, center, or department"
+	                        placeholder={data.role === 'manager' ? 'HaNova Academy, school, center, or department' : 'HaNova Platform, security team, or organization'}
                       />
                     </Field>
 
@@ -883,7 +911,7 @@ function SignUp() {
                           value={data.organizationRole}
                           onChange={(event) => update('organizationRole', event.target.value)}
                           className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/[0.24]"
-                          placeholder="Academic manager, operations lead..."
+	                          placeholder={data.role === 'manager' ? 'Academic manager, operations lead...' : 'Platform admin, security lead...'}
                         />
                       </Field>
                       <Field icon={BriefcaseBusiness} label="Primary need">
@@ -891,13 +919,13 @@ function SignUp() {
                           value={data.organizationNeed}
                           onChange={(event) => update('organizationNeed', event.target.value)}
                           className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/[0.24]"
-                          placeholder="Tutor scheduling, learner progress, payments..."
+	                          placeholder={data.role === 'manager' ? 'Tutor scheduling, learner progress, payments...' : 'Role governance, audit logs, security policy...'}
                         />
                       </Field>
                     </div>
 
                     <div>
-                      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.38]">Organization size</p>
+	                      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.38]">{data.role === 'manager' ? 'Organization size' : 'Admin coverage'}</p>
                       <div className="grid gap-2 sm:grid-cols-2">
                         {organizationSizeOptions.map((size) => (
                           <ChoiceButton
@@ -910,14 +938,16 @@ function SignUp() {
                       </div>
                     </div>
 
-                    <div className="rounded-3xl border border-emerald-300/15 bg-emerald-300/[0.045] p-5">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200/60">Workspace preview</p>
-                      <p className="mt-3 font-serif text-2xl text-white">
-                        {data.organizationName || 'Your organization'} workspace
-                      </p>
-                      <p className="mt-2 text-xs leading-6 text-white/45">
-                        HaNova will prepare controls for tutor operations, schedules, student progress, and billing.
-                      </p>
+	                    <div className="rounded-3xl border border-emerald-300/15 bg-emerald-300/[0.045] p-5">
+	                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200/60">{data.role === 'manager' ? 'Workspace preview' : 'Admin console preview'}</p>
+	                      <p className="mt-3 font-serif text-2xl text-white">
+	                        {data.organizationName || (data.role === 'manager' ? 'Your organization' : 'HaNova platform')} {data.role === 'manager' ? 'workspace' : 'console'}
+	                      </p>
+	                      <p className="mt-2 text-xs leading-6 text-white/45">
+	                        {data.role === 'manager'
+                            ? 'HaNova will prepare controls for tutor operations, schedules, student progress, and billing.'
+                            : 'HaNova will prepare controls for users, roles, security policies, audit logs, and platform configuration.'}
+	                      </p>
                     </div>
                   </>
                   )}
@@ -932,14 +962,18 @@ function SignUp() {
                       ? 'Choose your learning preferences'
                       : data.role === 'tutor'
                         ? 'Set availability and rates'
-                        : 'Choose workspace priorities'
+                        : data.role === 'manager'
+                          ? 'Choose workspace priorities'
+                          : 'Choose admin priorities'
                   }
                   subtitle={
                     data.role === 'student'
                       ? 'Keep it quick. These choices help scheduling, booking, and reminders feel personal.'
                       : data.role === 'tutor'
                         ? 'This helps HaNova show your open slots and quote the right price before payment.'
-                        : 'These choices shape dashboard defaults, notifications, and admin workflows.'
+                        : data.role === 'manager'
+                          ? 'These choices shape operational dashboard defaults, notifications, and manager workflows.'
+                          : 'These choices shape user governance, audit visibility, and platform security workflows.'
                   }
                 >
                   {data.role === 'student' ? (
@@ -1097,9 +1131,9 @@ function SignUp() {
                   ) : (
                   <>
                     <div>
-                      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.38]">Workspace priority</p>
+                      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.38]">{data.role === 'manager' ? 'Workspace priority' : 'Admin priority'}</p>
                       <div className="grid gap-2 sm:grid-cols-2">
-                        {organizationNeedOptions.map((need) => (
+                        {(data.role === 'manager' ? organizationNeedOptions : adminNeedOptions).map((need) => (
                           <ChoiceButton
                             key={need}
                             active={data.organizationNeed === need}
@@ -1111,7 +1145,7 @@ function SignUp() {
                     </div>
 
                     <div>
-                      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.38]">Workspace size</p>
+                      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.38]">{data.role === 'manager' ? 'Workspace size' : 'Platform scope'}</p>
                       <div className="grid gap-2 sm:grid-cols-2">
                         {organizationSizeOptions.map((size) => (
                           <ChoiceButton
@@ -1128,9 +1162,11 @@ function SignUp() {
                       <div className="mb-4 flex items-start gap-3">
                         <Bell size={18} className="mt-0.5 text-cyan-200" />
                         <div>
-                          <p className="text-sm font-semibold text-white">Admin notifications</p>
+                          <p className="text-sm font-semibold text-white">{data.role === 'manager' ? 'Manager notifications' : 'Admin notifications'}</p>
                           <p className="mt-1 text-xs text-white/40">
-                            Keep account, booking, payment, and tutor review events visible for managers.
+                            {data.role === 'manager'
+                              ? 'Keep booking, payment, complaint, and tutor review events visible for managers.'
+                              : 'Keep role, security, audit, and platform configuration events visible for admins.'}
                           </p>
                         </div>
                       </div>
@@ -1166,23 +1202,27 @@ function SignUp() {
                       ? 'Set up your profile'
                       : data.role === 'tutor'
                         ? 'Set up your tutor profile'
-                        : 'Set up the owner profile'
+                        : data.role === 'manager'
+                          ? 'Set up the manager profile'
+                          : 'Set up the admin profile'
                   }
                   subtitle={
                     data.role === 'student'
                       ? 'A lightweight profile helps tutors prepare before your first session.'
                       : data.role === 'tutor'
                         ? 'This public-facing profile helps students trust your teaching style before booking.'
-                        : 'This contact profile helps HaNova identify the manager responsible for the workspace.'
+                        : data.role === 'manager'
+                          ? 'This contact profile helps HaNova identify the manager responsible for daily operations.'
+                          : 'This profile identifies the admin responsible for platform governance and audit decisions.'
                   }
                 >
-                  <Field icon={User} label={data.role === 'admin' ? 'Account owner name' : 'Full name'} error={errorFor('fullName')} success={Boolean(data.fullName.trim())}>
+                  <Field icon={User} label={isOrganizationRole ? 'Account owner name' : 'Full name'} error={errorFor('fullName')} success={Boolean(data.fullName.trim())}>
                     <input
                       value={data.fullName}
                       onBlur={() => markTouched('fullName')}
                       onChange={(event) => update('fullName', event.target.value)}
                       className="w-full bg-transparent text-sm text-white outline-none placeholder:text-white/[0.24]"
-                      placeholder={data.role === 'tutor' ? 'Dr. Nguyen Lan Anh' : data.role === 'admin' ? 'Tran Minh, Academic Manager' : 'Nguyen Minh Anh'}
+                      placeholder={data.role === 'tutor' ? 'Dr. Nguyen Lan Anh' : data.role === 'manager' ? 'Tran Minh, Academic Manager' : data.role === 'admin' ? 'Pham Gia Bao, Platform Admin' : 'Nguyen Minh Anh'}
                       autoComplete="name"
                     />
                   </Field>
@@ -1201,7 +1241,7 @@ function SignUp() {
                         <Upload size={20} className="text-white/[0.55]" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">{data.role === 'admin' ? 'Organization or owner avatar optional' : 'Avatar upload optional'}</p>
+                        <p className="text-sm font-semibold text-white">{isOrganizationRole ? 'Organization or owner avatar optional' : 'Avatar upload optional'}</p>
                         <p className="mt-1 text-xs text-white/40">{data.avatarName || 'PNG or JPG. You can skip this for now.'}</p>
                       </div>
                     </div>
@@ -1209,7 +1249,7 @@ function SignUp() {
 
                   <div>
                     <label className="mb-3 block text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.38]">
-                      {data.role === 'tutor' ? 'Teaching bio optional' : data.role === 'admin' ? 'Workspace note optional' : 'Short bio optional'}
+                      {data.role === 'tutor' ? 'Teaching bio optional' : isOrganizationRole ? 'Workspace note optional' : 'Short bio optional'}
                     </label>
                     <textarea
                       value={data.bio}
@@ -1218,8 +1258,10 @@ function SignUp() {
                       placeholder={
                         data.role === 'tutor'
                           ? 'Example: I help Vietnamese students prepare for IELTS speaking with structured feedback.'
-                          : data.role === 'admin'
+                          : data.role === 'manager'
                             ? 'Example: We manage after-school tutoring for Grade 10-12 students.'
+                            : data.role === 'admin'
+                              ? 'Example: I manage platform access, security policies, and audit readiness.'
                             : 'Example: I am preparing for IELTS while balancing school assignments. I prefer calm, structured sessions.'
                       }
                     />
@@ -1228,7 +1270,7 @@ function SignUp() {
                   <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
                     <div className="rounded-3xl border border-cyan-200/15 bg-cyan-200/[0.045] p-5">
                       <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-100/60">
-                        {data.role === 'student' ? 'Learning goal summary' : data.role === 'tutor' ? 'Tutor setup summary' : 'Workspace summary'}
+	                        {data.role === 'student' ? 'Learning goal summary' : data.role === 'tutor' ? 'Tutor setup summary' : data.role === 'manager' ? 'Manager workspace summary' : 'Admin console summary'}
                       </p>
                       <p className="mt-3 font-serif text-2xl text-white">{accountSummary}</p>
                       <p className="mt-2 text-xs leading-6 text-white/45">
@@ -1236,7 +1278,9 @@ function SignUp() {
                           ? 'This will appear in your study plan and give recommended tutors useful context.'
                           : data.role === 'tutor'
                             ? 'This will help students understand your teaching scope and booking expectations.'
-                            : 'This will shape the manager dashboard and workspace defaults.'}
+	                            : data.role === 'manager'
+                              ? 'This will shape the manager dashboard and operational defaults.'
+                              : 'This will shape the admin console, role governance, and audit defaults.'}
                       </p>
                     </div>
 
@@ -1265,14 +1309,18 @@ function SignUp() {
                       ? 'Review and continue'
                       : data.role === 'tutor'
                         ? 'Review and apply'
-                        : 'Review and create workspace'
+                        : data.role === 'manager'
+                          ? 'Review and create manager workspace'
+                          : 'Review and create admin console'
                   }
                   subtitle={
                     data.role === 'student'
                       ? 'You are just a few steps away from your first session.'
                       : data.role === 'tutor'
                         ? 'Your tutor account will be ready for review and scheduling setup.'
-                        : 'Your manager account will be ready to coordinate tutors, students, and operations.'
+                        : data.role === 'manager'
+                          ? 'Your manager account will be ready to coordinate tutors, students, bookings, payments, reviews, and complaints.'
+                          : 'Your admin account will be ready to govern users, roles, security, audit logs, and platform configuration.'
                   }
                 >
                   {data.role === 'student' ? (
@@ -1412,8 +1460,8 @@ function SignUp() {
                   ) : (
                   <>
                     <div className="grid gap-4 lg:grid-cols-2">
-                      <SummaryCard title="Manager account" icon={User}>
-                        <p className="font-serif text-2xl text-white">{data.fullName || 'Workspace owner'}</p>
+                      <SummaryCard title={data.role === 'manager' ? 'Manager account' : 'Admin account'} icon={User}>
+                        <p className="font-serif text-2xl text-white">{data.fullName || (data.role === 'manager' ? 'Workspace owner' : 'Platform admin')}</p>
                         <p className="mt-2 text-xs leading-6 text-white/[0.42]">{data.organizationRole || 'Organization role pending'}</p>
                       </SummaryCard>
 
@@ -1424,9 +1472,9 @@ function SignUp() {
                         </p>
                       </SummaryCard>
 
-                      <SummaryCard title="Workspace modules" icon={BriefcaseBusiness}>
+                      <SummaryCard title={data.role === 'manager' ? 'Manager modules' : 'Admin modules'} icon={BriefcaseBusiness}>
                         <div className="flex flex-wrap gap-2">
-                          {['Tutors', 'Students', 'Schedule', 'Billing'].map((item) => (
+                          {(data.role === 'manager' ? ['Tutors', 'Bookings', 'Payments', 'Complaints'] : ['Users', 'Roles', 'Audit', 'Security']).map((item) => (
                             <span key={item} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] text-white/[0.56]">
                               {item}
                             </span>
@@ -1438,16 +1486,18 @@ function SignUp() {
                         <div className="space-y-2 text-xs leading-6 text-white/45">
                           <p>Email updates {data.notifications.email ? 'on' : 'off'}.</p>
                           <p>In-app updates {data.notifications.inApp ? 'on' : 'off'}.</p>
-                          <p>Events align with bookings, payments, and tutor review.</p>
+                          <p>{data.role === 'manager' ? 'Events align with bookings, payments, and tutor review.' : 'Events align with role changes, security policy, and audit logs.'}</p>
                         </div>
                       </SummaryCard>
                     </div>
 
                     <div className="rounded-[30px] border border-emerald-300/15 bg-emerald-300/[0.045] p-5">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200/60">Workspace ready</p>
-                      <p className="mt-3 font-serif text-2xl text-white">Create a manager workspace for {data.organizationName || 'your organization'}.</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-200/60">{data.role === 'manager' ? 'Workspace ready' : 'Admin console ready'}</p>
+                      <p className="mt-3 font-serif text-2xl text-white">{data.role === 'manager' ? `Create a manager workspace for ${data.organizationName || 'your organization'}.` : `Create an admin console for ${data.organizationName || 'HaNova platform'}.`}</p>
                       <p className="mt-2 text-xs leading-6 text-white/45">
-                        The dashboard can support tutor operations, student progress, schedules, and payments.
+                        {data.role === 'manager'
+                          ? 'The dashboard can support tutor operations, student progress, schedules, and payments.'
+                          : 'The console can support platform users, roles, security, audit logs, and system configuration.'}
                       </p>
                     </div>
 
@@ -1457,7 +1507,7 @@ function SignUp() {
                       disabled={isSaving}
                       className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-slate-950 transition hover:bg-cyan-50 disabled:cursor-wait disabled:opacity-70"
                     >
-                      Create manager account
+                      {data.role === 'manager' ? 'Create manager account' : 'Create admin account'}
                       <ArrowRight size={17} className="transition group-hover:translate-x-0.5" />
                     </button>
                   </>

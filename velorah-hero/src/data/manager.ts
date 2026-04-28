@@ -136,6 +136,16 @@ export interface ManagerNotification {
   actionLabel: string;
 }
 
+export interface OperationalFlow {
+  id: string;
+  source: 'Student' | 'Tutor' | 'System';
+  trigger: string;
+  managerVisibility: string;
+  actionLabel: string;
+  targetPath: string;
+  icon: LucideIcon;
+}
+
 export const managerStats: ManagerStat[] = [
   {
     label: 'Bookings today',
@@ -518,6 +528,30 @@ export const transactions: TransactionRecord[] = [
     refundable: true,
     nextStep: 'Confirm Chemistry 11 request or release MoMo hold',
   },
+  {
+    id: 'PAY-9107',
+    student: 'Lan Anh',
+    tutor: mathTutor.name,
+    amount: 500000,
+    method: 'VNPay',
+    status: 'refunded',
+    bookingId: 'BKG-2399',
+    policy: 'Manager-approved refund after tutor-created reschedule issue. Receipt and audit note are preserved.',
+    refundable: false,
+    nextStep: 'Keep receipt available and monitor 7-day satisfaction follow-up',
+  },
+  {
+    id: 'PAY-9108',
+    student: 'Phuong Nhi',
+    tutor: chemistryTutor.name,
+    amount: 390000,
+    method: 'VNPay',
+    status: 'failed',
+    bookingId: 'BKG-2410',
+    policy: 'Failed gateway callback does not create a confirmed booking. Student can retry or choose MoMo.',
+    refundable: false,
+    nextStep: 'Send retry link or switch to MoMo before confirming the lesson',
+  },
 ];
 
 export const reviews: ReviewRecord[] = [
@@ -531,6 +565,39 @@ export const reviews: ReviewRecord[] = [
     decision: 'visible',
     flags: [],
     nextStep: 'Keep review and publish progress badge',
+  },
+  {
+    id: 'REV-3002',
+    student: 'Lan Anh',
+    tutor: mathTutor.name,
+    rating: 4,
+    comment: 'Good Math structure, but the make-up slot communication should be clearer.',
+    lessonStatus: 'completed',
+    decision: 'flagged',
+    flags: ['Mentions scheduling friction'],
+    nextStep: 'Keep visible if language is appropriate, then inspect booking communication',
+  },
+  {
+    id: 'REV-3003',
+    student: 'Bao Chau',
+    tutor: suspendedIeltsTutor.name,
+    rating: 2,
+    comment: 'Lesson was cancelled too late and refund information was confusing.',
+    lessonStatus: 'completed',
+    decision: 'hidden',
+    flags: ['Linked to open complaint CMP-102'],
+    nextStep: 'Keep hidden until complaint CMP-102 has a resolution note',
+  },
+  {
+    id: 'REV-3004',
+    student: 'Gia Bao',
+    tutor: physicsTutor.name,
+    rating: 5,
+    comment: 'The Electric field session connected formulas to exam problems very well.',
+    lessonStatus: 'completed',
+    decision: 'visible',
+    flags: [],
+    nextStep: 'Keep review and include tutor in ranking watchlist',
   },
 ];
 
@@ -620,6 +687,54 @@ export const managerNotifications: ManagerNotification[] = [
     time: '22m',
     targetPath: '/manager/bookings',
     actionLabel: 'Review request',
+  },
+];
+
+export const operationalFlows: OperationalFlow[] = [
+  {
+    id: 'student-books',
+    source: 'Student',
+    trigger: 'Student books or changes a lesson slot',
+    managerVisibility: 'Booking Monitoring receives the requested, confirmed, completed, or cancelled state with payment hold context.',
+    actionLabel: 'Open booking monitor',
+    targetPath: '/manager/bookings',
+    icon: CalendarCheck2,
+  },
+  {
+    id: 'tutor-registers',
+    source: 'Tutor',
+    trigger: 'Tutor registers and uploads certificates',
+    managerVisibility: 'Tutor Management shows pending approval, certificate verification, and activation next step.',
+    actionLabel: 'Review tutor queue',
+    targetPath: '/manager/tutors',
+    icon: UserCheck,
+  },
+  {
+    id: 'student-reviews',
+    source: 'Student',
+    trigger: 'Student reviews after completed lesson',
+    managerVisibility: 'Reviews & Ratings only admits completed-lesson reviews for keep, hide, or flag decisions.',
+    actionLabel: 'Moderate reviews',
+    targetPath: '/manager/reviews',
+    icon: Star,
+  },
+  {
+    id: 'complaint-submitted',
+    source: 'Student',
+    trigger: 'Complaint submitted about tutor, booking, or payment',
+    managerVisibility: 'Complaints opens a case with SLA, handler assignment, response, and required resolution note.',
+    actionLabel: 'Handle complaints',
+    targetPath: '/manager/complaints',
+    icon: MessageSquareWarning,
+  },
+  {
+    id: 'system-detects-risk',
+    source: 'System',
+    trigger: 'Overlap, missed lesson, high cancellation, or payment risk detected',
+    managerVisibility: 'Dashboard alerts and Notifications route the manager to the exact operational module.',
+    actionLabel: 'View live alerts',
+    targetPath: '/manager/notifications',
+    icon: BellRing,
   },
 ];
 

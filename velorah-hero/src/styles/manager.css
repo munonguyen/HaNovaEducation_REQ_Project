@@ -807,6 +807,177 @@
   margin-bottom: 14px;
 }
 
+.manager-flow-card-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.manager-role-boundary-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.manager-flow-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  padding: 14px;
+  background: #f8fafc;
+}
+
+.manager-flow-card-icon {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(99, 102, 241, 0.13);
+  border-radius: 14px;
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.manager-flow-card strong {
+  display: block;
+  margin-top: 9px;
+  color: #172033;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.manager-flow-card p {
+  margin: 7px 0 12px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.manager-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.manager-chart-donut-wrap {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.manager-donut {
+  position: relative;
+  display: grid;
+  width: 164px;
+  height: 164px;
+  place-items: center;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2), 0 18px 34px rgba(15, 23, 42, 0.08);
+}
+
+.manager-donut::after {
+  content: "";
+  position: absolute;
+  inset: 23px;
+  border-radius: inherit;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.16);
+}
+
+.manager-donut span {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 3px;
+  text-align: center;
+}
+
+.manager-donut strong {
+  color: #172033;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.manager-donut small {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.manager-chart-legend,
+.manager-chart-bars {
+  display: grid;
+  gap: 10px;
+}
+
+.manager-chart-legend-row,
+.manager-chart-bar-copy {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+}
+
+.manager-chart-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.manager-chart-legend-row strong,
+.manager-chart-bar-copy strong {
+  overflow: hidden;
+  color: #172033;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.manager-chart-legend-row em,
+.manager-chart-bar-copy em {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
+}
+
+.manager-chart-bar-row {
+  display: grid;
+  gap: 6px;
+}
+
+.manager-chart-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.manager-chart-fill {
+  display: block;
+  width: var(--manager-chart-width);
+  height: 100%;
+  border-radius: inherit;
+  background: #64748b;
+}
+
+.manager-chart-fill-blue { background: linear-gradient(90deg, #60a5fa, #2563eb); }
+.manager-chart-fill-green { background: linear-gradient(90deg, #34d399, #059669); }
+.manager-chart-fill-amber { background: linear-gradient(90deg, #fbbf24, #d97706); }
+.manager-chart-fill-rose { background: linear-gradient(90deg, #fb7185, #e11d48); }
+.manager-chart-fill-indigo { background: linear-gradient(90deg, #818cf8, #4f46e5); }
+.manager-chart-fill-neutral { background: linear-gradient(90deg, #94a3b8, #64748b); }
+
+.manager-chart-bar-row small {
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .manager-flow-step {
   position: relative;
   display: grid;
@@ -1142,6 +1313,10 @@
   display: grid;
   grid-template-columns: minmax(170px, 0.35fr) minmax(260px, 1fr) minmax(180px, 0.3fr);
   align-items: end;
+}
+
+.manager-booking-filter-grid {
+  grid-template-columns: minmax(150px, 0.5fr) minmax(190px, 0.7fr) minmax(170px, 0.6fr) minmax(240px, 1fr) minmax(170px, 0.5fr);
 }
 
 .manager-field,
@@ -1552,17 +1727,21 @@
   font-size: 12px;
 }
 
-/* Premium dark manager theme, aligned with the customer and tutor workspaces. */
+/* Light manager operations theme with the same floating glass menu language as the student workspace. */
 .manager-shell {
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
-  color: #fdfbf7;
+  color: #172033;
   background:
-    radial-gradient(ellipse at 15% 28%, rgba(59, 130, 246, 0.12), transparent 46%),
-    radial-gradient(ellipse at 84% 42%, rgba(139, 92, 246, 0.10), transparent 46%),
-    radial-gradient(ellipse at 50% 84%, rgba(20, 184, 166, 0.06), transparent 42%),
-    #03030a;
+    linear-gradient(180deg, rgba(238, 243, 255, 0.92), rgba(248, 250, 252, 0.94) 36%, #f8fafc 100%),
+    radial-gradient(circle at 12% 4%, rgba(79, 70, 229, 0.14), transparent 28%),
+    radial-gradient(circle at 88% 14%, rgba(14, 165, 233, 0.12), transparent 28%);
+}
+
+.manager-shell > canvas {
+  opacity: 0.055;
+  mix-blend-mode: multiply;
 }
 
 .manager-video-overlay {
@@ -1577,44 +1756,14 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.1;
-  filter: blur(32px);
+  opacity: 0.045;
+  filter: blur(30px) saturate(1.35);
   transform: scale(1.1);
 }
 
-.manager-topbar,
 .manager-main {
   position: relative;
-}
-
-.manager-main {
   z-index: 2;
-}
-
-.manager-topbar {
-  border-bottom-color: rgba(255, 255, 255, 0.07);
-  background: rgba(4, 6, 16, 0.78);
-  backdrop-filter: blur(24px) saturate(165%);
-  -webkit-backdrop-filter: blur(24px) saturate(165%);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
-}
-
-.manager-brand,
-.manager-shell h1,
-.manager-shell h2,
-.manager-shell h3,
-.manager-alert strong,
-.manager-mini-item strong,
-.manager-record-main strong,
-.manager-metric-grid strong,
-.manager-certificate strong,
-.manager-info-grid strong,
-.manager-ranking-row strong,
-.manager-rule-card strong,
-.manager-toggle-row strong,
-.manager-dialog h2,
-.manager-notification-body h2 {
-  color: #ffffff;
 }
 
 .manager-brand-mark,
@@ -1626,49 +1775,25 @@
 .manager-rank,
 .manager-insight-icon,
 .manager-rule-icon {
-  border: 1px solid rgba(129, 140, 248, 0.18);
-  color: #c7d2fe;
-  background: rgba(99, 102, 241, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.manager-brand small,
-.manager-page-header p,
-.manager-alert p,
-.manager-mini-item small,
-.manager-mini-item em,
-.manager-flow-step small,
-.manager-record-main small,
-.manager-detail-head p,
-.manager-metric-grid span,
-.manager-certificate small,
-.manager-field span,
-.manager-dialog-field span,
-.manager-info-grid span,
-.manager-bar-item small,
-.manager-ranking-row small,
-.manager-rule-card p,
-.manager-setting-field span,
-.manager-toggle-row small,
-.manager-notification-top small,
-.manager-notification-body p {
-  color: rgba(255, 255, 255, 0.46);
+  border: 1px solid rgba(99, 102, 241, 0.13);
 }
 
 .manager-page-header,
 .manager-stat,
 .manager-panel,
 .manager-notification-card {
-  border-color: rgba(255, 255, 255, 0.075);
-  background: linear-gradient(160deg, rgba(14, 16, 32, 0.94), rgba(8, 10, 22, 0.9));
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  border-color: rgba(148, 163, 184, 0.24);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.07);
 }
 
 .manager-page-header {
   position: relative;
   overflow: hidden;
-  border-color: rgba(251, 191, 36, 0.12);
-  background: linear-gradient(135deg, rgba(18, 15, 36, 0.96), rgba(8, 10, 22, 0.92));
+  border-color: rgba(129, 140, 248, 0.18);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(239, 246, 255, 0.9)),
+    radial-gradient(circle at 14% 18%, rgba(59, 130, 246, 0.1), transparent 38%);
 }
 
 .manager-page-header::before {
@@ -1676,8 +1801,8 @@
   position: absolute;
   inset: -1px;
   background:
-    radial-gradient(circle at 14% 18%, rgba(251, 191, 36, 0.12), transparent 38%),
-    radial-gradient(circle at 88% 22%, rgba(99, 102, 241, 0.12), transparent 34%);
+    radial-gradient(circle at 14% 18%, rgba(37, 99, 235, 0.1), transparent 38%),
+    radial-gradient(circle at 88% 22%, rgba(99, 102, 241, 0.1), transparent 34%);
   pointer-events: none;
 }
 
@@ -1686,223 +1811,16 @@
   z-index: 1;
 }
 
-.manager-eyebrow,
-.manager-rule-card small {
-  color: rgba(251, 191, 36, 0.92);
-}
-
-.manager-nav-link {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.manager-nav-link:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.055);
-}
-
-.manager-nav-link.active,
-.manager-action-primary {
-  color: #080a16;
-  background: linear-gradient(135deg, #fbbf24, #fb923c);
-  box-shadow: 0 0 28px rgba(251, 191, 36, 0.26);
-}
-
-.manager-live {
-  border-color: rgba(52, 211, 153, 0.2);
-  color: #86efac;
-  background: rgba(52, 211, 153, 0.11);
-}
-
-.manager-action,
-.manager-filter-chip,
-.manager-inline-link,
-.manager-field input,
-.manager-field select,
-.manager-search-box,
-.manager-dialog-field textarea,
-.manager-setting-field input {
-  border-color: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.76);
-  background: rgba(255, 255, 255, 0.045);
-  box-shadow: none;
-}
-
-.manager-action:hover,
-.manager-filter-chip:hover,
-.manager-filter-chip.active,
-.manager-inline-link:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.075);
-}
-
-.manager-nav-link.active:hover,
-.manager-action-primary:hover {
-  border-color: transparent;
-  color: #080a16;
-  background: linear-gradient(135deg, #fbbf24, #fb923c);
-  box-shadow: 0 0 28px rgba(251, 191, 36, 0.3);
-}
-
-.manager-action-explained small,
-.manager-field input::placeholder,
-.manager-search-box input::placeholder {
-  color: rgba(255, 255, 255, 0.36);
-}
-
-.manager-action-danger {
-  border-color: rgba(251, 113, 133, 0.22);
-  color: #fda4af;
-  background: rgba(251, 113, 133, 0.08);
-}
-
-.manager-action-quiet,
-.manager-filter-bar,
-.manager-action-log,
-.manager-alert,
-.manager-mini-item,
-.manager-flow-step,
-.manager-record-row,
-.manager-certificate,
-.manager-metric-grid div,
-.manager-info-grid div,
-.manager-state-ladder span,
-.manager-ranking-row,
-.manager-rule-card,
-.manager-toggle-row,
-.manager-suggestion,
-.manager-risk-note {
-  border-color: rgba(255, 255, 255, 0.075);
-  background: rgba(255, 255, 255, 0.045);
-}
-
-.manager-action-log {
-  color: #c7d2fe;
-}
-
 .manager-record-row:hover,
 .manager-record-row.selected,
 .manager-notification-card.unread {
-  border-color: rgba(251, 191, 36, 0.18);
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.26), 0 0 0 1px rgba(251, 191, 36, 0.05);
+  border-color: rgba(37, 99, 235, 0.32);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.08);
 }
 
 .manager-booking-row.conflict {
-  border-color: rgba(251, 113, 133, 0.28);
-  background: linear-gradient(135deg, rgba(251, 113, 133, 0.11), rgba(255, 255, 255, 0.035));
-}
-
-.manager-dialog {
-  border-color: rgba(255, 255, 255, 0.09);
-  background: linear-gradient(160deg, rgba(14, 16, 32, 0.98), rgba(8, 10, 22, 0.96));
-  box-shadow: 0 30px 86px rgba(0, 0, 0, 0.62);
-}
-
-.manager-dialog p {
-  color: rgba(255, 255, 255, 0.52);
-}
-
-.manager-dialog-close {
-  border-color: rgba(255, 255, 255, 0.09);
-  color: rgba(255, 255, 255, 0.72);
-  background: rgba(255, 255, 255, 0.045);
-}
-
-.manager-search-box input {
-  color: rgba(255, 255, 255, 0.82);
-  background: transparent;
-}
-
-.manager-field input:focus,
-.manager-field select:focus,
-.manager-dialog-field textarea:focus,
-.manager-setting-field input:focus,
-.manager-search-box:focus-within {
-  border-color: rgba(251, 191, 36, 0.35);
-  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.08);
-}
-
-.manager-status {
-  border: 1px solid rgba(255, 255, 255, 0.09);
-}
-
-.manager-status-blue,
-.manager-status-indigo,
-.manager-alert-blue {
-  color: #c7d2fe;
-  background: rgba(99, 102, 241, 0.12);
-}
-
-.manager-status-green,
-.manager-alert-green {
-  color: #86efac;
-  background: rgba(52, 211, 153, 0.11);
-}
-
-.manager-status-amber,
-.manager-alert-amber {
-  color: #fde68a;
-  background: rgba(251, 191, 36, 0.11);
-}
-
-.manager-status-rose,
-.manager-alert-rose {
-  color: #fda4af;
-  background: rgba(251, 113, 133, 0.11);
-}
-
-.manager-status-neutral {
-  color: rgba(255, 255, 255, 0.62);
-  background: rgba(255, 255, 255, 0.055);
-}
-
-.manager-stat strong,
-.manager-stat span,
-.manager-bar-item strong {
-  color: #ffffff;
-}
-
-.manager-stat p {
-  color: rgba(255, 255, 255, 0.46);
-}
-
-.manager-stat-blue .manager-stat-icon,
-.manager-stat-indigo .manager-stat-icon {
-  color: #c7d2fe;
-  background: rgba(99, 102, 241, 0.12);
-}
-
-.manager-stat-green .manager-stat-icon {
-  color: #86efac;
-  background: rgba(52, 211, 153, 0.11);
-}
-
-.manager-stat-amber .manager-stat-icon {
-  color: #fde68a;
-  background: rgba(251, 191, 36, 0.11);
-}
-
-.manager-stat-rose .manager-stat-icon {
-  color: #fda4af;
-  background: rgba(251, 113, 133, 0.11);
-}
-
-.manager-suggestion {
-  color: rgba(199, 210, 254, 0.92);
-}
-
-.manager-risk-note {
-  color: #fda4af;
-}
-
-.manager-state-ladder span.active {
-  color: #080a16;
-  background: linear-gradient(135deg, #fbbf24, #fb923c);
-}
-
-.manager-bar-item span {
-  background: linear-gradient(180deg, #fbbf24, #818cf8);
-  box-shadow: 0 0 26px rgba(251, 191, 36, 0.18);
+  border-color: rgba(244, 63, 94, 0.32);
+  background: linear-gradient(90deg, #fff1f2, #fff);
 }
 
 @keyframes manager-pulse {
@@ -1921,7 +1839,8 @@
   }
 
   .manager-stat-grid,
-  .manager-flow-grid {
+  .manager-flow-grid,
+  .manager-flow-card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1930,6 +1849,10 @@
   }
 
   .manager-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-chart-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1976,6 +1899,8 @@
 
   .manager-stat-grid,
   .manager-flow-grid,
+  .manager-flow-card-grid,
+  .manager-role-boundary-grid,
   .manager-revenue-grid {
     grid-template-columns: 1fr;
   }
@@ -2003,8 +1928,14 @@
   }
 
   .manager-info-grid,
-  .manager-state-ladder {
+  .manager-state-ladder,
+  .manager-chart-donut-wrap {
     grid-template-columns: 1fr;
+  }
+
+  .manager-donut {
+    width: 142px;
+    height: 142px;
   }
 
   .manager-notification-card,

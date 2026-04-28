@@ -10,7 +10,9 @@ import {
 import {
   ActionLog,
   DecisionDialog,
+  ManagerBarChart,
   ManagerActionButton,
+  ManagerDonutChart,
   ManagerPageHeader,
   StatusPill,
 } from '../../components/manager/ManagerUI';
@@ -52,11 +54,42 @@ export default function PaymentsRevenue() {
     return { paid, holds, refundQueue };
   }, [records]);
 
+  const paymentStatusItems = useMemo(
+    () => [
+      { label: 'Paid', value: records.filter((transaction) => transaction.status === 'paid').length, tone: 'green' as const },
+      { label: 'Hold', value: records.filter((transaction) => transaction.status === 'hold').length, tone: 'blue' as const },
+      { label: 'Refund requested', value: records.filter((transaction) => transaction.status === 'refund_requested').length, tone: 'amber' as const },
+      { label: 'Refunded', value: records.filter((transaction) => transaction.status === 'refunded').length, tone: 'indigo' as const },
+      { label: 'Failed', value: records.filter((transaction) => transaction.status === 'failed').length, tone: 'rose' as const },
+    ],
+    [records],
+  );
+
+  const gatewayRevenueItems = useMemo(
+    () => (['VNPay', 'MoMo'] as const).map((method) => {
+      const amount = records.filter((transaction) => transaction.method === method).reduce((sum, transaction) => sum + transaction.amount, 0);
+      return {
+        label: method,
+        value: Number((amount / 1000000).toFixed(2)),
+        tone: method === 'VNPay' ? 'blue' as const : 'indigo' as const,
+        detail: formatVnd(amount),
+      };
+    }),
+    [records],
+  );
+
   const approveRefund = (transaction: TransactionRecord) => {
     setRecords((current) =>
       current.map((item) => (item.id === transaction.id ? { ...item, status: 'refunded' } : item)),
     );
     setNotice(`${transaction.id}: refund approved under policy. Student, tutor payout, and booking audit trail were updated.`);
+  };
+
+  const settleHold = (transaction: TransactionRecord) => {
+    setRecords((current) =>
+      current.map((item) => (item.id === transaction.id ? { ...item, status: 'paid' } : item)),
+    );
+    setNotice(`${transaction.id}: payment hold settled. Tutor payout, student receipt, and revenue summary were updated.`);
   };
 
   const explainPolicy = (transaction: TransactionRecord) => {
@@ -65,10 +98,31 @@ export default function PaymentsRevenue() {
   };
 
   const renderPaymentActions = (transaction: TransactionRecord) => {
-    if (transaction.refundable && transaction.status !== 'refunded') {
+    if (transaction.status === 'hold') {
+      return (
+        <>
+          <ManagerActionButton icon={ReceiptText} variant="primary" onClick={() => settleHold(transaction)}>
+            Settle hold
+          </ManagerActionButton>
+          <ManagerActionButton icon={RotateCcw} onClick={() => setRefundTarget(transaction)}>
+            Release hold
+          </ManagerActionButton>
+        </>
+      );
+    }
+
+    if (transaction.status === 'refund_requested') {
       return (
         <ManagerActionButton icon={RotateCcw} variant="primary" onClick={() => setRefundTarget(transaction)}>
           Refund
+        </ManagerActionButton>
+      );
+    }
+
+    if (transaction.status === 'refunded') {
+      return (
+        <ManagerActionButton icon={ReceiptText} onClick={() => setNotice(`${transaction.id}: refund receipt opened with payment gateway reference and manager audit note.`)}>
+          View refund receipt
         </ManagerActionButton>
       );
     }
@@ -150,6 +204,30 @@ export default function PaymentsRevenue() {
         </article>
       </section>
 
+      <section className="manager-chart-grid" aria-label="Payment visual summary">
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Settlement mix</span>
+              <h2>Payment states</h2>
+            </div>
+            <StatusPill tone="blue">{records.length} records</StatusPill>
+          </div>
+          <ManagerDonutChart items={paymentStatusItems} centerValue={`${records.length}`} centerLabel="Payments" />
+        </article>
+
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Gateway volume</span>
+              <h2>Revenue by method</h2>
+            </div>
+            <StatusPill tone="indigo">VNPay / MoMo</StatusPill>
+          </div>
+          <ManagerBarChart items={gatewayRevenueItems} valueSuffix="M" />
+        </article>
+      </section>
+
       <section className="manager-filter-bar" aria-label="Payment filters">
         {(['all', 'paid', 'hold', 'refund_requested', 'refunded', 'failed'] as const).map((status) => (
           <button
@@ -228,9 +306,9 @@ export default function PaymentsRevenue() {
 
       <DecisionDialog
         open={Boolean(refundTarget)}
-        title={`Refund ${refundTarget?.id ?? 'transaction'}`}
+        title={`${refundTarget?.status === 'hold' ? 'Release hold' : 'Refund'} ${refundTarget?.id ?? 'transaction'}`}
         description={refundTarget ? `${refundTarget.policy} This will update student wallet, tutor payout, and booking audit logs.` : 'Review refund policy before confirming.'}
-        confirmLabel="Approve refund"
+        confirmLabel={refundTarget?.status === 'hold' ? 'Release hold' : 'Approve refund'}
         onClose={() => setRefundTarget(null)}
         onConfirm={() => {
           if (refundTarget) approveRefund(refundTarget);

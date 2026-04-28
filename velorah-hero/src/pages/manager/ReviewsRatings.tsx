@@ -8,7 +8,9 @@ import {
 } from '../../data/manager';
 import {
   ActionLog,
+  ManagerBarChart,
   ManagerActionButton,
+  ManagerDonutChart,
   ManagerPageHeader,
   StatusPill,
 } from '../../components/manager/ManagerUI';
@@ -49,6 +51,25 @@ export default function ReviewsRatings() {
 
   const selectedReview = records.find((review) => review.id === selectedId) ?? records[0];
 
+  const moderationItems = useMemo(
+    () => [
+      { label: 'Visible', value: records.filter((review) => review.decision === 'visible').length, tone: 'green' as const },
+      { label: 'Flagged', value: records.filter((review) => review.decision === 'flagged').length, tone: 'amber' as const },
+      { label: 'Hidden', value: records.filter((review) => review.decision === 'hidden').length, tone: 'rose' as const },
+    ],
+    [records],
+  );
+
+  const ratingItems = useMemo(
+    () => [5, 4, 3, 2, 1].map((rating) => ({
+      label: `${rating} star`,
+      value: records.filter((review) => review.rating === rating).length,
+      tone: rating >= 5 ? 'green' as const : rating === 4 ? 'blue' as const : rating === 3 ? 'amber' as const : 'rose' as const,
+      detail: rating <= 3 ? 'Quality follow-up candidate' : 'Positive tutor quality signal',
+    })),
+    [records],
+  );
+
   const updateDecision = (review: ReviewRecord, decision: ReviewDecision, message: string) => {
     setRecords((current) =>
       current.map((item) => (item.id === review.id ? { ...item, decision } : item)),
@@ -73,23 +94,56 @@ export default function ReviewsRatings() {
 
   const renderReviewActions = (review: ReviewRecord) => (
     <>
-      <ManagerActionButton
-        icon={Eye}
-        variant={review.decision === 'visible' ? 'quiet' : 'primary'}
-        onClick={() => updateDecision(review, 'visible', 'review kept visible and tutor performance remains counted.')}
-      >
-        Keep review
-      </ManagerActionButton>
-      <ManagerActionButton
-        icon={EyeOff}
-        variant="danger"
-        onClick={() => updateDecision(review, 'hidden', 'review hidden from public tutor profile and moderation audit note added.')}
-      >
-        Hide review
-      </ManagerActionButton>
-      <ManagerActionButton icon={Flag} onClick={() => flagInappropriate(review)}>
-        Flag inappropriate
-      </ManagerActionButton>
+      {review.decision === 'visible' ? (
+        <ManagerActionButton
+          icon={Eye}
+          reason="Already visible"
+          alternative="Flag inappropriate content or hide if policy requires"
+          onClick={() => setNotice(`${review.id}: review is already visible. Next valid actions are flag inappropriate content or hide with moderation reason.`)}
+        >
+          Keep review
+        </ManagerActionButton>
+      ) : (
+        <ManagerActionButton
+          icon={Eye}
+          variant="primary"
+          onClick={() => updateDecision(review, 'visible', 'review kept visible and tutor performance remains counted.')}
+        >
+          Keep review
+        </ManagerActionButton>
+      )}
+      {review.decision === 'hidden' ? (
+        <ManagerActionButton
+          icon={EyeOff}
+          reason="Already hidden"
+          alternative="Keep review to restore visibility after moderation"
+          onClick={() => setNotice(`${review.id}: review is already hidden. Next valid action is keep review after the moderation concern is cleared.`)}
+        >
+          Hide review
+        </ManagerActionButton>
+      ) : (
+        <ManagerActionButton
+          icon={EyeOff}
+          variant="danger"
+          onClick={() => updateDecision(review, 'hidden', 'review hidden from public tutor profile and moderation audit note added.')}
+        >
+          Hide review
+        </ManagerActionButton>
+      )}
+      {review.decision === 'flagged' ? (
+        <ManagerActionButton
+          icon={Flag}
+          reason="Already flagged"
+          alternative="Keep or hide after moderation review"
+          onClick={() => setNotice(`${review.id}: review is already flagged. Choose keep or hide to complete moderation.`)}
+        >
+          Flag inappropriate
+        </ManagerActionButton>
+      ) : (
+        <ManagerActionButton icon={Flag} onClick={() => flagInappropriate(review)}>
+          Flag inappropriate
+        </ManagerActionButton>
+      )}
     </>
   );
 
@@ -116,6 +170,30 @@ export default function ReviewsRatings() {
       />
 
       <ActionLog message={notice} />
+
+      <section className="manager-chart-grid" aria-label="Review moderation charts">
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Moderation mix</span>
+              <h2>Review visibility states</h2>
+            </div>
+            <StatusPill tone="green">Completed only</StatusPill>
+          </div>
+          <ManagerDonutChart items={moderationItems} centerValue={`${records.length}`} centerLabel="Reviews" />
+        </article>
+
+        <article className="manager-panel">
+          <div className="manager-panel-header">
+            <div>
+              <span className="manager-eyebrow">Rating distribution</span>
+              <h2>Quality signals</h2>
+            </div>
+            <StatusPill tone="amber">{records.filter((review) => review.rating <= 3).length} watch</StatusPill>
+          </div>
+          <ManagerBarChart items={ratingItems} />
+        </article>
+      </section>
 
       <section className="manager-filter-bar" aria-label="Review filters">
         {(['all', 'visible', 'flagged', 'hidden'] as const).map((decision) => (

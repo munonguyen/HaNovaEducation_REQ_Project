@@ -97,9 +97,20 @@ export default function ManagerNotifications() {
                     {notification.actionLabel}
                     <ExternalLink size={15} />
                   </Link>
-                  <ManagerActionButton icon={CheckCheck} onClick={() => acknowledge(notification.id)}>
-                    {acknowledged ? 'Acknowledged' : 'Acknowledge'}
-                  </ManagerActionButton>
+                  {acknowledged ? (
+                    <ManagerActionButton
+                      icon={CheckCheck}
+                      reason="Already acknowledged"
+                      alternative="Open source module or escalate to handler"
+                      onClick={() => setNotice(`${notification.id}: already acknowledged. Use the linked module or escalation action for the next step.`)}
+                    >
+                      Acknowledged
+                    </ManagerActionButton>
+                  ) : (
+                    <ManagerActionButton icon={CheckCheck} onClick={() => acknowledge(notification.id)}>
+                      Acknowledge
+                    </ManagerActionButton>
+                  )}
                   <ManagerActionButton
                     icon={Send}
                     variant="quiet"

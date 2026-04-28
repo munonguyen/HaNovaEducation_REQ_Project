@@ -88,7 +88,7 @@ export const TutorForm: React.FC<FormProps> = ({ onSubmit, loading }) => (
   </form>
 );
 
-export const AdminForm: React.FC<FormProps> = ({ onSubmit, loading }) => (
+export const ManagerForm: React.FC<FormProps> = ({ onSubmit, loading }) => (
   <form onSubmit={onSubmit}>
     <div className="auth-form-group">
       <label className="auth-label">Full Name</label>
@@ -117,7 +117,37 @@ export const AdminForm: React.FC<FormProps> = ({ onSubmit, loading }) => (
       <input type="password" className="auth-input" placeholder="••••••••" required />
     </div>
     <button type="submit" className="auth-button-primary" disabled={loading}>
-      {loading ? 'Processing...' : 'Register Organization'}
+      {loading ? 'Processing...' : 'Create Manager Account'}
+    </button>
+  </form>
+);
+
+export const AdminForm: React.FC<FormProps> = ({ onSubmit, loading }) => (
+  <form onSubmit={onSubmit}>
+    <div className="auth-form-group">
+      <label className="auth-label">Full Name</label>
+      <input type="text" className="auth-input" placeholder="Platform Admin" required />
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="auth-form-group">
+        <label className="auth-label">Admin Email</label>
+        <input type="email" className="auth-input" placeholder="admin@hanova.vn" required />
+      </div>
+      <div className="auth-form-group">
+        <label className="auth-label">Phone</label>
+        <input type="tel" className="auth-input" placeholder="+84..." required />
+      </div>
+    </div>
+    <div className="auth-form-group">
+      <label className="auth-label">Admin scope</label>
+      <input type="text" className="auth-input" placeholder="Users, roles, security, audit logs" required />
+    </div>
+    <div className="auth-form-group">
+      <label className="auth-label">Password</label>
+      <input type="password" className="auth-input" placeholder="••••••••" required />
+    </div>
+    <button type="submit" className="auth-button-primary" disabled={loading}>
+      {loading ? 'Processing...' : 'Create Admin Account'}
     </button>
   </form>
 );
