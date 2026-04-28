@@ -59,16 +59,44 @@ export default function PaymentsRevenue() {
     setNotice(`${transaction.id}: refund approved under policy. Student, tutor payout, and booking audit trail were updated.`);
   };
 
+  const settleHold = (transaction: TransactionRecord) => {
+    setRecords((current) =>
+      current.map((item) => (item.id === transaction.id ? { ...item, status: 'paid' } : item)),
+    );
+    setNotice(`${transaction.id}: payment hold settled. Tutor payout, student receipt, and revenue summary were updated.`);
+  };
+
   const explainPolicy = (transaction: TransactionRecord) => {
     setSelectedId(transaction.id);
     setNotice(`${transaction.id}: refund is not allowed automatically. Policy: ${transaction.policy} Next action: open dispute review or offer learning credit.`);
   };
 
   const renderPaymentActions = (transaction: TransactionRecord) => {
-    if (transaction.refundable && transaction.status !== 'refunded') {
+    if (transaction.status === 'hold') {
+      return (
+        <>
+          <ManagerActionButton icon={ReceiptText} variant="primary" onClick={() => settleHold(transaction)}>
+            Settle hold
+          </ManagerActionButton>
+          <ManagerActionButton icon={RotateCcw} onClick={() => setRefundTarget(transaction)}>
+            Release hold
+          </ManagerActionButton>
+        </>
+      );
+    }
+
+    if (transaction.status === 'refund_requested') {
       return (
         <ManagerActionButton icon={RotateCcw} variant="primary" onClick={() => setRefundTarget(transaction)}>
           Refund
+        </ManagerActionButton>
+      );
+    }
+
+    if (transaction.status === 'refunded') {
+      return (
+        <ManagerActionButton icon={ReceiptText} onClick={() => setNotice(`${transaction.id}: refund receipt opened with payment gateway reference and manager audit note.`)}>
+          View refund receipt
         </ManagerActionButton>
       );
     }
@@ -228,9 +256,9 @@ export default function PaymentsRevenue() {
 
       <DecisionDialog
         open={Boolean(refundTarget)}
-        title={`Refund ${refundTarget?.id ?? 'transaction'}`}
+        title={`${refundTarget?.status === 'hold' ? 'Release hold' : 'Refund'} ${refundTarget?.id ?? 'transaction'}`}
         description={refundTarget ? `${refundTarget.policy} This will update student wallet, tutor payout, and booking audit logs.` : 'Review refund policy before confirming.'}
-        confirmLabel="Approve refund"
+        confirmLabel={refundTarget?.status === 'hold' ? 'Release hold' : 'Approve refund'}
         onClose={() => setRefundTarget(null)}
         onConfirm={() => {
           if (refundTarget) approveRefund(refundTarget);
