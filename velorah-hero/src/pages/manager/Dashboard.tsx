@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CalendarSearch, MessageSquareWarning, UsersRound } from 'lucide-react';
+import { AlertTriangle, CalendarSearch, GraduationCap, MessageSquareWarning, School, ShieldCheck, UsersRound } from 'lucide-react';
 import {
   bookings,
   bookingFlow,
@@ -107,9 +107,27 @@ export default function ManagerDashboard() {
             <span className="manager-eyebrow">Role separation</span>
             <h2>Manager is operations, Admin is platform governance</h2>
           </div>
-          <StatusPill tone="indigo">Separated access</StatusPill>
+          <StatusPill tone="indigo">4 role systems</StatusPill>
         </div>
         <div className="manager-flow-card-grid manager-role-boundary-grid">
+          <article className="manager-flow-card">
+            <span className="manager-flow-card-icon"><GraduationCap size={18} /></span>
+            <div>
+              <StatusPill tone="blue">Student</StatusPill>
+              <strong>Owns learning workflows: tutor discovery, booking, schedule, study plan, and personal notifications.</strong>
+              <p>Students request lessons, review completed sessions, submit complaints, and receive operational updates from managers.</p>
+              <ManagerActionLink to="/dashboard" variant="quiet">Open student system</ManagerActionLink>
+            </div>
+          </article>
+          <article className="manager-flow-card">
+            <span className="manager-flow-card-icon"><School size={18} /></span>
+            <div>
+              <StatusPill tone="amber">Tutor</StatusPill>
+              <strong>Owns teaching workflows: booking requests, lessons, schedule, students, and study plan support.</strong>
+              <p>Tutors accept or respond to booking requests; managers only intervene when approval, conflict, complaint, or quality control is needed.</p>
+              <ManagerActionLink to="/tutor/dashboard" variant="quiet">Open tutor system</ManagerActionLink>
+            </div>
+          </article>
           <article className="manager-flow-card">
             <span className="manager-flow-card-icon"><UsersRound size={18} /></span>
             <div>
@@ -120,9 +138,9 @@ export default function ManagerDashboard() {
             </div>
           </article>
           <article className="manager-flow-card">
-            <span className="manager-flow-card-icon"><AlertTriangle size={18} /></span>
+            <span className="manager-flow-card-icon"><ShieldCheck size={18} /></span>
             <div>
-              <StatusPill tone="amber">Admin</StatusPill>
+              <StatusPill tone="rose">Admin</StatusPill>
               <strong>Owns users, roles, security, audit logs, and platform configuration.</strong>
               <p>When a case needs privileged access, the manager escalates instead of changing admin-only settings directly.</p>
               <ManagerActionLink to="/admin/dashboard" variant="quiet">Open admin console</ManagerActionLink>

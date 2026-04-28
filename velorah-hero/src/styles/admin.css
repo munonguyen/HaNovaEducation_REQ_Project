@@ -321,8 +321,17 @@
   background: #f8fafc;
 }
 
+.admin-boundary-card {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-boundary-card svg {
+  color: #0f766e;
+}
+
 .admin-boundary-card p {
-  margin: 7px 0;
+  margin: 0;
 }
 
 .admin-queue-row {

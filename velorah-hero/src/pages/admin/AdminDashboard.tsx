@@ -6,7 +6,9 @@ import {
   CheckCircle2,
   Database,
   FileClock,
+  GraduationCap,
   KeyRound,
+  School,
   ServerCog,
   ShieldCheck,
   Users,
@@ -21,12 +23,26 @@ const platformStats = [
 
 const roleBoundaries = [
   {
+    role: 'Student',
+    icon: GraduationCap,
+    scope: 'Learns through tutor discovery, bookings, schedule, study plan, reviews, and complaints.',
+    cannot: 'Cannot access tutor workspaces, operational queues, or platform administration.',
+  },
+  {
+    role: 'Tutor',
+    icon: School,
+    scope: 'Teaches through booking requests, lessons, schedule, assigned students, and study plan support.',
+    cannot: 'Cannot approve other tutors, process refunds, resolve complaints, or change platform roles.',
+  },
+  {
     role: 'Manager',
+    icon: Users,
     scope: 'Runs academic operations: tutors, bookings, payments, reviews, complaints.',
     cannot: 'Cannot create admin users, rotate security keys, or change platform-wide access policies.',
   },
   {
     role: 'Admin',
+    icon: ShieldCheck,
     scope: 'Controls platform governance: users, roles, security, audit logs, infrastructure config.',
     cannot: 'Does not resolve student complaints or approve tutor performance decisions directly.',
   },
@@ -90,13 +106,17 @@ export default function AdminDashboard() {
             <span className="admin-pill">Separated</span>
           </div>
           <div className="admin-boundary-list">
-            {roleBoundaries.map((item) => (
+            {roleBoundaries.map((item) => {
+              const Icon = item.icon;
+              return (
               <div className="admin-boundary-card" key={item.role}>
+                <Icon size={18} />
                 <strong>{item.role}</strong>
                 <p>{item.scope}</p>
                 <small>{item.cannot}</small>
               </div>
-            ))}
+              );
+            })}
           </div>
         </article>
 
