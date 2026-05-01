@@ -13,6 +13,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import StarfieldCanvas from '../components/StarfieldCanvas';
+import RoleWorkspaceBridge from '../components/RoleWorkspaceBridge';
 import backgroundVideo from '../assets/videos/background-video.mp4';
 import '../styles/manager.css';
 
@@ -74,6 +75,7 @@ export default function ManagerLayout({ children }: { children: ReactNode }) {
         </div>
 
         <div className="manager-floating-links">
+          <RoleWorkspaceBridge onNavigate={() => setIsOpen(false)} />
           {managerNav.map(({ path, label, num, desc, icon: Icon }) => (
             <NavLink
               key={path}

@@ -12,6 +12,7 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { readStoredUserProfile, USER_UPDATED_EVENT } from '../../utils/helpers';
+import RoleWorkspaceBridge from '../RoleWorkspaceBridge';
 
 const tutorLinks = [
   { path: '/tutor/dashboard', label: 'Home', num: '01', desc: 'Daily teaching overview', icon: Home },
@@ -94,6 +95,7 @@ export default function TutorNavigation() {
         </div>
 
         <div className="tutor-floating-links">
+          <RoleWorkspaceBridge onNavigate={() => setIsOpen(false)} />
           {tutorLinks.map(({ path, label, num, desc, icon: Icon }) => {
             const isActive = activePath === path;
             return (

@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   Users,
 } from 'lucide-react';
+import RoleWorkspaceBridge from '../components/RoleWorkspaceBridge';
 import '../styles/admin.css';
 
 const adminNav = [
@@ -45,6 +46,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
 
         <div className="admin-floating-links">
+          <RoleWorkspaceBridge onNavigate={() => setOpen(false)} />
           {adminNav.map(({ path, label, desc, icon: Icon }) => (
             <NavLink
               key={path}
