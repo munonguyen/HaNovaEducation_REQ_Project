@@ -1876,6 +1876,42 @@
 }
 
 @media (max-width: 760px) {
+  .manager-floating-menu:not(.is-open) {
+    width: 116px;
+    bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
+  .manager-floating-menu:not(.is-open) .manager-floating-header {
+    min-height: 48px;
+    gap: 0;
+    padding: 6px;
+  }
+
+  .manager-floating-menu:not(.is-open) .manager-floating-brand {
+    gap: 0;
+    padding: 4px 8px 4px 4px;
+  }
+
+  .manager-floating-menu:not(.is-open) .manager-floating-brand span:not(.manager-floating-logo),
+  .manager-floating-menu:not(.is-open) .manager-menu-trigger span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .manager-floating-menu:not(.is-open) .manager-floating-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .manager-floating-menu:not(.is-open) .manager-menu-trigger {
+    min-height: 36px;
+    padding: 0 10px;
+  }
+
   .manager-topbar {
     padding: 12px 14px;
   }
