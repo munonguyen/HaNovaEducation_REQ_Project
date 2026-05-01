@@ -68,7 +68,8 @@ function readIsAuthenticated() {
 export default function Navigation() {
   const location = useLocation();
   const activeTab = location.pathname;
-  const [phase, setPhase] = useState(0);
+  const shouldPlayIntro = location.pathname === '/';
+  const [phase, setPhase] = useState(() => shouldPlayIntro ? 0 : 3);
   const [isOpen, setIsOpen] = useState(false);
   const [introIn, setIntroIn] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(() => readIsAuthenticated());
@@ -78,14 +79,16 @@ export default function Navigation() {
   }, [isOpen]);
 
   useEffect(() => {
-    const t0 = setTimeout(() => setIntroIn(true), 300);
+    if (!shouldPlayIntro) return;
+
+    const t0 = setTimeout(() => setIntroIn(true), 180);
     const t = [
-      setTimeout(() => setPhase(1), 2400),
-      setTimeout(() => setPhase(2), 3800),
-      setTimeout(() => setPhase(3), 4500),
+      setTimeout(() => setPhase(1), 650),
+      setTimeout(() => setPhase(2), 1050),
+      setTimeout(() => setPhase(3), 1250),
     ];
     return () => { clearTimeout(t0); t.forEach(clearTimeout); };
-  }, []);
+  }, [shouldPlayIntro]);
 
   useEffect(() => {
     const syncAuth = () => setIsAuthenticated(readIsAuthenticated());
@@ -97,9 +100,10 @@ export default function Navigation() {
     };
   }, []);
 
-  const isIntro = phase === 0;
-  const isPill = phase >= 2;
-  const isReady = phase >= 3;
+  const displayPhase = shouldPlayIntro ? phase : 3;
+  const isIntro = shouldPlayIntro && displayPhase === 0;
+  const isPill = displayPhase >= 2;
+  const isReady = displayPhase >= 3;
 
   const isActivePath = (path: string) => {
     if (path === '/') return activeTab === '/';
