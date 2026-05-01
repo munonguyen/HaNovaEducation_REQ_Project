@@ -52,4 +52,23 @@ test.describe('four-role workspace smoke', () => {
     await expect(page.getByRole('link', { name: /Review manager rules/i })).toHaveAttribute('href', '/manager/settings');
     await expect(page.getByRole('link', { name: /Open admin console/i })).toHaveAttribute('href', '/admin/dashboard');
   });
+
+  const menuChecks = [
+    { path: '/dashboard', trigger: /^menu$/i },
+    { path: '/tutor/dashboard', trigger: /tutor menu/i },
+    { path: '/manager/dashboard', trigger: /manager menu/i },
+    { path: '/admin/dashboard', trigger: /admin menu/i },
+  ] as const;
+
+  for (const check of menuChecks) {
+    test(`${check.path} menu exposes all role workspaces`, async ({ page }) => {
+      await page.goto(check.path);
+      await page.getByRole('button', { name: check.trigger }).click();
+
+      await expect(page.getByRole('link', { name: /Student Workspace/i })).toHaveAttribute('href', '/dashboard');
+      await expect(page.getByRole('link', { name: /Tutor Workspace/i })).toHaveAttribute('href', '/tutor/dashboard');
+      await expect(page.getByRole('link', { name: /Manager Workspace/i })).toHaveAttribute('href', '/manager/dashboard');
+      await expect(page.getByRole('link', { name: /Admin Workspace/i })).toHaveAttribute('href', '/admin/dashboard');
+    });
+  }
 });

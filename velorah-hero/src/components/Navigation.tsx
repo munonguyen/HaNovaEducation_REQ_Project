@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ProfileQuickMenu from './ProfileQuickMenu';
+import RoleWorkspaceBridge from './RoleWorkspaceBridge';
 import { clearStoredUserProfile, readStoredUserProfile, USER_UPDATED_EVENT } from '../utils/helpers';
 
 const E = 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -247,8 +248,10 @@ export default function Navigation() {
           <div style={{
             maxHeight: isOpen ? '600px' : '0', opacity: isOpen ? 1 : 0,
             transition: `max-height 0.6s ${E}, opacity 0.45s ${E} ${isOpen ? '0.1s' : '0s'}`,
-            overflow: 'hidden',
+            overflowY: isOpen ? 'auto' : 'hidden',
           }}>
+            <RoleWorkspaceBridge onNavigate={() => setIsOpen(false)} />
+
             {menuLinks.map((link, i) => (
               <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="group block" style={{
                 opacity: isOpen ? 1 : 0, transform: isOpen ? 'translateY(0)' : 'translateY(14px)',
