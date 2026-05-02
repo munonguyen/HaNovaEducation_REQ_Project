@@ -1,0 +1,12 @@
+{
+  "framework": "vite",
+  "installCommand": "cd velorah-hero && npm ci",
+  "buildCommand": "cd velorah-hero && npm run build",
+  "outputDirectory": "velorah-hero/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
