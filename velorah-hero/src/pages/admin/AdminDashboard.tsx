@@ -145,23 +145,81 @@ export default function AdminDashboard() {
       </section>
 
       <section className="admin-grid admin-grid-three">
+        <article className="admin-panel col-span-3 lg:col-span-2">
+          <div className="admin-panel-header">
+            <div>
+              <span className="admin-eyebrow">Analytics</span>
+              <h2>Platform Activity</h2>
+            </div>
+          </div>
+          <div className="flex items-end justify-between gap-2 h-40 mt-4 px-2">
+            {[45, 60, 40, 70, 85, 55, 95].map((val, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 flex-1 group">
+                <div className="w-full bg-white/5 rounded-t-md relative overflow-hidden flex-1 flex items-end">
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${val}%` }}
+                    transition={{ duration: 1, delay: i * 0.1 }}
+                    className="w-full bg-indigo-500/80 rounded-t-md group-hover:bg-indigo-400 transition-colors"
+                  />
+                </div>
+                <span className="text-[10px] text-white/40 font-mono">Day {i+1}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <aside className="admin-panel">
+          <div className="admin-panel-header">
+            <div>
+              <span className="admin-eyebrow">Distribution</span>
+              <h2>Active Roles</h2>
+            </div>
+          </div>
+          <div className="space-y-4 mt-4">
+            {[
+              { label: 'Students', count: 950, color: 'bg-emerald-400' },
+              { label: 'Tutors', count: 210, color: 'bg-blue-400' },
+              { label: 'Managers', count: 45, color: 'bg-amber-400' },
+              { label: 'Admins', count: 12, color: 'bg-rose-400' },
+            ].map((r) => (
+              <div key={r.label}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-white/70">{r.label}</span>
+                  <span className="font-mono text-white/90">{r.count}</span>
+                </div>
+                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(r.count / 1217) * 100}%` }}
+                    transition={{ duration: 1.2 }}
+                    className={`h-full ${r.color}`}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </aside>
+      </section>
+
+      <section className="admin-grid admin-grid-three">
         <article className="admin-panel">
-          <ServerCog size={21} />
-          <h2>System configuration</h2>
-          <p>Platform-level flags, integrations, retention windows, and service health checks.</p>
-          <button type="button" onClick={() => setNotice('System configuration panel opened. Changes require audit note and admin confirmation.')}>Open config</button>
+          <ServerCog size={21} className="text-indigo-400 mb-3" />
+          <h2>System Configuration</h2>
+          <p className="text-sm text-white/60 mb-4 mt-2">Manage platform-level flags, third-party integrations, data retention windows, and core service health checks.</p>
+          <button className="admin-action-btn" type="button" onClick={() => setNotice('System configuration panel opened. Changes require audit note and admin confirmation.')}>Open Config</button>
         </article>
         <article className="admin-panel">
-          <Database size={21} />
-          <h2>Data governance</h2>
-          <p>Export logs, retention policy, backup status, and privacy requests.</p>
-          <button type="button" onClick={() => setNotice('Data governance queue opened with export, retention, and backup actions.')}>Review data controls</button>
+          <Database size={21} className="text-emerald-400 mb-3" />
+          <h2>Data Governance</h2>
+          <p className="text-sm text-white/60 mb-4 mt-2">Enforce data retention policies, monitor backup integrity, handle privacy requests, and export system logs.</p>
+          <button className="admin-action-btn" type="button" onClick={() => setNotice('Data governance queue opened with export, retention, and backup actions.')}>Review Data Controls</button>
         </article>
         <article className="admin-panel">
-          <CheckCircle2 size={21} />
-          <h2>Manager handoff</h2>
-          <p>Operational cases stay with Manager unless platform access, security, or audit intervention is needed.</p>
-          <button type="button" onClick={() => setNotice('Manager handoff rules verified. Operational queues remain under /manager.')}>Verify handoff</button>
+          <CheckCircle2 size={21} className="text-amber-400 mb-3" />
+          <h2>Manager Handoff</h2>
+          <p className="text-sm text-white/60 mb-4 mt-2">Transfer operational cases to Managers while maintaining strict access boundaries and escalation paths.</p>
+          <button className="admin-action-btn" type="button" onClick={() => setNotice('Manager handoff rules verified. Operational queues remain under /manager.')}>Verify Handoff</button>
         </article>
       </section>
     </motion.div>

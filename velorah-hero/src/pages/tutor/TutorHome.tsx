@@ -185,6 +185,33 @@ export default function TutorHome() {
             ))}
           </section>
 
+          <section className="tutor-card">
+            <div className="tutor-card-header mb-4">
+              <div>
+                <h2 className="tutor-section-title">Weekly Lessons</h2>
+                <p className="tutor-section-copy">Your teaching hours across the week.</p>
+              </div>
+            </div>
+            <div className="flex items-end justify-between gap-2 h-24 mt-2 px-1">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+                const heightPct = [40, 70, 30, 80, 50, 90, 20][i];
+                return (
+                  <div key={day} className="flex flex-col items-center gap-2 flex-1 group">
+                    <div className="w-full bg-white/5 rounded-t-sm relative overflow-hidden flex-1 flex items-end">
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${heightPct}%` }}
+                        transition={{ duration: 1, delay: i * 0.1 }}
+                        className="w-full bg-emerald-500/80 rounded-t-sm group-hover:bg-emerald-400 transition-colors"
+                      />
+                    </div>
+                    <span className="text-[10px] text-white/50">{day}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
           <section className="tutor-card revenue-card">
             <div className="revenue-card-head">
               <div className="tutor-soft-icon green"><WalletCards size={19} /></div>
