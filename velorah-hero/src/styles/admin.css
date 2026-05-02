@@ -378,3 +378,41 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ═══ ROLE WORKSPACE BRIDGE – Light theme overrides for Admin floating menu ═══ */
+.admin-floating-menu .role-workspace-bridge {
+  border-top-color: rgba(15, 23, 42, 0.08);
+}
+
+.admin-floating-menu .role-workspace-heading span,
+.admin-floating-menu .role-workspace-heading strong {
+  color: rgba(15, 23, 42, 0.35);
+}
+
+.admin-floating-menu .role-workspace-heading strong {
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.admin-floating-menu .role-workspace-link {
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #475569;
+  background: rgba(15, 23, 42, 0.03);
+}
+
+.admin-floating-menu .role-workspace-link:hover,
+.admin-floating-menu .role-workspace-link.is-active {
+  border-color: rgba(20, 184, 166, 0.3);
+  color: #0f766e;
+  background: #f0fdfa;
+  transform: translateY(-1px);
+}
+
+.admin-floating-menu .role-workspace-icon {
+  color: #0f766e;
+  background: #ccfbf1;
+}
+
+.admin-floating-menu .role-workspace-link em {
+  color: #94a3b8;
+}
+
