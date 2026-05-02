@@ -242,15 +242,16 @@ export default function TutorManagement() {
             <span className="manager-eyebrow">Pipeline Analytics</span>
             <h2 className="mb-4">Tutor Onboarding Funnel</h2>
           </div>
-          <div className="flex items-end justify-between gap-3 h-32 px-4 mt-4">
+          <div className="flex items-end justify-between gap-3 h-36 px-4 mt-4">
             {[
-              { label: 'Applied', value: 120, color: 'bg-slate-200' },
-              { label: 'Pending', value: 45, color: 'bg-amber-400/80' },
-              { label: 'Approved', value: 30, color: 'bg-blue-400/80' },
-              { label: 'Active', value: 25, color: 'bg-emerald-400/80' },
+              { label: 'Applied', value: 120, color: 'bg-slate-400' },
+              { label: 'Pending', value: 45, color: 'bg-amber-400' },
+              { label: 'Approved', value: 30, color: 'bg-blue-500' },
+              { label: 'Active', value: 25, color: 'bg-emerald-500' },
             ].map((step, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 flex-1 group">
-                <div className="w-full bg-slate-100 rounded-t-md relative overflow-hidden flex-1 flex items-end">
+              <div key={i} className="flex flex-col items-center gap-1 flex-1 group">
+                <span className="text-[11px] font-bold text-slate-600 mb-1">{step.value}</span>
+                <div className="w-full border border-slate-200 rounded-t-md relative overflow-hidden flex-1 flex items-end bg-slate-50">
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${(step.value / 120) * 100}%` }}
@@ -258,8 +259,7 @@ export default function TutorManagement() {
                     className={`w-full rounded-t-md ${step.color} group-hover:brightness-110 transition-all`}
                   />
                 </div>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{step.label}</span>
-                <span className="text-xs font-mono">{step.value}</span>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">{step.label}</span>
               </div>
             ))}
           </div>
