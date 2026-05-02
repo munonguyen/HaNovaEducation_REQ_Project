@@ -123,6 +123,7 @@ export default function Profile() {
   const activeTab = isProfileTab(requestedTab) ? requestedTab : DEFAULT_TAB;
   const [profile, setProfile] = useState<StoredUserProfile | null>(() => readStoredUserProfile());
   const [toggles, setToggles] = useState(() => buildToggleState(readStoredUserProfile()));
+  const [profileNotice, setProfileNotice] = useState('');
 
   useEffect(() => {
     const syncProfile = () => {
@@ -141,6 +142,10 @@ export default function Profile() {
 
   const toggle = (key: keyof typeof toggles) => {
     setToggles(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const showProfileNotice = (message: string) => {
+    setProfileNotice(message);
   };
 
   const handleTabChange = (tab: ProfileTab) => {
@@ -211,6 +216,19 @@ export default function Profile() {
         </button>
       </div>
 
+      <AnimatePresence>
+        {profileNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="mb-6 rounded-2xl border border-cyan-200/18 bg-cyan-200/[0.08] px-5 py-3 text-sm font-medium text-cyan-50"
+          >
+            {profileNotice}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="grid lg:grid-cols-[280px_1fr] gap-8">
         
         {/* Left Sidebar */}
@@ -271,7 +289,10 @@ export default function Profile() {
                   <h2 className="text-2xl font-serif text-white">Personal Details</h2>
                   <p className="text-sm text-white/40 mt-1">Update your basic profile information.</p>
                 </div>
-                <button className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
+                <button
+                  onClick={() => showProfileNotice('Profile editor opened. Demo changes are kept in your local HaNova session.')}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors"
+                >
                   <Edit2 size={12} /> Edit
                 </button>
               </div>
@@ -400,8 +421,18 @@ export default function Profile() {
                      <p className="text-sm text-indigo-200/50 mb-6">Renews on Nov 15, 2026 • $150.00/month</p>
                      
                      <div className="flex flex-wrap gap-3">
-                       <button className="px-6 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 transition-colors">Manage Plan</button>
-                       <button className="px-6 py-2.5 rounded-full bg-white/5 text-white/60 font-semibold text-sm border border-white/10 hover:bg-white/10 transition-colors">View History</button>
+                       <button
+                         onClick={() => showProfileNotice('Plan management opened with upgrade, pause, and cancellation options.')}
+                         className="px-6 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 transition-colors"
+                       >
+                         Manage Plan
+                       </button>
+                       <button
+                         onClick={() => showProfileNotice('Billing history opened for invoices, refunds, and payment receipts.')}
+                         className="px-6 py-2.5 rounded-full bg-white/5 text-white/60 font-semibold text-sm border border-white/10 hover:bg-white/10 transition-colors"
+                       >
+                         View History
+                       </button>
                      </div>
                    </div>
                 </div>
@@ -422,7 +453,10 @@ export default function Profile() {
                      <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Default</span>
                   </div>
                   
-                  <button className="w-full p-4 rounded-[18px] border border-dashed border-white/10 text-center text-xs text-white/30 hover:bg-white/[0.02] hover:text-white/50 transition-colors font-bold uppercase tracking-widest">
+                  <button
+                    onClick={() => showProfileNotice('Payment method form opened. Demo mode validates the card before saving locally.')}
+                    className="w-full p-4 rounded-[18px] border border-dashed border-white/10 text-center text-xs text-white/30 hover:bg-white/[0.02] hover:text-white/50 transition-colors font-bold uppercase tracking-widest"
+                  >
                     + Add Payment Method
                   </button>
                 </div>
@@ -447,7 +481,12 @@ export default function Profile() {
                           <p className="text-white/35 text-xs">Last changed 3 months ago</p>
                         </div>
                       </div>
-                      <button className="px-5 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold tracking-widest uppercase transition-colors shrink-0">Change</button>
+                      <button
+                        onClick={() => showProfileNotice('Password change flow opened. You will need your current password and a new secure password.')}
+                        className="px-5 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold tracking-widest uppercase transition-colors shrink-0"
+                      >
+                        Change
+                      </button>
                    </div>
 
                    <div className="p-5 rounded-[20px] border border-emerald-500/20 bg-emerald-500/[0.03] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -460,7 +499,12 @@ export default function Profile() {
                           <p className="text-white/35 text-xs">Authy app is configured as your 2FA method.</p>
                         </div>
                       </div>
-                      <button className="px-5 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold tracking-widest uppercase transition-colors shrink-0">Configure</button>
+                      <button
+                        onClick={() => showProfileNotice('Two-factor authentication settings opened with authenticator and backup code options.')}
+                        className="px-5 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-bold tracking-widest uppercase transition-colors shrink-0"
+                      >
+                        Configure
+                      </button>
                    </div>
 
                    <div className="p-5 rounded-[20px] border border-white/5 bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.04] transition-colors">
@@ -473,7 +517,12 @@ export default function Profile() {
                           <p className="text-white/35 text-xs">2 devices currently signed in</p>
                         </div>
                       </div>
-                      <button className="px-5 py-2 rounded-full border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-xs font-bold tracking-widest uppercase text-red-400/70 hover:text-red-400 transition-colors shrink-0">Sign Out All</button>
+                      <button
+                        onClick={() => showProfileNotice('All other sessions were queued for sign out. This browser session stays active.')}
+                        className="px-5 py-2 rounded-full border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-xs font-bold tracking-widest uppercase text-red-400/70 hover:text-red-400 transition-colors shrink-0"
+                      >
+                        Sign Out All
+                      </button>
                    </div>
                 </div>
              </motion.div>

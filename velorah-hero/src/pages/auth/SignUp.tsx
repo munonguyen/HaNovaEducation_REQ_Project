@@ -243,6 +243,7 @@ function SignUp() {
   const [data, setData] = useState<OnboardingData>(() => loadDraft());
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [socialNotice, setSocialNotice] = useState('');
 
   const selectedTutor = searchParams.get('tutor') ?? searchParams.get('tutorId');
   const selectedSession = searchParams.get('session') ?? searchParams.get('sessionId');
@@ -621,6 +622,7 @@ function SignUp() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     <button
                       type="button"
+                      onClick={() => setSocialNotice('Google sign-up is not connected in this demo. Continue with email to create any role workspace.')}
                       className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-white/[0.82] transition hover:border-white/20 hover:bg-white/[0.08]"
                     >
                       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-sm font-bold text-black">G</span>
@@ -628,12 +630,26 @@ function SignUp() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => setSocialNotice('Facebook sign-up is not connected in this demo. Continue with email to create any role workspace.')}
                       className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white/70 transition hover:border-white/20 hover:bg-white/[0.07]"
                     >
                       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1877F2] text-sm font-bold text-white">f</span>
                       Continue with Facebook
                     </button>
                   </div>
+
+                  <AnimatePresence>
+                    {socialNotice && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        className="rounded-2xl border border-cyan-200/18 bg-cyan-200/[0.08] px-4 py-3 text-xs font-medium leading-5 text-cyan-50"
+                      >
+                        {socialNotice}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
 
                   <div className="flex items-center gap-4 py-2">
                     <div className="h-px flex-1 bg-white/10" />

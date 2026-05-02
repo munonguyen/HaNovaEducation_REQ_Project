@@ -77,8 +77,17 @@ function SignIn() {
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid gap-3 sm:grid-cols-2">
-          <SocialButton label="Continue with Google" mark="G" />
-          <SocialButton label="Continue with Facebook" mark="f" brandColor="#1877F2" />
+          <SocialButton
+            label="Continue with Google"
+            mark="G"
+            onClick={() => setAuthError('Google sign-in is not connected in this demo. Use a demo account below to enter a workspace.')}
+          />
+          <SocialButton
+            label="Continue with Facebook"
+            mark="f"
+            brandColor="#1877F2"
+            onClick={() => setAuthError('Facebook sign-in is not connected in this demo. Use a demo account below to enter a workspace.')}
+          />
         </div>
 
         <div className="flex items-center gap-4 py-1">
@@ -248,10 +257,11 @@ function SignIn() {
   );
 }
 
-function SocialButton({ label, mark, brandColor }: { label: string; mark: string; brandColor?: string }) {
+function SocialButton({ label, mark, brandColor, onClick }: { label: string; mark: string; brandColor?: string; onClick: () => void }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm font-semibold text-white/[0.82] transition hover:border-white/20 hover:bg-white/[0.08]"
     >
       <span

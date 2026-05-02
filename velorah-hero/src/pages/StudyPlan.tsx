@@ -158,6 +158,7 @@ export default function StudyPlan() {
   const [taskStatuses, setTaskStatuses] = useState<Record<string, string>>({});
   const [dismissedReminders, setDismissedReminders] = useState<string[]>([]);
   const [starRating, setStarRating] = useState<Record<string, number>>({});
+  const [planNotice, setPlanNotice] = useState('');
 
   const togglePhase = (id: string) => {
     setExpandedPhases(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
@@ -181,6 +182,16 @@ export default function StudyPlan() {
     setTaskStatuses(prev => ({ ...prev, [id]: prev[id] === 'Completed' ? 'Pending' : 'Completed' }));
   };
 
+  const continueLearning = () => {
+    setExpandedPhases((current) => (current.includes('p2') ? current : [...current, 'p2']));
+    setExpandedSession('ses6');
+    setPlanNotice('Next IELTS reading session opened. Review Strategy Guide.pdf before True / False / Not Given practice.');
+  };
+
+  const openMaterial = (label: string) => {
+    setPlanNotice(`${label}: material preview opened and attached to the active study session.`);
+  };
+
   const activeReminders = reminders.filter(r => !dismissedReminders.includes(r.id));
 
   return (
@@ -190,6 +201,18 @@ export default function StudyPlan() {
       exit={{ opacity: 0 }}
       className="min-h-screen pt-[88px] pb-28 px-4 lg:px-10 max-w-[1400px] mx-auto text-white"
     >
+      <AnimatePresence>
+        {planNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="mb-5 rounded-2xl border border-cyan-200/18 bg-cyan-200/[0.08] px-5 py-3 text-sm font-medium text-cyan-50"
+          >
+            {planNotice}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ══ SOFT REMINDERS ══ */}
       <AnimatePresence>
@@ -293,7 +316,10 @@ export default function StudyPlan() {
                 <Calendar size={15} />
                 View Schedule
               </Link>
-              <button className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-indigo-500 hover:bg-indigo-400 text-sm font-bold text-white transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+              <button
+                onClick={continueLearning}
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-indigo-500 hover:bg-indigo-400 text-sm font-bold text-white transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)]"
+              >
                 <Play size={15} />
                 Continue Learning
               </button>
@@ -464,7 +490,11 @@ export default function StudyPlan() {
                                                     <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold mb-2">Materials</p>
                                                     <div className="flex flex-wrap gap-2">
                                                       {session.materials.map((m, i) => (
-                                                        <button key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-[11px] text-white/70 hover:bg-white/[0.08] transition-colors">
+                                                        <button
+                                                          key={i}
+                                                          onClick={() => openMaterial(m.label)}
+                                                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-[11px] text-white/70 hover:bg-white/[0.08] transition-colors"
+                                                        >
                                                           <MaterialIcon type={m.type} />
                                                           {m.label}
                                                         </button>

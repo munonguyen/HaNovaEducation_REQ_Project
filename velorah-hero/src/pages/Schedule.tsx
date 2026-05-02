@@ -134,6 +134,7 @@ export default function Schedule() {
   
   const [hoveredSession, setHoveredSession] = useState<SessionWithTutor | null>(null);
   const [selectedModalSession, setSelectedModalSession] = useState<SessionWithTutor | null>(null);
+  const [scheduleNotice, setScheduleNotice] = useState('');
 
   // Customization state
   const [pxPerHour, setPxPerHour] = useState(90);
@@ -189,6 +190,15 @@ export default function Schedule() {
     setSelectedModalSession(session);
   };
 
+  const handleSessionAction = (action: 'cancel' | 'reschedule', session: SessionWithTutor) => {
+    setScheduleNotice(
+      action === 'cancel'
+        ? `${session.title}: cancellation request opened with the 12-hour refund policy applied.`
+        : `${session.title}: reschedule flow opened with tutor availability and conflict checks.`,
+    );
+    setSelectedModalSession(null);
+  };
+
   const offDays = selectedTutor ? mockTutorOffDays[selectedTutor] || [] : [];
 
   const toggleDay = (idx: number) => {
@@ -201,6 +211,18 @@ export default function Schedule() {
       animate={{ opacity: 1 }} 
       className="fixed inset-0 pt-[90px] pb-12 px-4 lg:px-10 text-white font-sans flex flex-col z-10"
     >
+      <AnimatePresence>
+        {scheduleNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="mx-auto mb-4 w-full max-w-[1800px] rounded-2xl border border-cyan-200/18 bg-cyan-200/[0.08] px-5 py-3 text-sm font-medium text-cyan-50"
+          >
+            {scheduleNotice}
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       {/* ══ COMPACT HEADER ══ */}
       <div className="mb-4 shrink-0 flex items-end justify-between gap-6 max-w-[1800px] w-full mx-auto">
@@ -683,12 +705,14 @@ export default function Schedule() {
                               const isCancelled = session.status === 'Cancelled';
 
                               return (
-                                <div 
+                                <button
+                                  type="button"
                                   key={session.id}
+                                  aria-label={`Open ${session.title}`}
                                   onMouseEnter={() => setHoveredSession({ ...session, tutor })}
                                   onMouseLeave={() => setHoveredSession(null)}
                                   onClick={() => handleSlotClick({ ...session, tutor })}
-                                  className={`absolute inset-x-1.5 rounded-xl px-2.5 py-2 border transition-all duration-300 cursor-pointer overflow-hidden group/card flex flex-col justify-between
+                                  className={`absolute z-50 inset-x-1.5 rounded-xl px-2.5 py-2 border transition-all duration-300 cursor-pointer overflow-hidden group/card flex flex-col justify-between text-left pointer-events-auto
                                     ${isCancelled 
                                        ? 'bg-[linear-gradient(135deg,rgba(239,68,68,0.1),rgba(239,68,68,0.02))] border-red-500/20 hover:border-red-500/40 opacity-70' 
                                        : themeMode === 'neon'
@@ -698,7 +722,7 @@ export default function Schedule() {
                                                : `bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.01))] border-${tutor.color}-400/30 hover:border-${tutor.color}-400/60 shadow-[0_8px_25px_rgba(0,0,0,0.15)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 backdrop-blur-md`
                                     }
                                   `}
-                                  style={{ top: tOffset + 40 + 2, height: tHeight - 4 }}
+                                  style={{ top: tOffset + 40 + 2, height: tHeight - 4, zIndex: 50, pointerEvents: 'auto' }}
                                 >
                                    {/* Accent bar */}
                                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${isCancelled ? 'bg-red-500/50' : `bg-${tutor.color}-400`}`} />
@@ -730,7 +754,7 @@ export default function Schedule() {
                                          </div>
                                       )}
                                    </div>
-                                </div>
+                                </button>
                               )
                            })}
 
@@ -857,7 +881,7 @@ export default function Schedule() {
                initial={{ scale: 0.95, y: 20 }}
                animate={{ scale: 1, y: 0 }}
                exit={{ scale: 0.95, y: 20 }}
-               className="relative w-full max-w-lg bg-[#060810] border border-white/10 rounded-[28px] overflow-hidden shadow-2xl glass-panel"
+               className="relative w-full max-w-lg max-h-[calc(100vh-3rem)] overflow-y-auto bg-[#060810] border border-white/10 rounded-[28px] shadow-2xl glass-panel custom-scrollbar"
              >
                 <div className="absolute top-0 left-0 right-0 h-32 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.1),transparent)] pointer-events-none" />
                 <button onClick={() => setSelectedModalSession(null)} className="absolute top-5 right-5 p-2 rounded-full border border-white/10 hover:bg-white/10 transition-colors z-10 text-white/50 hover:text-white">
@@ -974,10 +998,16 @@ export default function Schedule() {
                    )}
 
                    <div className="flex gap-3 pt-3 border-t border-white/5">
-                      <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full border border-white/10 hover:bg-white/[0.03] transition-colors text-sm font-medium text-white/70">
+                      <button
+                        onClick={() => handleSessionAction('cancel', selectedModalSession)}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full border border-white/10 hover:bg-white/[0.03] transition-colors text-sm font-medium text-white/70"
+                      >
                          <XCircle size={15} /> Cancel
                       </button>
-                      <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-white text-black hover:bg-white/90 transition-colors text-sm font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                      <button
+                        onClick={() => handleSessionAction('reschedule', selectedModalSession)}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-white text-black hover:bg-white/90 transition-colors text-sm font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                      >
                          <RefreshCw size={15} /> Reschedule
                       </button>
                    </div>

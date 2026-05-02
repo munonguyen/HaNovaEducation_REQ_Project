@@ -694,7 +694,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <button className={`group flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm transition-all duration-250 shrink-0
+              <Link to="/schedule" className={`group flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm transition-all duration-250 shrink-0
                 ${isNear||isReady
                   ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-black shadow-[0_0_28px_rgba(251,191,36,0.35)] hover:shadow-[0_0_40px_rgba(251,191,36,0.55)] hover:scale-[1.03]'
                   : 'bg-amber-400/10 border border-amber-400/28 text-amber-300 hover:bg-amber-400/18 hover:border-amber-400/45'
@@ -702,7 +702,7 @@ export default function Dashboard() {
               >
                 <Video size={16}/> {isReady ? 'Join Now' : 'Enter Lesson'}
                 <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"/>
-              </button>
+              </Link>
             </div>
 
             {/* Footer strip */}

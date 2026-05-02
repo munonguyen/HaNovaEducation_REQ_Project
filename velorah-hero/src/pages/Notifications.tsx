@@ -275,6 +275,7 @@ export default function Notifications() {
   const [activeRole, setActiveRole] = useState<NotificationRole>(() => getInitialRole());
   const [activeCategory, setActiveCategory] = useState<Category | 'all'>('all');
   const [readIds, setReadIds] = useState<string[]>([]);
+  const [actionNotice, setActionNotice] = useState('');
 
   const roleNotifications = useMemo(
     () => initialNotifications.filter((item) => item.role === activeRole),
@@ -293,6 +294,10 @@ export default function Notifications() {
 
   const markRead = (id: string) => setReadIds((current) => (current.includes(id) ? current : [...current, id]));
   const markAllRead = () => setReadIds((current) => Array.from(new Set([...current, ...roleNotifications.map((item) => item.id)])));
+  const handleNotificationAction = (notification: RoleNotification) => {
+    markRead(notification.id);
+    setActionNotice(`${notification.action}: opened ${notification.target} workflow.`);
+  };
 
   return (
     <motion.div
@@ -403,6 +408,19 @@ export default function Notifications() {
           </div>
 
           <div className="max-h-[680px] overflow-y-auto p-5 custom-scrollbar">
+            <AnimatePresence>
+              {actionNotice && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="mb-4 rounded-2xl border border-cyan-200/18 bg-cyan-200/[0.08] px-4 py-3 text-sm font-medium text-cyan-50"
+                >
+                  {actionNotice}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <AnimatePresence mode="popLayout">
               {visibleNotifications.map((notification, index) => {
                 const Icon = categoryIcons[notification.category];
@@ -461,7 +479,10 @@ export default function Notifications() {
                               <Check size={14} />
                             </button>
                           )}
-                          <button className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-black transition hover:bg-cyan-50">
+                          <button
+                            onClick={() => handleNotificationAction(notification)}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-black transition hover:bg-cyan-50"
+                          >
                             {notification.action} <ChevronRight size={13} />
                           </button>
                         </div>
