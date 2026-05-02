@@ -245,10 +245,16 @@ export default function Navigation() {
           </div>
 
           {/* ── MENU LINKS ── */}
-          <div style={{
-            maxHeight: isOpen ? '600px' : '0', opacity: isOpen ? 1 : 0,
-            transition: `max-height 0.6s ${E}, opacity 0.45s ${E} ${isOpen ? '0.1s' : '0s'}`,
-            overflowY: isOpen ? 'auto' : 'hidden',
+          <div
+            className="custom-scrollbar"
+            style={{
+              maxHeight: isOpen ? '65vh' : '0', opacity: isOpen ? 1 : 0,
+              transition: `max-height 0.6s ${E}, opacity 0.45s ${E} ${isOpen ? '0.1s' : '0s'}`,
+              overflowY: isOpen ? 'auto' : 'hidden',
+              overflowX: 'hidden',
+              overscrollBehavior: 'contain',
+              WebkitOverflowScrolling: 'touch',
+              pointerEvents: isOpen ? 'auto' : 'none',
           }}>
             <RoleWorkspaceBridge onNavigate={() => setIsOpen(false)} />
 
