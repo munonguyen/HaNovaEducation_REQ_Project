@@ -155,15 +155,15 @@ export default function AdminDashboard() {
           <div className="flex items-end justify-between gap-2 h-40 mt-4 px-2">
             {[45, 60, 40, 70, 85, 55, 95].map((val, i) => (
               <div key={i} className="flex flex-col items-center gap-2 flex-1 group">
-                <div className="w-full bg-white/5 rounded-t-md relative overflow-hidden flex-1 flex items-end">
+                <div className="w-full bg-slate-100 rounded-t-md relative overflow-hidden flex-1 flex items-end">
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${val}%` }}
                     transition={{ duration: 1, delay: i * 0.1 }}
-                    className="w-full bg-indigo-500/80 rounded-t-md group-hover:bg-indigo-400 transition-colors"
+                    className="w-full bg-teal-500/80 rounded-t-md group-hover:bg-teal-400 transition-colors"
                   />
                 </div>
-                <span className="text-[10px] text-white/40 font-mono">Day {i+1}</span>
+                <span className="text-[10px] text-slate-500 font-mono">Day {i+1}</span>
               </div>
             ))}
           </div>
@@ -185,10 +185,10 @@ export default function AdminDashboard() {
             ].map((r) => (
               <div key={r.label}>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="text-white/70">{r.label}</span>
-                  <span className="font-mono text-white/90">{r.count}</span>
+                  <span className="text-slate-600">{r.label}</span>
+                  <span className="font-mono text-slate-700 font-medium">{r.count}</span>
                 </div>
-                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${(r.count / 1217) * 100}%` }}
@@ -206,19 +206,19 @@ export default function AdminDashboard() {
         <article className="admin-panel">
           <ServerCog size={21} className="text-indigo-400 mb-3" />
           <h2>System Configuration</h2>
-          <p className="text-sm text-white/60 mb-4 mt-2">Manage platform-level flags, third-party integrations, data retention windows, and core service health checks.</p>
+          <p className="text-sm text-slate-500 mb-4 mt-2">Manage platform-level flags, third-party integrations, data retention windows, and core service health checks.</p>
           <button className="admin-action-btn" type="button" onClick={() => setNotice('System configuration panel opened. Changes require audit note and admin confirmation.')}>Open Config</button>
         </article>
         <article className="admin-panel">
           <Database size={21} className="text-emerald-400 mb-3" />
           <h2>Data Governance</h2>
-          <p className="text-sm text-white/60 mb-4 mt-2">Enforce data retention policies, monitor backup integrity, handle privacy requests, and export system logs.</p>
+          <p className="text-sm text-slate-500 mb-4 mt-2">Enforce data retention policies, monitor backup integrity, handle privacy requests, and export system logs.</p>
           <button className="admin-action-btn" type="button" onClick={() => setNotice('Data governance queue opened with export, retention, and backup actions.')}>Review Data Controls</button>
         </article>
         <article className="admin-panel">
           <CheckCircle2 size={21} className="text-amber-400 mb-3" />
           <h2>Manager Handoff</h2>
-          <p className="text-sm text-white/60 mb-4 mt-2">Transfer operational cases to Managers while maintaining strict access boundaries and escalation paths.</p>
+          <p className="text-sm text-slate-500 mb-4 mt-2">Transfer operational cases to Managers while maintaining strict access boundaries and escalation paths.</p>
           <button className="admin-action-btn" type="button" onClick={() => setNotice('Manager handoff rules verified. Operational queues remain under /manager.')}>Verify Handoff</button>
         </article>
       </section>

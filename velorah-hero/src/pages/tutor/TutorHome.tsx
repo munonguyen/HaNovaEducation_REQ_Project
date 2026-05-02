@@ -197,7 +197,7 @@ export default function TutorHome() {
                 const heightPct = [40, 70, 30, 80, 50, 90, 20][i];
                 return (
                   <div key={day} className="flex flex-col items-center gap-2 flex-1 group">
-                    <div className="w-full bg-white/5 rounded-t-sm relative overflow-hidden flex-1 flex items-end">
+                    <div className="w-full bg-slate-100 rounded-t-sm relative overflow-hidden flex-1 flex items-end">
                       <motion.div
                         initial={{ height: 0 }}
                         animate={{ height: `${heightPct}%` }}
@@ -205,7 +205,7 @@ export default function TutorHome() {
                         className="w-full bg-emerald-500/80 rounded-t-sm group-hover:bg-emerald-400 transition-colors"
                       />
                     </div>
-                    <span className="text-[10px] text-white/50">{day}</span>
+                    <span className="text-[10px] text-slate-500">{day}</span>
                   </div>
                 );
               })}

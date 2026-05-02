@@ -244,13 +244,13 @@ export default function TutorManagement() {
           </div>
           <div className="flex items-end justify-between gap-3 h-32 px-4 mt-4">
             {[
-              { label: 'Applied', value: 120, color: 'bg-white/20' },
+              { label: 'Applied', value: 120, color: 'bg-slate-200' },
               { label: 'Pending', value: 45, color: 'bg-amber-400/80' },
               { label: 'Approved', value: 30, color: 'bg-blue-400/80' },
               { label: 'Active', value: 25, color: 'bg-emerald-400/80' },
             ].map((step, i) => (
               <div key={i} className="flex flex-col items-center gap-2 flex-1 group">
-                <div className="w-full bg-white/5 rounded-t-md relative overflow-hidden flex-1 flex items-end">
+                <div className="w-full bg-slate-100 rounded-t-md relative overflow-hidden flex-1 flex items-end">
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${(step.value / 120) * 100}%` }}
@@ -258,7 +258,7 @@ export default function TutorManagement() {
                     className={`w-full rounded-t-md ${step.color} group-hover:brightness-110 transition-all`}
                   />
                 </div>
-                <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">{step.label}</span>
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{step.label}</span>
                 <span className="text-xs font-mono">{step.value}</span>
               </div>
             ))}
@@ -269,7 +269,7 @@ export default function TutorManagement() {
           <div className="relative w-24 h-24 flex items-center justify-center">
             <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 36 36">
               <path
-                className="text-white/10"
+                className="text-slate-200"
                 strokeWidth="3"
                 stroke="currentColor"
                 fill="none"
@@ -289,7 +289,7 @@ export default function TutorManagement() {
             </svg>
             <span className="text-xl font-bold">20.8%</span>
           </div>
-          <p className="text-[10px] text-white/40 mt-3 uppercase tracking-widest">Active / Applied</p>
+          <p className="text-[10px] text-slate-500 mt-3 uppercase tracking-widest">Active / Applied</p>
         </div>
       </section>
 
