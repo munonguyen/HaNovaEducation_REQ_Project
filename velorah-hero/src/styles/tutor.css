@@ -420,18 +420,27 @@
 .tutor-floating-links {
   max-height: 0;
   padding: 0 12px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   opacity: 0;
+  pointer-events: none;
   transition:
     max-height 620ms cubic-bezier(0.16, 1, 0.3, 1),
     opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
     padding 520ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.tutor-floating-links::-webkit-scrollbar { width: 4px; }
+.tutor-floating-links::-webkit-scrollbar-track { background: transparent; }
+.tutor-floating-links::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
 .tutor-floating-menu.is-open .tutor-floating-links {
-  max-height: min(64vh, 600px);
+  max-height: 65vh;
   padding: 8px 12px 12px;
   opacity: 1;
+  pointer-events: auto;
 }
 
 .tutor-floating-link {
