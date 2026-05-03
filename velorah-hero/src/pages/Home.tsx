@@ -23,8 +23,8 @@ export default function Home() {
     <div className="w-full flex flex-col items-center">
 
       {/* ═══ 1. HERO — Clean fullscreen video, NO text overlay ═══ */}
-      <div className="w-full h-[100vh] relative">
-        <div className="absolute inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-6 md:bottom-6 rounded-[32px] overflow-hidden">
+      <div className="w-full h-[60vh] md:h-[100vh] relative">
+        <div className="absolute inset-x-4 top-4 bottom-4 md:inset-x-8 md:top-6 md:bottom-6 rounded-[24px] md:rounded-[32px] overflow-hidden">
           <motion.video
             initial={{ scale: 1.05 }}
             animate={{ scale: 1 }}
@@ -35,6 +35,20 @@ export default function Home() {
           />
           {/* Subtle bottom gradient for content transition */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#020205]/80" />
+          {/* Mobile hero overlay - shows CTA on small screens */}
+          <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 px-6 md:hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#020205]/30 to-[#020205]/90" />
+            <div className="relative z-10 text-center">
+              <h1 className="text-3xl font-serif text-white mb-3 leading-tight">Study with <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">Structure</span></h1>
+              <p className="text-white/50 text-sm mb-6 max-w-xs mx-auto">Your path to academic clarity begins here.</p>
+              <button
+                onClick={() => navigate('/tutors')}
+                className="px-8 py-3.5 bg-gradient-to-r from-blue-500 to-violet-500 text-white rounded-full font-semibold text-xs uppercase tracking-widest shadow-[0_0_30px_rgba(99,102,241,0.3)]"
+              >
+                Start Learning
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
