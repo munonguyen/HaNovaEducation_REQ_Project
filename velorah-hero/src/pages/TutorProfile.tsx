@@ -222,7 +222,7 @@ export default function TutorProfile() {
                  <h3 className="flex items-center gap-4 text-xs font-bold uppercase tracking-[0.3em] text-white/50 mb-8"><span className="w-12 h-px bg-white/20"></span> Teaching Philosophy</h3>
                  <div className="relative p-8 md:p-12 rounded-[32px] border border-white/[0.06] bg-gradient-to-br from-white/[0.02] to-transparent">
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-white/90 italic leading-relaxed mb-6">
-                   "{tutor.philosophy}"
+                   "{tutor.quote}"
                  </h2>   <p className="text-white/60 text-lg md:text-xl leading-relaxed font-serif max-w-3xl">{tutor.intro}</p>
                  </div>
                  
