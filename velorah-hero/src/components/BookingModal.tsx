@@ -122,18 +122,14 @@ export default function BookingModal({
   }, [step, isOpen]);
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    const resetTimer = window.setTimeout(() => {
+    if (isOpen) {
       setStep(1);
       setSelectedPlan('single');
       setPolicyAgreed(false);
       setPolicyExpanded(false);
       setTimeLeft(600);
       setSelectedPayment('vnpay');
-    }, 0);
-
-    return () => window.clearTimeout(resetTimer);
+    }
   }, [isOpen]);
 
   const plans = {
@@ -220,7 +216,7 @@ export default function BookingModal({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/85 p-4"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"
@@ -228,7 +224,7 @@ export default function BookingModal({
         >
           <motion.div
             variants={modalVariants}
-            className="relative flex h-[calc(100vh-2rem)] max-h-[760px] w-full max-w-5xl flex-col overflow-hidden rounded-[34px] border border-moonlight-gray/20 bg-soft-charcoal/95 shadow-[0_45px_120px_rgba(0,0,0,0.65)] glass-panel"
+            className="relative flex h-[calc(100vh-2rem)] max-h-[760px] w-full max-w-5xl flex-col overflow-hidden rounded-[34px] border border-moonlight-gray/20 bg-[#0c0e1a] shadow-[0_45px_120px_rgba(0,0,0,0.65)]"
           >
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(212,163,91,0.08),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.08),transparent_40%)]" />
 
@@ -278,7 +274,7 @@ export default function BookingModal({
             </div>
 
             {/* Main Content Area */}
-            <div className="relative min-h-0 w-full flex-1 overflow-hidden overflow-y-auto custom-scrollbar">
+            <div className="relative min-h-0 w-full flex-1 overflow-y-auto custom-scrollbar">
               <AnimatePresence custom={1} mode="wait">
                 
                 {/* STEP 1: SCHEDULE */}
@@ -290,7 +286,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="absolute inset-0 grid gap-8 px-8 py-8 lg:grid-cols-[1.3fr_0.7fr] overflow-y-auto custom-scrollbar"
+                    className="grid gap-8 px-8 py-8 lg:grid-cols-[1.3fr_0.7fr] min-h-full"
                   >
                     <div className="space-y-8">
                       <div>
@@ -436,7 +432,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="absolute inset-0 flex flex-col px-8 py-8 overflow-y-auto custom-scrollbar"
+                    className="flex flex-col px-8 py-8 min-h-full"
                   >
                     <div className="text-center mb-10">
                       <h4 className="text-2xl font-serif text-white mb-2">Choose your learning plan</h4>
@@ -452,12 +448,7 @@ export default function BookingModal({
                         return (
                           <button
                             key={key}
-                            onClick={() => {
-                               setSelectedPlan(key);
-                               if (step === 2) {
-                                  setTimeout(() => setStep(3), 350);
-                               }
-                            }}
+                            onClick={() => setSelectedPlan(key)}
                             className={`relative text-left flex flex-col p-6 rounded-[28px] border transition-all duration-300 ease-out overflow-hidden group ${
                               active
                                 ? 'border-amber-400 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.15),transparent)] shadow-[0_0_30px_rgba(251,191,36,0.1)]'
@@ -501,7 +492,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="absolute inset-0 grid gap-8 px-8 py-8 lg:grid-cols-[1fr_360px] overflow-y-auto custom-scrollbar"
+                    className="grid gap-8 px-8 py-8 lg:grid-cols-[1fr_360px] min-h-full"
                   >
                     {/* LEFT PANEL */}
                     <div className="space-y-8 pr-2">
@@ -569,9 +560,10 @@ export default function BookingModal({
                                  initial={{ height: 0, opacity: 0 }}
                                  animate={{ height: 'auto', opacity: 1 }}
                                  exit={{ height: 0, opacity: 0 }}
-                                 className="px-5 pb-5 pt-0 text-[13px] text-white/60 leading-relaxed border-t border-white/5 mt-2 pt-4"
+                                 style={{ overflow: 'hidden' }}
+                                 className="text-[13px] text-white/60 leading-relaxed border-t border-white/5"
                                >
-                                  <ul className="list-disc pl-5 space-y-2 mb-4">
+                                  <ul className="list-disc pl-5 space-y-2 mb-4 px-5 pt-4">
                                      <li>Free cancellation up to 24 hours before the scheduled session.</li>
                                      <li>50% refund applied for cancellations within 12-24 hours.</li>
                                      <li>No-shows or cancellations within 12 hours are non-refundable.</li>
@@ -657,7 +649,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="absolute inset-0 flex flex-col items-center justify-center overflow-y-auto px-8 py-8 text-center custom-scrollbar"
+                    className="flex flex-col items-center justify-center px-8 py-8 text-center min-h-full"
                   >
                     <div className="flex h-24 w-24 items-center justify-center rounded-[32px] bg-gradient-to-br from-emerald-400/20 to-teal-500/10 border border-emerald-500/30 mb-8 shadow-[0_0_50px_rgba(16,185,129,0.15)] relative">
                       <motion.div

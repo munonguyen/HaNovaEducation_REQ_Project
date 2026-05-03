@@ -297,7 +297,7 @@ export default function TutorProfile() {
         </div>
 
         {/* Mobile Sticky CTA */}
-        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#05070f]/95 p-4 backdrop-blur-2xl md:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-[1000] border-t border-white/10 bg-[#05070f]/95 p-4 pb-6 backdrop-blur-2xl md:hidden">
           <button
             onClick={() => setIsBookingOpen(true)}
             className="flex w-full items-center justify-between rounded-[20px] bg-white px-6 py-4 text-base font-bold text-black shadow-[0_0_30px_rgba(255,255,255,0.15)]"
