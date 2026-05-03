@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -123,6 +124,7 @@ export default function BookingModal({
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStep(1);
       setSelectedPlan('single');
       setPolicyAgreed(false);
@@ -212,7 +214,7 @@ export default function BookingModal({
     return `${min}:${sec.toString().padStart(2, '0')}`;
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -730,6 +732,7 @@ export default function BookingModal({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
