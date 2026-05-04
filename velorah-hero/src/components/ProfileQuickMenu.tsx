@@ -11,6 +11,14 @@ import {
   LogOut,
   Settings,
   User,
+  ShieldCheck,
+  Gauge,
+  UsersRound,
+  CalendarSearch,
+  CircleDollarSign,
+  FileClock,
+  KeyRound,
+  ServerCog,
 } from 'lucide-react';
 import {
   USER_UPDATED_EVENT,
@@ -18,7 +26,47 @@ import {
   readStoredUserProfile,
   type StoredUserProfile,
 } from '../utils/helpers';
+
 const authRoutes = ['/signin', '/signup', '/forgot-password', '/auth-success'];
+
+interface RoleTheme {
+  primary: string;
+  gradient: string;
+  iconBg: string;
+  border: string;
+  accentText: string;
+}
+
+const ROLE_THEMES: Record<string, RoleTheme> = {
+  student: {
+    primary: 'cyan',
+    gradient: 'from-cyan-300/30 to-violet-400/35',
+    iconBg: 'bg-cyan-400/10',
+    border: 'border-cyan-400/20',
+    accentText: 'text-cyan-100',
+  },
+  tutor: {
+    primary: 'blue',
+    gradient: 'from-blue-400/30 to-indigo-500/35',
+    iconBg: 'bg-blue-400/10',
+    border: 'border-blue-400/20',
+    accentText: 'text-blue-100',
+  },
+  manager: {
+    primary: 'emerald',
+    gradient: 'from-emerald-400/30 to-teal-500/35',
+    iconBg: 'bg-emerald-400/10',
+    border: 'border-emerald-400/20',
+    accentText: 'text-emerald-100',
+  },
+  admin: {
+    primary: 'rose',
+    gradient: 'from-rose-400/30 to-indigo-500/35',
+    iconBg: 'bg-rose-400/10',
+    border: 'border-rose-400/20',
+    accentText: 'text-rose-100',
+  }
+};
 
 export default function ProfileQuickMenu() {
   const location = useLocation();
@@ -73,25 +121,42 @@ export default function ProfileQuickMenu() {
     );
   }
 
+  const role = (profile.role?.toLowerCase() || 'student') as keyof typeof ROLE_THEMES;
+  const theme = ROLE_THEMES[role] || ROLE_THEMES.student;
+
   const actions = [
+    // ROLE-SPECIFIC DASHBOARD LINK
+    ...(role === 'student' ? [] : [
+      {
+        label: role === 'admin' ? 'Admin Center' : 'Workspace Home',
+        detail: `Switch to ${role} dashboard`,
+        href: `/${role}/dashboard`,
+        icon: role === 'admin' ? ShieldCheck : (role === 'manager' ? Gauge : BookOpen),
+        active: location.pathname.includes('/dashboard'),
+      }
+    ]),
+
+    // CORE LINKS
     {
       label: 'Profile',
       detail: 'Personal details and account info',
-      href: profile.role === 'tutor' ? '/tutor/profile' : '/profile?tab=personal',
+      href: role === 'tutor' ? '/tutor/profile' : '/profile?tab=personal',
       icon: User,
       active: location.pathname.includes('/profile') && (!currentTab || currentTab === 'personal'),
     },
     {
       label: 'Settings',
-      detail: 'Preferences, notifications, security',
-      href: profile.role === 'tutor' ? '/tutor/settings' : '/profile?tab=preferences',
+      detail: 'Preferences and security',
+      href: role === 'tutor' ? '/tutor/settings' : (role === 'manager' ? '/manager/settings' : '/profile?tab=preferences'),
       icon: Settings,
       active: location.pathname.includes('/settings') || (location.pathname.includes('/profile') && (currentTab === 'preferences' || currentTab === 'security')),
     },
-    ...(profile.role === 'student' ? [
+
+    // STUDENT EXCLUSIVES
+    ...(role === 'student' ? [
       {
         label: 'Study plan',
-        detail: 'Milestones from onboarding',
+        detail: 'Milestones and roadmaps',
         href: '/study-plan',
         icon: BookOpen,
         active: location.pathname === '/study-plan',
@@ -111,10 +176,26 @@ export default function ProfileQuickMenu() {
         active: location.pathname === '/profile' && currentTab === 'billing',
       }
     ] : []),
+
+    // MANAGER EXCLUSIVES
+    ...(role === 'manager' ? [
+      { label: 'Tutors', detail: 'Management & performance', href: '/manager/tutors', icon: UsersRound, active: location.pathname === '/manager/tutors' },
+      { label: 'Bookings', detail: 'Monitoring & states', href: '/manager/bookings', icon: CalendarSearch, active: location.pathname === '/manager/bookings' },
+      { label: 'Payments', detail: 'VNPay, MoMo, Revenue', href: '/manager/payments', icon: CircleDollarSign, active: location.pathname === '/manager/payments' },
+    ] : []),
+
+    // ADMIN EXCLUSIVES
+    ...(role === 'admin' ? [
+      { label: 'Users', detail: 'Accounts & Roles', href: '/admin/users', icon: UsersRound, active: location.pathname === '/admin/users' },
+      { label: 'Security', detail: 'Policies & risk controls', href: '/admin/security', icon: KeyRound, active: location.pathname === '/admin/security' },
+      { label: 'Audit Logs', detail: 'Trace system actions', href: '/admin/audit', icon: FileClock, active: location.pathname === '/admin/audit' },
+      { label: 'Platform Config', detail: 'Infrastructure settings', href: '/admin/config', icon: ServerCog, active: location.pathname === '/admin/config' },
+    ] : []),
+
     {
       label: 'Notifications',
-      detail: 'Reminders and updates',
-      href: profile.role === 'tutor' ? '/tutor/notifications' : (profile.role === 'manager' ? '/manager/notifications' : '/notifications'),
+      detail: 'Alerts and updates',
+      href: role === 'tutor' ? '/tutor/notifications' : (role === 'manager' ? '/manager/notifications' : '/notifications'),
       icon: Bell,
       active: location.pathname.includes('/notifications'),
     },
@@ -125,16 +206,16 @@ export default function ProfileQuickMenu() {
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="group flex items-center gap-3 rounded-full border border-white/[0.12] bg-[#060813]/75 px-2.5 py-2 pr-3 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition hover:border-white/[0.22] hover:bg-[#0b1020]/85"
+        className={`group flex items-center gap-3 rounded-full border border-white/[0.12] bg-[#060813]/75 px-2.5 py-2 pr-3 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition hover:border-white/[0.22] hover:bg-[#0b1020]/85`}
         aria-expanded={open}
         aria-label="Open profile menu"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.18] bg-gradient-to-br from-cyan-300/30 to-violet-400/35 font-serif text-sm text-white shadow-[0_0_18px_rgba(34,211,238,0.12)]">
+        <span className={`flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.18] bg-gradient-to-br ${theme.gradient} font-serif text-sm text-white shadow-[0_0_18px_rgba(34,211,238,0.12)]`}>
           {profile.initials}
         </span>
         <span className="hidden max-w-[150px] text-left sm:block">
           <span className="block truncate text-sm font-semibold leading-4 text-white">{profile.name}</span>
-          <span className="mt-1 block text-[10px] uppercase tracking-[0.18em] text-white/35">{profile.role}</span>
+          <span className={`mt-1 block text-[10px] uppercase tracking-[0.18em] ${theme.accentText} opacity-60`}>{profile.role}</span>
         </span>
         <ChevronDown size={15} className={`text-white/45 transition ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -146,7 +227,7 @@ export default function ProfileQuickMenu() {
       >
         <div className="border-b border-white/10 p-5">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/[0.16] bg-gradient-to-br from-cyan-300/25 to-violet-400/30 font-serif text-lg text-white">
+            <div className={`flex h-14 w-14 items-center justify-center rounded-full border border-white/[0.16] bg-gradient-to-br ${theme.gradient} font-serif text-lg text-white`}>
               {profile.initials}
             </div>
             <div className="min-w-0">
@@ -154,15 +235,15 @@ export default function ProfileQuickMenu() {
               <p className="mt-1 truncate text-xs text-white/[0.42]">{profile.email}</p>
             </div>
           </div>
-          {profile.goal && (
-            <div className="mt-4 rounded-2xl border border-cyan-200/[0.12] bg-cyan-200/[0.045] px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-100/55">Current goal</p>
+          {profile.goal && role === 'student' && (
+            <div className={`mt-4 rounded-2xl border ${theme.border} ${theme.iconBg} px-4 py-3`}>
+              <p className={`text-[10px] font-bold uppercase tracking-[0.18em] ${theme.accentText} opacity-70`}>Current goal</p>
               <p className="mt-1 text-xs leading-5 text-white/[0.62]">{profile.goal}</p>
             </div>
           )}
         </div>
 
-        <div className="p-2">
+        <div className="p-2 custom-scrollbar max-h-[420px] overflow-y-auto">
           {actions.map((action) => (
             <Link
               key={`${action.label}-${action.href}`}
@@ -173,8 +254,8 @@ export default function ProfileQuickMenu() {
               }`}
             >
               <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.035] ${
-                  action.active ? 'text-cyan-100' : 'text-white/[0.46] group-hover:text-cyan-100'
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/[0.08] ${theme.iconBg} ${
+                  action.active ? theme.accentText : 'text-white/[0.46] group-hover:text-white'
                 }`}
               >
                 <action.icon size={16} />
@@ -211,3 +292,4 @@ export default function ProfileQuickMenu() {
     </div>
   );
 }
+
