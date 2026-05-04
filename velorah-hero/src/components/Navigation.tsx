@@ -245,6 +245,7 @@ export default function Navigation() {
           {/* ── MENU LINKS ── */}
           <div
             className="custom-scrollbar"
+            data-lenis-prevent
             style={{
               maxHeight: isOpen ? '65vh' : '0', opacity: isOpen ? 1 : 0,
               transition: `max-height 0.6s ${E}, opacity 0.45s ${E} ${isOpen ? '0.1s' : '0s'}`,
