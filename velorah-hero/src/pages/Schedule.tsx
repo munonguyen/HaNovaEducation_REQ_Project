@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Video,
   ChevronDown,
+  MapPin,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -66,6 +67,7 @@ interface Session {
   isUpdated: boolean;
   location: string;
   room: string;
+  address?: string;
   materials: string;
   delivery: SessionDelivery;
   meetingPlatform?: string;
@@ -74,19 +76,23 @@ interface Session {
   meetingPasscode?: string;
 }
 
+function googleMapsUrl(address: string) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
 const mySessions: Session[] = [
-  { id: 's1', tutorId: '1', title: 'Quantum Mechanics Review', type: 'Session', durationMinutes: 60, dayIndex: 0, startHour: 8, status: 'Confirmed', note: 'Review Chapter 3 before class.', isUpdated: false, location: 'Academic Plaza', room: 'A1-204', materials: 'Formula Sheet v2, Lab Goggles', delivery: 'In-person' },
+  { id: 's1', tutorId: '1', title: 'Quantum Mechanics Review', type: 'Session', durationMinutes: 60, dayIndex: 0, startHour: 8, status: 'Confirmed', note: 'Review Chapter 3 before class.', isUpdated: false, location: 'Academic Plaza', room: 'A1-204', address: '144 Xuân Thủy, Cầu Giấy, Hà Nội', materials: 'Formula Sheet v2, Lab Goggles', delivery: 'In-person' },
   { id: 's2', tutorId: '2', title: 'Syntax Analysis', type: 'Monthly', durationMinutes: 90, dayIndex: 2, startHour: 14, status: 'Rescheduled', note: 'Use the shared sentence bank before joining the live parse walkthrough.', isUpdated: true, location: 'Virtual classroom', room: 'Meet Room Syntax-Lab', materials: 'IPA Chart, Syntax Workbook', delivery: 'Online', meetingPlatform: 'Google Meet', meetingLink: 'https://meet.google.com/lookup/hanova-syntax-lab', meetingCode: 'Syntax-Lab', meetingPasscode: 'HANOVA26' },
-  { id: 's3', tutorId: '1', title: 'Thermodynamics Lab', type: 'Course', durationMinutes: 120, dayIndex: 4, startHour: 10, status: 'Cancelled', note: '', isUpdated: false, location: 'Science Wing', room: 'Lab 4', materials: 'None', delivery: 'In-person' },
-  { id: 's4', tutorId: '2', title: 'Phonetics Practice', type: 'Monthly', durationMinutes: 60, dayIndex: 3, startHour: 15, status: 'Confirmed', note: 'Read the handout on IPA', isUpdated: false, location: 'Digital Studio', room: 'Studio B', materials: 'Microphone, Handout 3', delivery: 'In-person' },
-  { id: 's5', tutorId: '3', title: 'Data Structures Intro', type: 'Course', durationMinutes: 120, dayIndex: 0, startHour: 13, status: 'Confirmed', note: 'Setup dev environment', isUpdated: false, location: 'Tech Tower', room: 'Lounge 1', materials: 'VS Code, Git installed', delivery: 'In-person' },
-  { id: 's6', tutorId: '1', title: 'Relativity Seminar', type: 'Session', durationMinutes: 60, dayIndex: 1, startHour: 9, status: 'Confirmed', note: 'Bring notes on Einstein', isUpdated: false, location: 'Academic Plaza', room: 'A1-405', materials: 'Field Journal', delivery: 'In-person' },
-  { id: 's7', tutorId: '2', title: 'Morphology Deep Dive', type: 'Monthly', durationMinutes: 90, dayIndex: 1, startHour: 16, status: 'Confirmed', note: '', isUpdated: false, location: 'Language Hub', room: 'B3-105', materials: 'Textbook', delivery: 'In-person' },
-  { id: 's8', tutorId: '3', title: 'Algorithm Complexity', type: 'Course', durationMinutes: 90, dayIndex: 3, startHour: 11, status: 'Confirmed', note: 'Review Big O notation', isUpdated: true, location: 'Tech Tower', room: 'Room 202', materials: 'Graph Paper', delivery: 'In-person' },
-  { id: 's9', tutorId: '1', title: 'Electromagnetism', type: 'Session', durationMinutes: 60, dayIndex: 5, startHour: 10, status: 'Rescheduled', note: '', isUpdated: true, location: 'Science Wing', room: 'Hall 1', materials: 'Calculator', delivery: 'In-person' },
+  { id: 's3', tutorId: '1', title: 'Thermodynamics Lab', type: 'Course', durationMinutes: 120, dayIndex: 4, startHour: 10, status: 'Cancelled', note: '', isUpdated: false, location: 'Science Wing', room: 'Lab 4', address: '1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội', materials: 'None', delivery: 'In-person' },
+  { id: 's4', tutorId: '2', title: 'Phonetics Practice', type: 'Monthly', durationMinutes: 60, dayIndex: 3, startHour: 15, status: 'Confirmed', note: 'Read the handout on IPA', isUpdated: false, location: 'Digital Studio', room: 'Studio B', address: '336 Nguyễn Trãi, Thanh Xuân, Hà Nội', materials: 'Microphone, Handout 3', delivery: 'In-person' },
+  { id: 's5', tutorId: '3', title: 'Data Structures Intro', type: 'Course', durationMinutes: 120, dayIndex: 0, startHour: 13, status: 'Confirmed', note: 'Setup dev environment', isUpdated: false, location: 'Tech Tower', room: 'Lounge 1', address: '17 Tạ Quang Bửu, Hai Bà Trưng, Hà Nội', materials: 'VS Code, Git installed', delivery: 'In-person' },
+  { id: 's6', tutorId: '1', title: 'Relativity Seminar', type: 'Session', durationMinutes: 60, dayIndex: 1, startHour: 9, status: 'Confirmed', note: 'Bring notes on Einstein', isUpdated: false, location: 'Academic Plaza', room: 'A1-405', address: '144 Xuân Thủy, Cầu Giấy, Hà Nội', materials: 'Field Journal', delivery: 'In-person' },
+  { id: 's7', tutorId: '2', title: 'Morphology Deep Dive', type: 'Monthly', durationMinutes: 90, dayIndex: 1, startHour: 16, status: 'Confirmed', note: '', isUpdated: false, location: 'Language Hub', room: 'B3-105', address: '182 Lương Thế Vinh, Nam Từ Liêm, Hà Nội', materials: 'Textbook', delivery: 'In-person' },
+  { id: 's8', tutorId: '3', title: 'Algorithm Complexity', type: 'Course', durationMinutes: 90, dayIndex: 3, startHour: 11, status: 'Confirmed', note: 'Review Big O notation', isUpdated: true, location: 'Tech Tower', room: 'Room 202', address: '17 Tạ Quang Bửu, Hai Bà Trưng, Hà Nội', materials: 'Graph Paper', delivery: 'In-person' },
+  { id: 's9', tutorId: '1', title: 'Electromagnetism', type: 'Session', durationMinutes: 60, dayIndex: 5, startHour: 10, status: 'Rescheduled', note: '', isUpdated: true, location: 'Science Wing', room: 'Hall 1', address: '1 Đại Cồ Việt, Hai Bà Trưng, Hà Nội', materials: 'Calculator', delivery: 'In-person' },
   { id: 's10', tutorId: '2', title: 'Semantics Tutorial', type: 'Session', durationMinutes: 60, dayIndex: 6, startHour: 14, status: 'Confirmed', note: 'Keep your camera on for the small-group breakout analysis.', isUpdated: false, location: 'Virtual classroom', room: 'Zoom Room 882-192', materials: 'Internet connection', delivery: 'Online', meetingPlatform: 'Zoom', meetingLink: 'https://us06web.zoom.us/j/8821923321?pwd=hanovaSemantics', meetingCode: '882-192', meetingPasscode: 'Syntax24' },
   { id: 's11', tutorId: '1', title: 'Advanced Quantum Physics', type: 'Course', durationMinutes: 120, dayIndex: 2, startHour: 19, status: 'Confirmed', note: 'Prepare for late night lab discussion', isUpdated: true, location: 'Virtual classroom', room: 'Teams Room Quantum-Night', materials: 'Dark-room goggles', delivery: 'Online', meetingPlatform: 'Microsoft Teams', meetingLink: 'https://teams.microsoft.com/l/meetup-join/19%3Ahanova-quantum-night%40thread.v2/0?context=%7B%22Tid%22%3A%22hanova-academy%22%2C%22Oid%22%3A%22physics-night%22%7D', meetingCode: 'Quantum-Night', meetingPasscode: 'Photon88' },
-  { id: 's12', tutorId: '3', title: 'AI Ethics', type: 'Session', durationMinutes: 90, dayIndex: 4, startHour: 20, status: 'Confirmed', note: 'Reading assignment on AI safety', isUpdated: false, location: 'Innovation Lab', room: 'Glass Hub', materials: 'iPad/Laptop', delivery: 'In-person' }
+  { id: 's12', tutorId: '3', title: 'AI Ethics', type: 'Session', durationMinutes: 90, dayIndex: 4, startHour: 20, status: 'Confirmed', note: 'Reading assignment on AI safety', isUpdated: false, location: 'Innovation Lab', room: 'Glass Hub', address: '268 Lý Thường Kiệt, Quận 10, TP.HCM', materials: 'iPad/Laptop', delivery: 'In-person' }
 ];
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -468,37 +474,50 @@ export default function Schedule() {
                             const tOffset = (session.startHour - startH) * pxPerHour;
                             const tHeight = (session.durationMinutes / 60) * pxPerHour;
                             const isCancelled = session.status === 'Cancelled';
+                            const isOnline = session.delivery === 'Online';
                             return (
-                              <button
+                              <div
                                 key={session.id}
-                                onClick={() => handleSlotClick({ ...session, tutor })}
-                                className={`absolute inset-x-1.5 rounded-[14px] px-3 py-2.5 border transition-all text-left overflow-hidden cursor-pointer flex flex-col justify-between ${
+                                className={`absolute inset-x-1.5 rounded-[14px] border transition-all text-left overflow-hidden flex flex-col ${
                                   isCancelled
-                                    ? 'bg-red-500/[0.06] border-red-500/20 opacity-50 hover:opacity-70'
+                                    ? 'bg-red-500/[0.06] border-red-500/20 opacity-60'
                                     : `bg-[linear-gradient(160deg,rgba(255,255,255,0.07),rgba(255,255,255,0.01))] border-${tutor.color}-400/25 hover:border-${tutor.color}-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] hover:-translate-y-[1px]`
                                 }`}
                                 style={{ top: tOffset + 50, height: tHeight - 4, zIndex: 50 }}
                               >
                                 {/* Color accent bar */}
                                 <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[14px] ${isCancelled ? 'bg-red-500/60' : `bg-${tutor.color}-400`}`} />
-                                {/* Content */}
-                                <div className="pl-1.5 flex-1 min-h-0 overflow-hidden">
-                                  <h5 className={`font-serif text-[12px] leading-tight text-white truncate ${isCancelled ? 'line-through opacity-60' : ''}`}>{session.title}</h5>
+                                
+                                {/* Clickable main area */}
+                                <button onClick={() => handleSlotClick({ ...session, tutor })} className="pl-3 pr-2 pt-2 flex-1 min-h-0 overflow-hidden cursor-pointer text-left">
+                                  {/* Status + delivery badge row */}
+                                  <div className="flex items-center gap-1 mb-1">
+                                    {isCancelled && <span className="px-1.5 py-0.5 rounded bg-red-500/15 border border-red-500/25 text-[7px] font-bold uppercase text-red-400">Cancelled</span>}
+                                    {session.status === 'Rescheduled' && <span className="px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20 text-[7px] font-bold uppercase text-amber-300">RSC</span>}
+                                    <span className={`px-1.5 py-0.5 rounded text-[7px] font-bold uppercase ${isOnline ? 'bg-cyan-400/10 border border-cyan-400/20 text-cyan-300' : 'bg-indigo-400/10 border border-indigo-400/20 text-indigo-300'}`}>
+                                      {isOnline ? 'Online' : 'Offline'}
+                                    </span>
+                                  </div>
+                                  <h5 className="font-serif text-[12px] leading-tight text-white truncate">{session.title}</h5>
                                   <p className={`text-[10px] mt-0.5 truncate ${isCancelled ? 'text-red-400/50' : `text-${tutor.color}-300/70`} uppercase tracking-wider`}>{tutor.name}</p>
-                                </div>
-                                {/* Time range + badge at bottom */}
-                                <div className="pl-1.5 flex items-center justify-between gap-1 mt-1 shrink-0">
+                                </button>
+
+                                {/* Bottom: time + location link */}
+                                <div className="pl-3 pr-2 pb-2 flex items-center justify-between gap-1 shrink-0">
                                   <span className={`text-[9px] font-mono ${isCancelled ? 'text-red-400/30' : 'text-white/35'}`}>
                                     {formatTimeSlot(session.startHour)}–{formatTimeSlot(session.startHour + session.durationMinutes / 60)}
                                   </span>
-                                  {session.status === 'Rescheduled' && (
-                                    <span className="px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20 text-[7px] font-bold uppercase tracking-wider text-amber-300 shrink-0">RSC</span>
-                                  )}
-                                  {session.delivery === 'Online' && !isCancelled && (
-                                    <Video size={10} className="text-cyan-400/60 shrink-0" />
-                                  )}
+                                  {isOnline && session.meetingLink && !isCancelled ? (
+                                    <a href={session.meetingLink} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-cyan-400/10 text-[8px] font-bold text-cyan-300 hover:bg-cyan-400/20 transition-colors truncate max-w-[70px]">
+                                      <Video size={8} /> Join
+                                    </a>
+                                  ) : !isOnline && session.address && !isCancelled ? (
+                                    <a href={googleMapsUrl(session.address)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-400/10 text-[8px] font-bold text-indigo-300 hover:bg-indigo-400/20 transition-colors truncate max-w-[70px]" title={session.address}>
+                                      <MapPin size={8} /> Map
+                                    </a>
+                                  ) : null}
                                 </div>
-                              </button>
+                              </div>
                             )
                          })}
                       </div>
@@ -517,20 +536,76 @@ export default function Schedule() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
              <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-[#0a0d16] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden p-8">
                 <button onClick={() => setSelectedModalSession(null)} className="absolute top-6 right-6 p-2 rounded-full border border-white/10 hover:bg-white/10 transition-colors text-white/40 hover:text-white"><X size={16} /></button>
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6"><Clock size={20} className="text-blue-400" /></div>
-                <h3 className="text-2xl font-serif text-white mb-2">{selectedModalSession.title}</h3>
-                <p className="text-white/40 mb-8 font-medium text-left">With {selectedModalSession.tutor.name} · {selectedModalSession.type}</p>
                 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-left">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 block mb-2">TIME & DATE</span>
-                    <p className="text-sm text-white/90">{daysOfWeek[selectedModalSession.dayIndex]}, {formatSessionRange(selectedModalSession)}</p>
-                  </div>
-                  <div className={`p-4 rounded-2xl border text-left ${selectedModalSession.delivery === 'Online' ? 'bg-cyan-500/5 border-cyan-500/20' : 'bg-indigo-500/5 border-indigo-500/20'}`}>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 block mb-2">{selectedModalSession.delivery === 'Online' ? 'PLATFORM' : 'ROOM'}</span>
-                    <p className="text-sm text-white/90">{selectedModalSession.delivery === 'Online' ? selectedModalSession.meetingPlatform : selectedModalSession.room}</p>
-                  </div>
+                {/* Delivery badge */}
+                <div className="flex items-center gap-2 mb-4">
+                  {selectedModalSession.delivery === 'Online' ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-[10px] font-bold uppercase tracking-widest text-cyan-300"><Video size={12} /> Online Session</span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-400/10 border border-indigo-400/20 text-[10px] font-bold uppercase tracking-widest text-indigo-300"><MapPin size={12} /> In-person Session</span>
+                  )}
+                  {selectedModalSession.status === 'Cancelled' && <span className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold uppercase text-red-400">Cancelled</span>}
+                  {selectedModalSession.status === 'Rescheduled' && <span className="px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-[10px] font-bold uppercase text-amber-300">Rescheduled</span>}
                 </div>
+
+                <h3 className="text-2xl font-serif text-white mb-2">{selectedModalSession.title}</h3>
+                <p className="text-white/40 mb-6 font-medium text-left">With {selectedModalSession.tutor.name} · {selectedModalSession.type}</p>
+                
+                {/* Time & Date */}
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-left mb-4">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/20 block mb-2">TIME & DATE</span>
+                  <p className="text-sm text-white/90">{daysOfWeek[selectedModalSession.dayIndex]}, {formatSessionRange(selectedModalSession)} · {selectedModalSession.durationMinutes} min</p>
+                </div>
+
+                {/* Online: meeting details */}
+                {selectedModalSession.delivery === 'Online' ? (
+                  <div className="p-5 rounded-2xl bg-cyan-500/[0.04] border border-cyan-500/15 mb-4 text-left">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-cyan-400/50 block mb-3">MEETING DETAILS</span>
+                    <div className="space-y-2.5 text-sm">
+                      <div className="flex items-center gap-3 text-white/80">
+                        <Video size={15} className="text-cyan-400 shrink-0" />
+                        <span>{selectedModalSession.meetingPlatform}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-white/80">
+                        <span className="text-[10px] text-white/30 w-[50px] shrink-0 uppercase font-bold">Room</span>
+                        <span className="font-mono text-cyan-200/80">{selectedModalSession.meetingCode || selectedModalSession.room}</span>
+                      </div>
+                      {selectedModalSession.meetingPasscode && (
+                        <div className="flex items-center gap-3 text-white/80">
+                          <span className="text-[10px] text-white/30 w-[50px] shrink-0 uppercase font-bold">Pass</span>
+                          <span className="font-mono text-cyan-200/80">{selectedModalSession.meetingPasscode}</span>
+                        </div>
+                      )}
+                    </div>
+                    {selectedModalSession.meetingLink && (
+                      <a href={selectedModalSession.meetingLink} target="_blank" rel="noreferrer" className="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-full bg-cyan-400 text-black font-bold text-xs uppercase tracking-widest hover:bg-cyan-300 transition-colors">
+                        Join Online Room <ExternalLink size={14} />
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  /* Offline: location details */
+                  <div className="p-5 rounded-2xl bg-indigo-500/[0.04] border border-indigo-500/15 mb-4 text-left">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400/50 block mb-3">LOCATION</span>
+                    <div className="space-y-2.5 text-sm">
+                      <div className="flex items-center gap-3 text-white/80">
+                        <span className="text-[10px] text-white/30 w-[50px] shrink-0 uppercase font-bold">Place</span>
+                        <span>{selectedModalSession.location} · {selectedModalSession.room}</span>
+                      </div>
+                      {selectedModalSession.address && (
+                        <div className="flex items-start gap-3">
+                          <span className="text-[10px] text-white/30 w-[50px] shrink-0 uppercase font-bold mt-0.5">Addr</span>
+                          <span className="text-white/70">{selectedModalSession.address}</span>
+                        </div>
+                      )}
+                    </div>
+                    {selectedModalSession.address && (
+                      <a href={googleMapsUrl(selectedModalSession.address)} target="_blank" rel="noreferrer" className="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-full bg-indigo-400 text-black font-bold text-xs uppercase tracking-widest hover:bg-indigo-300 transition-colors">
+                        Open in Google Maps <MapPin size={14} />
+                      </a>
+                    )}
+                  </div>
+                )}
 
                 {selectedModalSession.note && (
                   <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10 mb-6 text-left">
