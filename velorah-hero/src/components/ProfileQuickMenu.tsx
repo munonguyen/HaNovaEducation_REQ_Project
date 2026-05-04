@@ -100,6 +100,13 @@ export default function ProfileQuickMenu() {
   }, []);
 
   useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : 'unset';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [open]);
+
+  useEffect(() => {
     const closeOnOutsideClick = (event: MouseEvent) => {
       if (!menuRef.current?.contains(event.target as Node)) setOpen(false);
     };
@@ -293,7 +300,7 @@ export default function ProfileQuickMenu() {
           )}
         </div>
 
-        <div className="p-2 custom-scrollbar max-h-[420px] overflow-y-auto">
+        <div className="p-2 custom-scrollbar max-h-[420px] overflow-y-auto" data-lenis-prevent>
           {actions.map((action) => (
             <Link
               key={`${action.label}-${action.href}`}
