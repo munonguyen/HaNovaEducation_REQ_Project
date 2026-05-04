@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import ProfileQuickMenu from './ProfileQuickMenu';
 import RoleWorkspaceBridge from './RoleWorkspaceBridge';
 import { clearStoredUserProfile, readStoredUserProfile, USER_UPDATED_EVENT } from '../utils/helpers';
 
@@ -113,7 +112,6 @@ export default function Navigation() {
 
   return (
     <>
-      <ProfileQuickMenu />
 
       <style>{`
         @keyframes introReveal {

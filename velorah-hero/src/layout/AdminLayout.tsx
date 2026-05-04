@@ -4,13 +4,11 @@ import {
   Activity,
   FileClock,
   KeyRound,
-  LogOut,
   ServerCog,
   ShieldCheck,
   SlidersHorizontal,
   Users,
 } from 'lucide-react';
-import { clearStoredUserProfile } from '../utils/helpers';
 import RoleWorkspaceBridge from '../components/RoleWorkspaceBridge';
 import '../styles/admin.css';
 
@@ -63,20 +61,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               </span>
             </NavLink>
           ))}
-          
-          <div className="mt-auto pt-6 border-t border-white/5">
-            <button
-              onClick={() => {
-                clearStoredUserProfile();
-                setOpen(false);
-                window.location.href = '/signin';
-              }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all group w-full"
-            >
-              <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
-              <span className="text-sm font-bold uppercase tracking-widest">Sign Out</span>
-            </button>
-          </div>
         </div>
       </nav>
       <main className="admin-main">{children}</main>

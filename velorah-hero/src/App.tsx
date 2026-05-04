@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Layout from './layout/Layout';
 import Navigation from './components/Navigation';
+import ProfileQuickMenu from './components/ProfileQuickMenu';
 
 // ── Code-split every page: only load JS when the route is visited ──
 const Home         = lazy(() => import('./pages/Home'));
@@ -77,6 +78,7 @@ export default function App() {
 
   return (
     <>
+      <ProfileQuickMenu />
       {/* Intro flash — reduced from 2.2s → 0.6s */}
       <div
         className="fixed inset-0 z-[997] bg-[#020205] pointer-events-none"

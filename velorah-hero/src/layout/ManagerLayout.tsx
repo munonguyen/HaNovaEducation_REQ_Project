@@ -6,14 +6,12 @@ import {
   CalendarSearch,
   CircleDollarSign,
   Gauge,
-  LogOut,
   MessageSquareWarning,
   Settings,
   ShieldCheck,
   Star,
   UsersRound,
 } from 'lucide-react';
-import { clearStoredUserProfile } from '../utils/helpers';
 import StarfieldCanvas from '../components/StarfieldCanvas';
 import RoleWorkspaceBridge from '../components/RoleWorkspaceBridge';
 import backgroundVideo from '../assets/videos/background-video.mp4';
@@ -97,25 +95,12 @@ export default function ManagerLayout({ children }: { children: ReactNode }) {
         </div>
 
         <div className="manager-floating-footer">
-          <div className="flex flex-col w-full gap-4">
-            <button
-              onClick={() => {
-                clearStoredUserProfile();
-                setIsOpen(false);
-                window.location.href = '/signin';
-              }}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all group w-full"
-            >
-              <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
-              <span className="text-sm font-bold uppercase tracking-widest">Sign Out</span>
-            </button>
-            <div className="flex items-start gap-3">
-              <span className="manager-live-dot mt-1" />
-              <span>
-                <strong>Live operations</strong>
-                <em>Manager handles operations. Admin handles roles, security and audit.</em>
-              </span>
-            </div>
+          <div className="flex items-start gap-3">
+            <span className="manager-live-dot mt-1" />
+            <span>
+              <strong>Live operations</strong>
+              <em>Manager handles operations. Admin handles roles, security and audit.</em>
+            </span>
           </div>
         </div>
       </nav>
