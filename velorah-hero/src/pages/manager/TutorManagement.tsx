@@ -243,79 +243,51 @@ export default function TutorManagement() {
             <h2 className="mb-6">Tutor Onboarding Funnel</h2>
           </div>
           
-          <div className="relative flex-1 flex items-center justify-center pt-2 pb-8">
-            <div className="relative w-full max-w-[480px] aspect-[4/3] flex flex-col items-center">
-              <svg viewBox="0 0 400 300" className="w-full h-full drop-shadow-2xl">
-                <defs>
-                  <linearGradient id="grad-applied" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#94a3b8" />
-                    <stop offset="100%" stopColor="#64748b" />
-                  </linearGradient>
-                  <linearGradient id="grad-pending" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#f59e0b" />
-                    <stop offset="100%" stopColor="#d97706" />
-                  </linearGradient>
-                  <linearGradient id="grad-approved" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#2563eb" />
-                  </linearGradient>
-                  <linearGradient id="grad-active" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#10b981" />
-                    <stop offset="100%" stopColor="#059669" />
-                  </linearGradient>
-                </defs>
+          <div className="relative flex-1 flex items-center justify-center pt-6 pb-4">
+            <div className="relative w-full h-[220px] px-8">
+              {/* Grid Lines */}
+              <div className="absolute inset-0 flex flex-col justify-between px-8 pb-8 pt-4">
+                {[120, 90, 60, 30, 0].map((val) => (
+                  <div key={val} className="w-full flex items-center gap-3">
+                    <span className="w-8 text-[10px] font-bold text-slate-400 text-right">{val}</span>
+                    <div className="flex-1 h-px bg-slate-100" />
+                  </div>
+                ))}
+              </div>
 
-                {/* Applied Stage */}
-                <motion.path
-                  initial={{ opacity: 0, pathLength: 0 }}
-                  animate={{ opacity: 1, pathLength: 1 }}
-                  transition={{ duration: 1 }}
-                  d="M20,10 L380,10 L340,75 L60,75 Z"
-                  fill="url(#grad-applied)"
-                />
-                
-                {/* Pending Stage */}
-                <motion.path
-                  initial={{ opacity: 0, pathLength: 0 }}
-                  animate={{ opacity: 1, pathLength: 1 }}
-                  transition={{ duration: 1, delay: 0.2 }}
-                  d="M65,85 L335,85 L300,150 L100,150 Z"
-                  fill="url(#grad-pending)"
-                />
-
-                {/* Approved Stage */}
-                <motion.path
-                  initial={{ opacity: 0, pathLength: 0 }}
-                  animate={{ opacity: 1, pathLength: 1 }}
-                  transition={{ duration: 1, delay: 0.4 }}
-                  d="M105,160 L295,160 L270,225 L130,225 Z"
-                  fill="url(#grad-approved)"
-                />
-
-                {/* Active Stage */}
-                <motion.path
-                  initial={{ opacity: 0, pathLength: 0 }}
-                  animate={{ opacity: 1, pathLength: 1 }}
-                  transition={{ duration: 1, delay: 0.6 }}
-                  d="M135,235 L265,235 L250,290 L150,290 Z"
-                  fill="url(#grad-active)"
-                />
-
-                {/* Values & Labels */}
-                <g className="font-bold fill-white pointer-events-none">
-                  <text x="200" y="45" textAnchor="middle" className="text-[14px]">120 APPLIED</text>
-                  <text x="200" y="122" textAnchor="middle" className="text-[14px]">45 PENDING</text>
-                  <text x="200" y="197" textAnchor="middle" className="text-[14px]">30 APPROVED</text>
-                  <text x="200" y="268" textAnchor="middle" className="text-[14px]">25 ACTIVE</text>
-                </g>
-
-                {/* Conversion Labels */}
-                <g className="font-black fill-slate-400 text-[10px]">
-                  <text x="350" y="83" textAnchor="start">38% CONV.</text>
-                  <text x="315" y="158" textAnchor="start">67% CONV.</text>
-                  <text x="285" y="233" textAnchor="start">83% CONV.</text>
-                </g>
-              </svg>
+              {/* Bars */}
+              <div className="absolute inset-0 flex items-end justify-between px-20 pb-8 pt-4">
+                {[
+                  { label: 'Applied', value: 120, color: 'bg-slate-400' },
+                  { label: 'Pending', value: 45, color: 'bg-amber-400' },
+                  { label: 'Approved', value: 30, color: 'bg-blue-500' },
+                  { label: 'Active', value: 25, color: 'bg-emerald-500' },
+                ].map((step, i) => (
+                  <div key={i} className="flex flex-col items-center gap-2 w-16 group">
+                    <motion.span 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 + i * 0.1 }}
+                      className="text-xs font-black text-slate-900"
+                    >
+                      {step.value}
+                    </motion.span>
+                    <div className="w-full relative">
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${(step.value / 120) * 160}px` }}
+                        transition={{ duration: 1, delay: i * 0.1, ease: "easeOut" }}
+                        className={`w-full rounded-t-lg ${step.color} shadow-sm group-hover:brightness-105 transition-all relative overflow-hidden`}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent" />
+                      </motion.div>
+                    </div>
+                    <span className="absolute bottom-[-24px] text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                      {step.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
