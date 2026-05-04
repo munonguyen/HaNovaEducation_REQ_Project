@@ -124,6 +124,8 @@ export default function BookingModal({
 
   useEffect(() => {
     if (isOpen) {
+      // Lock body scroll
+      document.body.style.overflow = 'hidden';
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setStep(1);
       setSelectedPlan('single');
@@ -131,7 +133,12 @@ export default function BookingModal({
       setPolicyExpanded(false);
       setTimeLeft(600);
       setSelectedPayment('vnpay');
+    } else {
+      document.body.style.overflow = 'unset';
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   const plans = {
@@ -276,7 +283,7 @@ export default function BookingModal({
             </div>
 
             {/* Main Content Area */}
-            <div className="relative w-full flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain">
+            <div data-lenis-prevent className="relative w-full flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain">
               <AnimatePresence custom={1} mode="wait">
                 
                 {/* STEP 1: SCHEDULE */}
