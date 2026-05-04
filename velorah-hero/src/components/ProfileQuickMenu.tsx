@@ -183,15 +183,26 @@ export default function ProfileQuickMenu() {
 
   const actions = [
     // ROLE-SPECIFIC DASHBOARD LINK
-    ...(role === 'student' ? [] : [
+    // ROLE-SPECIFIC DASHBOARD LINKS (ADMIN/MANAGER)
+    ...(role === 'admin' || role === 'manager' ? [
       {
-        label: role === 'admin' ? 'Admin Center' : 'Workspace Home',
-        detail: `Switch to ${role} dashboard`,
+        label: role === 'admin' ? 'Admin Center' : 'Manager Dashboard',
+        detail: `Control and governance overview`,
         href: `/${role}/dashboard`,
-        icon: role === 'admin' ? ShieldCheck : (role === 'manager' ? Gauge : BookOpen),
+        icon: role === 'admin' ? ShieldCheck : Gauge,
         active: location.pathname.includes('/dashboard'),
       }
-    ]),
+    ] : []),
+
+    // TUTOR EXCLUSIVES
+    ...(role === 'tutor' ? [
+      { label: 'Tutor Dashboard', detail: 'Overview & status', href: '/tutor/dashboard', icon: Gauge, active: location.pathname === '/tutor/dashboard' },
+      { label: 'My Schedule', detail: 'Availability & slots', href: '/tutor/schedule', icon: Calendar, active: location.pathname === '/tutor/schedule' },
+      { label: 'Bookings', detail: 'Requests & confirmations', href: '/tutor/bookings', icon: CalendarSearch, active: location.pathname === '/tutor/bookings' },
+      { label: 'My Lessons', detail: 'Past & upcoming', href: '/tutor/lessons', icon: BookOpen, active: location.pathname === '/tutor/lessons' },
+      { label: 'Study Plans', detail: 'Track student progress', href: '/tutor/study-plans', icon: FileClock, active: location.pathname === '/tutor/study-plans' },
+      { label: 'My Students', detail: 'Student list & info', href: '/tutor/students', icon: UsersRound, active: location.pathname === '/tutor/students' },
+    ] : []),
 
     // CORE LINKS
     {
@@ -212,11 +223,32 @@ export default function ProfileQuickMenu() {
     // STUDENT EXCLUSIVES
     ...(role === 'student' ? [
       {
+        label: 'Dashboard',
+        detail: 'Overview of your learning',
+        href: '/dashboard',
+        icon: Gauge,
+        active: location.pathname === '/dashboard',
+      },
+      {
+        label: 'Find Tutors',
+        detail: 'Connect with mentors',
+        href: '/tutors',
+        icon: UsersRound,
+        active: location.pathname === '/tutors',
+      },
+      {
         label: 'Study plan',
         detail: 'Milestones and roadmaps',
         href: '/study-plan',
         icon: BookOpen,
         active: location.pathname === '/study-plan',
+      },
+      {
+        label: 'Study groups',
+        detail: 'Join peer learning',
+        href: '/groups',
+        icon: UsersRound,
+        active: location.pathname === '/groups',
       },
       {
         label: 'Schedule',
