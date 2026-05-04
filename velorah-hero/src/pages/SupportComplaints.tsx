@@ -10,6 +10,9 @@ import {
   Upload,
   MessageSquare,
   LifeBuoy,
+  X,
+  Bell,
+  FileCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -26,6 +29,12 @@ const mockHistory = [
   { id: 'CMP-945', category: 'Quality', issue: 'Tutor was 15 mins late', status: 'Investigating', date: 'Yesterday', resolution: null },
 ];
 
+interface SubmissionNotification {
+  caseId: string;
+  category: string;
+  timestamp: string;
+}
+
 export default function SupportComplaints() {
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
@@ -33,15 +42,32 @@ export default function SupportComplaints() {
   const [feedback, setFeedback] = useState('Our support managers review all critical complaints within 24 hours.');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [notification, setNotification] = useState<SubmissionNotification | null>(null);
 
   const handleSubmit = () => {
     setIsSubmitting(true);
+    const caseId = `CMP-${Math.floor(100 + Math.random() * 900)}`;
+    const now = new Date();
+    const timestamp = now.toLocaleString('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+
     setTimeout(() => {
       setIsSubmitting(false);
       setStep(1);
       setDescription('');
-      setFeedback('Your complaint (CMP-952) has been logged. A manager will reach out via notifications soon.');
+      setFeedback(`Your complaint (${caseId}) has been logged. A manager will reach out via notifications soon.`);
+      setNotification({
+        caseId,
+        category: selectedCategory.label,
+        timestamp,
+      });
     }, 1500);
+  };
+
+  const dismissNotification = () => {
+    setNotification(null);
   };
 
   return (
@@ -51,6 +77,139 @@ export default function SupportComplaints() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* ══ SUCCESS NOTIFICATION OVERLAY ══ */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md"
+            onClick={dismissNotification}
+          >
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+              className="relative w-full max-w-md bg-[#0a0d16] border border-emerald-500/20 rounded-[32px] shadow-[0_25px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(16,185,129,0.08)] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Glow accent */}
+              <div className="absolute top-0 left-0 right-0 h-40 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.12),transparent)] pointer-events-none" />
+              
+              <button
+                onClick={dismissNotification}
+                className="absolute top-5 right-5 p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-white/40 hover:text-white z-10"
+              >
+                <X size={14} />
+              </button>
+
+              <div className="px-8 pt-10 pb-8 text-center relative z-10">
+                {/* Animated check icon */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', damping: 12, stiffness: 200, delay: 0.15 }}
+                  className="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center"
+                >
+                  <motion.div
+                    initial={{ scale: 0, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.35, type: 'spring', damping: 10 }}
+                  >
+                    <CheckCircle2 size={36} className="text-emerald-400" />
+                  </motion.div>
+                </motion.div>
+
+                <motion.h3
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="text-2xl font-serif text-white mb-2"
+                >
+                  Complaint Submitted
+                </motion.h3>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.35 }}
+                  className="text-white/40 text-sm leading-relaxed mb-8"
+                >
+                  Your case has been successfully logged into the resolution system. Our support team will review and respond promptly.
+                </motion.p>
+
+                {/* Case details card */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 mb-6 text-left space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 block mb-1">CASE ID</span>
+                      <span className="text-lg font-bold text-emerald-400 font-mono">{notification.caseId}</span>
+                    </div>
+                    <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-400">Open</span>
+                    </div>
+                  </div>
+                  <div className="h-px bg-white/5" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 block mb-1">CATEGORY</span>
+                      <span className="text-sm text-white/70">{notification.category}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 block mb-1">SUBMITTED</span>
+                      <span className="text-sm text-white/70">{notification.timestamp}</span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Timeline expectations */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.55 }}
+                  className="rounded-2xl border border-blue-500/10 bg-blue-500/[0.03] p-4 mb-8 text-left"
+                >
+                  <div className="flex items-start gap-3">
+                    <Bell size={16} className="text-blue-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs text-white/60 leading-relaxed">
+                        <strong className="text-blue-400">Next steps:</strong> You will receive a notification once a manager begins reviewing your case. Most complaints are acknowledged within <strong className="text-white/80">24 hours</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.65 }}
+                  className="flex gap-3"
+                >
+                  <button
+                    onClick={() => { dismissNotification(); setShowHistory(true); }}
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full border border-white/10 bg-white/[0.03] text-white/60 hover:text-white hover:bg-white/[0.06] transition-all text-xs font-bold uppercase tracking-widest"
+                  >
+                    <FileCheck size={14} /> View History
+                  </button>
+                  <button
+                    onClick={dismissNotification}
+                    className="flex-1 py-3.5 rounded-full bg-emerald-500 text-white font-bold text-xs uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+                  >
+                    Done
+                  </button>
+                </motion.div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <header className="mb-12">
         <div className="flex items-center justify-between mb-6">
           <div>
