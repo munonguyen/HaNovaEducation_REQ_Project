@@ -217,8 +217,11 @@ export default function ProfileQuickMenu() {
     },
     {
       label: 'Settings',
-      detail: 'Preferences and security',
-      href: role === 'tutor' ? '/tutor/settings' : (role === 'manager' ? '/manager/settings' : '/profile?tab=preferences'),
+      detail: role === 'tutor' ? 'Availability, payments & schedule rules'
+        : role === 'manager' ? 'Policies, gateways & routing rules'
+        : role === 'admin' ? 'System security & audit config'
+        : 'Learning preferences & notifications',
+      href: role === 'tutor' ? '/tutor/settings' : (role === 'manager' ? '/manager/settings' : role === 'admin' ? '/admin/settings' : '/profile?tab=preferences'),
       icon: Settings,
       active: location.pathname.includes('/settings') || (location.pathname.includes('/profile') && (currentTab === 'preferences' || currentTab === 'security')),
     },

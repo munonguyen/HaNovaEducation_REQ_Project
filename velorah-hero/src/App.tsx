@@ -52,6 +52,7 @@ const ManagerSettings = lazy(() => import('./pages/manager/Settings'));
 // Admin Pages
 const AdminLayout = lazy(() => import('./layout/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 
 /** Minimal dark-theme fallback shown while a lazy chunk loads */
 function PageLoader() {
@@ -137,6 +138,7 @@ export default function App() {
             <AdminLayout>
               <Routes location={location} key={location.pathname}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/settings" element={<AdminSettings />} />
                 <Route path="/admin/users" element={<AdminDashboard />} />
                 <Route path="/admin/security" element={<AdminDashboard />} />
                 <Route path="/admin/audit" element={<AdminDashboard />} />
