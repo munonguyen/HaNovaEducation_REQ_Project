@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
+  BarChart3,
   Bell,
   BookOpen,
   Calendar,
@@ -202,6 +203,7 @@ export default function ProfileQuickMenu() {
       { label: 'My Lessons', detail: 'Past & upcoming', href: '/tutor/lessons', icon: BookOpen, active: location.pathname === '/tutor/lessons' },
       { label: 'Study Plans', detail: 'Track student progress', href: '/tutor/study-plans', icon: FileClock, active: location.pathname === '/tutor/study-plans' },
       { label: 'My Students', detail: 'Student list & info', href: '/tutor/students', icon: UsersRound, active: location.pathname === '/tutor/students' },
+      { label: 'Performance', detail: 'Student reviews & metrics', href: '/tutor/performance', icon: BarChart3, active: location.pathname === '/tutor/performance' },
     ] : []),
 
     // CORE LINKS
