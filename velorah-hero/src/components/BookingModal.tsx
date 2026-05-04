@@ -226,7 +226,7 @@ export default function BookingModal({
         >
           <motion.div
             variants={modalVariants}
-            className="relative flex h-[calc(100vh-2rem)] max-h-[760px] w-full max-w-5xl flex-col overflow-hidden rounded-[34px] border border-moonlight-gray/20 bg-[#0c0e1a] shadow-[0_45px_120px_rgba(0,0,0,0.65)]"
+            className="relative flex h-[92vh] md:h-[calc(100vh-4rem)] max-h-[820px] w-full max-w-5xl flex-col overflow-hidden rounded-[24px] md:rounded-[34px] border border-moonlight-gray/20 bg-[#0c0e1a] shadow-[0_45px_120px_rgba(0,0,0,0.65)]"
           >
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(212,163,91,0.08),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.08),transparent_40%)]" />
 
@@ -276,7 +276,7 @@ export default function BookingModal({
             </div>
 
             {/* Main Content Area */}
-            <div className="relative min-h-0 w-full flex-1 overflow-y-auto custom-scrollbar">
+            <div className="relative w-full flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar overscroll-contain">
               <AnimatePresence custom={1} mode="wait">
                 
                 {/* STEP 1: SCHEDULE */}
@@ -288,7 +288,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="grid gap-8 px-8 py-8 lg:grid-cols-[1.3fr_0.7fr] min-h-full"
+                    className="grid gap-8 px-6 md:px-8 py-8 lg:grid-cols-[1.3fr_0.7fr] min-h-full pb-24 md:pb-12"
                   >
                     <div className="space-y-8">
                       <div>
