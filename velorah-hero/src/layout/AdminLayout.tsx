@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <div className="admin-floating-links">
+        <div className="admin-floating-links" data-lenis-prevent>
           <RoleWorkspaceBridge onNavigate={() => setOpen(false)} />
           {adminNav.map(({ path, label, desc, icon: Icon }) => (
             <NavLink

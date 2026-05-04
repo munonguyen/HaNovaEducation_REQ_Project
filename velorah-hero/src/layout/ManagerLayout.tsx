@@ -74,7 +74,7 @@ export default function ManagerLayout({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <div className="manager-floating-links">
+        <div className="manager-floating-links" data-lenis-prevent>
           <RoleWorkspaceBridge onNavigate={() => setIsOpen(false)} />
           {managerNav.map(({ path, label, num, desc, icon: Icon }) => (
             <NavLink
