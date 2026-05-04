@@ -10,10 +10,9 @@ import {
   X,
   CheckCircle2,
   Settings2,
-  BookOpen,
   ExternalLink,
   Video,
-  Link2,
+  ChevronDown,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -119,6 +118,7 @@ export default function Schedule() {
   const [selectedModalSession, setSelectedModalSession] = useState<SessionWithTutor | null>(null);
   const [scheduleNotice, setScheduleNotice] = useState('');
   const [showCustomPanel, setShowCustomPanel] = useState(false);
+  const [showOnlinePanel, setShowOnlinePanel] = useState(false);
   
   const pxPerHour = 110;
 
@@ -315,101 +315,62 @@ export default function Schedule() {
 
         {/* ═══ RIGHT PANEL ═══ */}
         <div className="flex flex-col min-h-0">
-          <div className="mb-4 grid shrink-0 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-            {/* ONLINE CLASSROOM CARD */}
-            <div className="rounded-[24px] border border-cyan-400/15 bg-[#0a0d16]/80 p-5 shadow-[0_18px_45px_rgba(0,0,0,0.35)] backdrop-blur-md">
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.08] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-100/75">
-                    <Video size={12} /> ONLINE CLASSROOM
-                  </div>
-                  <h3 className="mt-3 text-xl font-serif text-white">Remote lessons with instant join links</h3>
-                  <p className="mt-1 max-w-2xl text-sm leading-6 text-white/40">
-                    Jump into your next virtual room without opening chat history or notification threads.
-                  </p>
-                </div>
-                <div className="rounded-[18px] border border-white/10 bg-white/[0.02] px-4 py-3 md:min-w-[110px] text-center">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/20">AVAILABLE ROOMS</p>
-                  <p className="mt-2 text-2xl font-serif text-white">{onlineSessions.length || 0}</p>
-                </div>
-              </div>
 
-              <div className="mt-4 flex gap-3 overflow-x-auto pb-1 custom-scrollbar">
-                {onlineSessions.map((session) => (
-                  <div key={session.id} className="min-w-[240px] flex-1 rounded-[20px] border border-white/10 bg-white/[0.02] p-4 shadow-xl">
-                    <div className="flex items-center justify-between gap-3 mb-3">
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-cyan-100">
-                        <Video size={11} /> {session.meetingPlatform}
-                      </span>
-                      <span className={`rounded-full border px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.16em] ${session.status === 'Rescheduled' ? 'border-amber-400/25 bg-amber-400/10 text-amber-300' : 'border-emerald-400/25 bg-emerald-400/10 text-emerald-300'}`}>
-                        {session.status}
-                      </span>
-                    </div>
-                    <h4 className="font-serif text-lg text-white mb-0.5">{session.title}</h4>
-                    <p className="text-xs text-white/40 mb-3">{session.tutor.name}</p>
-                    <div className="space-y-2 text-[11px] text-white/50 mb-4">
-                       <div className="flex items-center gap-2">
-                         <Clock size={12} className="text-cyan-400" />
-                         <span>{daysOfWeek[session.dayIndex]} · {formatTimeSlot(session.startHour)} - {formatTimeSlot(session.startHour + session.durationMinutes/60)}</span>
-                       </div>
-                       <div className="flex items-center gap-2">
-                         <Link2 size={12} className="text-cyan-400" />
-                         <span>{session.room}</span>
-                       </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <a href={session.meetingLink} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-black transition hover:bg-white/90">
-                        Join room <ExternalLink size={12} />
-                      </a>
-                      <button onClick={() => setSelectedModalSession(session)} className="flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-white/70 hover:text-white">Details</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* NEXT ONLINE ROOM CARD */}
-            <div className="rounded-[24px] border border-violet-400/15 bg-[#120a1c]/80 p-5 shadow-[0_18px_45px_rgba(0,0,0,0.35)] backdrop-blur-md">
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <div className="inline-flex items-center gap-2 rounded-full border border-violet-300/15 bg-violet-300/[0.08] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-100/75">
-                  <Sparkles size={12} /> NEXT ONLINE ROOM
+          {/* ── COMPACT ONLINE ROOMS STRIP ── */}
+          <div className="mb-3 shrink-0">
+            <button
+              onClick={() => setShowOnlinePanel(!showOnlinePanel)}
+              className="w-full flex items-center justify-between px-5 py-3 rounded-[18px] border border-cyan-400/15 bg-[#0a0d16]/80 backdrop-blur-md hover:bg-[#0a0d16] transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-100/75">
+                  <Video size={13} className="text-cyan-400" /> Online Rooms
                 </div>
-                <div className="text-[10px] uppercase tracking-[0.18em] text-white/20 font-bold">READY TO JOIN</div>
+                <span className="px-2.5 py-0.5 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-[10px] font-bold text-cyan-300">{onlineSessions.length} available</span>
+                {nextOnlineSession && (
+                  <span className="hidden md:flex items-center gap-2 text-xs text-white/40">
+                    <Sparkles size={11} className="text-violet-400" />
+                    Next: <strong className="text-white/70">{nextOnlineSession.title}</strong> · {nextOnlineSession.tutor.name}
+                  </span>
+                )}
               </div>
+              <ChevronDown size={16} className={`text-white/30 transition-transform duration-300 ${showOnlinePanel ? 'rotate-180' : ''}`} />
+            </button>
 
-              {nextOnlineSession ? (
-                <>
-                  <h3 className="text-xl font-serif text-white">{nextOnlineSession.title}</h3>
-                  <p className="mt-1 text-sm text-white/40">
-                    {nextOnlineSession.tutor.name} · Wed · 14:00 – 15:30
-                  </p>
-                  <div className="mt-4 rounded-[18px] bg-black/40 border border-white/5 p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/20 mb-3">MEETING ACCESS</p>
-                    <div className="space-y-2 text-sm text-white/80">
-                      <div className="flex items-center gap-2">
-                        <Video size={14} className="text-violet-400" />
-                        <span>{nextOnlineSession.meetingPlatform}</span>
+            <AnimatePresence>
+              {showOnlinePanel && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-3 flex gap-3 overflow-x-auto pb-1 custom-scrollbar">
+                    {onlineSessions.map((session) => (
+                      <div key={session.id} className="min-w-[220px] flex-1 rounded-[16px] border border-white/10 bg-white/[0.02] p-3.5">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="inline-flex items-center gap-1 rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.16em] text-cyan-100">
+                            <Video size={9} /> {session.meetingPlatform}
+                          </span>
+                          <span className={`rounded-full border px-2 py-0.5 text-[7px] font-bold uppercase ${session.status === 'Rescheduled' ? 'border-amber-400/25 bg-amber-400/10 text-amber-300' : 'border-emerald-400/25 bg-emerald-400/10 text-emerald-300'}`}>
+                            {session.status}
+                          </span>
+                        </div>
+                        <h4 className="font-serif text-sm text-white mb-0.5 truncate">{session.title}</h4>
+                        <p className="text-[10px] text-white/35 mb-2">{session.tutor.name} · {daysOfWeek[session.dayIndex]} · {formatTimeSlot(session.startHour)}-{formatTimeSlot(session.startHour + session.durationMinutes/60)}</p>
+                        <div className="flex gap-2">
+                          <a href={session.meetingLink} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[10px] font-bold text-black hover:bg-white/90">
+                            Join <ExternalLink size={10} />
+                          </a>
+                          <button onClick={() => setSelectedModalSession(session)} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-semibold text-white/60 hover:text-white">Details</button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Link2 size={14} className="text-violet-400" />
-                        <span>{nextOnlineSession.room}</span>
-                      </div>
-                      <p className="text-xs text-white/30 pt-1">Passcode: {nextOnlineSession.meetingPasscode}</p>
-                    </div>
+                    ))}
                   </div>
-                  <div className="mt-4 flex gap-3">
-                    <a href={nextOnlineSession.meetingLink} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-2 rounded-full bg-violet-200 px-4 py-3 text-xs font-bold text-black transition hover:bg-violet-100">
-                      Open meeting <ExternalLink size={14} />
-                    </a>
-                    <button onClick={() => setSelectedModalSession(nextOnlineSession)} className="flex-1 flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-semibold text-white/70 hover:text-white">
-                      Review materials <BookOpen size={14} />
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="h-40 flex items-center justify-center text-white/20 text-sm border border-dashed border-white/5 rounded-2xl">No upcoming online room.</div>
+                </motion.div>
               )}
-            </div>
+            </AnimatePresence>
           </div>
           
           {/* CALENDAR / OVERVIEW CONTAINER */}
