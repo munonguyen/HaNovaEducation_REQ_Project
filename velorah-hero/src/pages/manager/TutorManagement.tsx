@@ -206,7 +206,7 @@ export default function TutorManagement() {
       transition={{ duration: 0.35 }}
     >
       <ManagerPageHeader
-        eyebrow="UC-01 / UC-11"
+        eyebrow="Tutor Management"
         title="Tutor Management"
         description="Approve tutors, reject weak applications, monitor performance, and control suspension or reactivation without leaving the manager flow."
         actions={

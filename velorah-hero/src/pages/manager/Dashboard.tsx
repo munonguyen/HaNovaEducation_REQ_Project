@@ -227,7 +227,7 @@ export default function ManagerDashboard() {
         <article className="manager-panel">
           <div className="manager-panel-header">
             <div>
-              <span className="manager-eyebrow">UC-01 / UC-11</span>
+              <span className="manager-eyebrow">Tutor lifecycle</span>
               <h2>Tutor state flow</h2>
             </div>
           </div>
@@ -249,7 +249,7 @@ export default function ManagerDashboard() {
         <article className="manager-panel">
           <div className="manager-panel-header">
             <div>
-              <span className="manager-eyebrow">UC-12</span>
+              <span className="manager-eyebrow">Resolution flow</span>
               <h2>Complaint state flow</h2>
             </div>
           </div>

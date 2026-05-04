@@ -167,7 +167,7 @@ export default function PaymentsRevenue() {
       transition={{ duration: 0.35 }}
     >
       <ManagerPageHeader
-        eyebrow="UC-05"
+        eyebrow="Payments"
         title="Payments & Revenue"
         description="Monitor revenue, VNPay/MoMo transactions, payment holds, failed trials, and policy-aware refunds tied to booking state."
         actions={

@@ -159,7 +159,7 @@ export default function Complaints() {
       transition={{ duration: 0.35 }}
     >
       <ManagerPageHeader
-        eyebrow="UC-12"
+        eyebrow="Complaints"
         title="Complaints"
         description="Handle student and tutor complaints with clear ownership, response steps, resolution notes, and cross-flow impact on tutors, bookings, and payments."
         actions={
