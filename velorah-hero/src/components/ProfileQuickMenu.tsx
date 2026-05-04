@@ -10,6 +10,7 @@ import {
   CreditCard,
   LogIn,
   LogOut,
+  LifeBuoy,
   Settings,
   User,
   ShieldCheck,
@@ -289,6 +290,13 @@ export default function ProfileQuickMenu() {
       href: role === 'tutor' ? '/tutor/notifications' : (role === 'manager' ? '/manager/notifications' : '/notifications'),
       icon: Bell,
       active: location.pathname.includes('/notifications'),
+    },
+    {
+      label: 'Support & Help',
+      detail: 'Submit a complaint',
+      href: '/support',
+      icon: LifeBuoy,
+      active: location.pathname === '/support',
     },
   ];
 

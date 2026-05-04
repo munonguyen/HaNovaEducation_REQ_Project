@@ -16,6 +16,7 @@ const Schedule     = lazy(() => import('./pages/Schedule'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Profile      = lazy(() => import('./pages/Profile'));
 const StudyPlan    = lazy(() => import('./pages/StudyPlan'));
+const SupportComplaints = lazy(() => import('./pages/SupportComplaints'));
 
 // Auth Pages
 const SignIn       = lazy(() => import('./pages/auth/SignIn'));
@@ -34,6 +35,7 @@ const Students       = lazy(() => import('./pages/tutor/Students'));
 const TutorNotifications = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Notifications })));
 const TutorSelfProfile   = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Profile })));
 const TutorSettings  = lazy(() => import('./pages/tutor/TutorPlaceholders').then(m => ({ default: m.Settings })));
+const PerformanceReviews = lazy(() => import('./pages/tutor/PerformanceReviews'));
 
 // Manager Pages
 const ManagerLayout = lazy(() => import('./layout/ManagerLayout'));
@@ -107,6 +109,7 @@ export default function App() {
                 <Route path="/tutor/notifications" element={<TutorNotifications />} />
                 <Route path="/tutor/profile"     element={<TutorSelfProfile />} />
                 <Route path="/tutor/settings"    element={<TutorSettings />} />
+                <Route path="/tutor/performance"   element={<PerformanceReviews />} />
                 <Route path="/tutor/*"           element={<TutorHome />} />
               </Routes>
             </TutorLayout>
@@ -158,6 +161,7 @@ export default function App() {
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/profile"     element={<Profile />} />
                 <Route path="/study-plan"  element={<StudyPlan />} />
+                <Route path="/support"     element={<SupportComplaints />} />
                 
                 {/* Auth Routes */}
                 <Route path="/signin"      element={<SignIn />} />
