@@ -237,59 +237,96 @@ export default function TutorManagement() {
 
       {/* Analytics Chart for Tutor Management */}
       <section className="mb-6 grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div className="lg:col-span-3 manager-panel flex flex-col justify-between">
+        <div className="lg:col-span-3 manager-panel flex flex-col justify-between overflow-hidden">
           <div>
             <span className="manager-eyebrow">Pipeline Analytics</span>
-            <h2 className="mb-4">Tutor Onboarding Funnel</h2>
+            <h2 className="mb-6">Tutor Onboarding Funnel</h2>
           </div>
-          <div className="flex items-end justify-between gap-3 h-36 px-4 mt-4">
-            {[
-              { label: 'Applied', value: 120, color: 'bg-slate-400' },
-              { label: 'Pending', value: 45, color: 'bg-amber-400' },
-              { label: 'Approved', value: 30, color: 'bg-blue-500' },
-              { label: 'Active', value: 25, color: 'bg-emerald-500' },
-            ].map((step, i) => (
-              <div key={i} className="flex flex-col items-center gap-1 flex-1 group">
-                <span className="text-[11px] font-bold text-slate-600 mb-1">{step.value}</span>
-                <div className="w-full border border-slate-200 rounded-t-md relative overflow-hidden flex-1 flex items-end bg-slate-50">
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${(step.value / 120) * 100}%` }}
-                    transition={{ duration: 1, delay: i * 0.15 }}
-                    className={`w-full rounded-t-md ${step.color} group-hover:brightness-110 transition-all`}
-                  />
-                </div>
-                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">{step.label}</span>
+          
+          <div className="relative flex-1 flex items-center justify-center py-4">
+            <div className="w-full max-w-2xl px-6">
+              <div className="relative flex flex-col gap-3">
+                {[
+                  { label: 'Applied', value: 120, color: '#94a3b8', width: '100%' },
+                  { label: 'Pending', value: 45, color: '#f59e0b', width: '65%' },
+                  { label: 'Approved', value: 30, color: '#3b82f6', width: '45%' },
+                  { label: 'Active', value: 25, color: '#10b981', width: '35%' },
+                ].map((step, i, arr) => (
+                  <div key={i} className="relative group">
+                    <div className="flex items-center gap-6">
+                      {/* Stage Label & Value */}
+                      <div className="w-24 text-right shrink-0">
+                        <div className="text-xs font-bold text-slate-500 uppercase tracking-tighter">{step.label}</div>
+                        <div className="text-lg font-black text-slate-900 leading-none">{step.value}</div>
+                      </div>
+                      
+                      {/* The Funnel Bar */}
+                      <div className="relative flex-1 h-12 flex items-center">
+                        <motion.div
+                          initial={{ width: 0, opacity: 0 }}
+                          animate={{ width: step.width, opacity: 1 }}
+                          transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                          style={{ backgroundColor: step.color }}
+                          className="h-full rounded-r-2xl rounded-l-md shadow-sm relative overflow-hidden"
+                        >
+                          {/* Glossy overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-50" />
+                          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black/5 to-transparent" />
+                        </motion.div>
+                      </div>
+
+                      {/* Conversion Indicator */}
+                      {i < arr.length - 1 && (
+                        <div className="absolute left-[120px] bottom-[-14px] z-10 flex items-center gap-2">
+                          <div className="h-4 w-px bg-slate-200" />
+                          <div className="bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full text-[10px] font-black text-slate-500 shadow-sm">
+                            {Math.round((arr[i+1].value / step.value) * 100)}% conv.
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
         <div className="manager-panel flex flex-col justify-center items-center text-center">
-          <span className="manager-eyebrow mb-2">Conversion Rate</span>
-          <div className="relative w-24 h-24 flex items-center justify-center">
+          <span className="manager-eyebrow mb-4">Total Efficiency</span>
+          <div className="relative w-32 h-32 flex items-center justify-center">
             <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-              <path
-                className="text-slate-200"
-                strokeWidth="3"
-                stroke="currentColor"
+              <circle
+                cx="18" cy="18" r="15.915"
                 fill="none"
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                stroke="#f1f5f9"
+                strokeWidth="3"
               />
-              <motion.path
-                className="text-emerald-400"
+              <motion.circle
+                cx="18" cy="18" r="15.915"
+                fill="none"
+                stroke="#10b981"
                 strokeWidth="3"
                 strokeDasharray="100, 100"
-                stroke="currentColor"
-                fill="none"
                 initial={{ strokeDasharray: "0, 100" }}
                 animate={{ strokeDasharray: "20.8, 100" }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
-                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
             </svg>
-            <span className="text-xl font-bold">20.8%</span>
+            <div className="flex flex-col items-center">
+              <span className="text-2xl font-black text-slate-900 leading-none">20.8%</span>
+              <span className="text-[9px] font-bold text-slate-400 uppercase mt-1">Final rate</span>
+            </div>
           </div>
-          <p className="text-[10px] text-slate-500 mt-3 uppercase tracking-widest">Active / Applied</p>
+          <div className="mt-6 grid grid-cols-2 gap-4 w-full">
+            <div className="text-left">
+              <div className="text-[10px] font-bold text-slate-400 uppercase">Avg. Time</div>
+              <div className="text-sm font-bold text-slate-900">4.2 Days</div>
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] font-bold text-slate-400 uppercase">Dropouts</div>
+              <div className="text-sm font-bold text-slate-900">79.2%</div>
+            </div>
+          </div>
         </div>
       </section>
 
