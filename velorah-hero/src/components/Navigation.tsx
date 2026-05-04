@@ -6,14 +6,14 @@ import { clearStoredUserProfile, readStoredUserProfile, USER_UPDATED_EVENT } fro
 const E = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
 const menuLinks = [
-  { path: '/', label: 'Home', num: 'HaNova', desc: 'Overview & latest updates' },
-  { path: '/dashboard', label: 'Dashboard', num: 'UC-06', desc: 'Personal academic overview' },
-  { path: '/tutors', label: 'Find Tutors', num: 'UC-01', desc: 'Browse the mentor roster' },
-  { path: '/study-plan', label: 'Study Plan', num: 'UC-04', desc: 'Track your learning milestones' },
-  { path: '/groups', label: 'Study Groups', num: 'UC-05', desc: 'Structured peer and tutor-led cohorts' },
-  { path: '/schedule', label: 'Schedule', num: 'UC-03', desc: 'Your weekly timetable and sessions' },
-  { path: '/notifications', label: 'Notifications', num: 'UC-07', desc: 'System and booking alerts' },
-  { path: '/profile', label: 'Profile', num: 'UC-08', desc: 'Preferences and account settings' },
+  { path: '/', label: 'Home', num: '', desc: 'Overview & latest updates' },
+  { path: '/dashboard', label: 'Dashboard', num: '', desc: 'Personal academic overview' },
+  { path: '/tutors', label: 'Find Tutors', num: '', desc: 'Browse the mentor roster' },
+  { path: '/study-plan', label: 'Study Plan', num: '', desc: 'Track your learning milestones' },
+  { path: '/groups', label: 'Study Groups', num: '', desc: 'Structured peer and tutor-led cohorts' },
+  { path: '/schedule', label: 'Schedule', num: '', desc: 'Your weekly timetable and sessions' },
+  { path: '/notifications', label: 'Notifications', num: '', desc: 'System and booking alerts' },
+  { path: '/profile', label: 'Profile', num: '', desc: 'Preferences and account settings' },
 ];
 
 /* ═══ LOGO: The HaNova Hexagon (Bespoke Brand Mark) ═══ 

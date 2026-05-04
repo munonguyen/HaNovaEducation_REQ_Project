@@ -223,42 +223,42 @@ export default function ProfileQuickMenu() {
     // STUDENT EXCLUSIVES
     ...(role === 'student' ? [
       {
-        label: 'Dashboard (UC-06)',
+        label: 'Dashboard',
         detail: 'Overview of your learning',
         href: '/dashboard',
         icon: Gauge,
         active: location.pathname === '/dashboard',
       },
       {
-        label: 'Find Tutors (UC-01)',
+        label: 'Find Tutors',
         detail: 'Connect with mentors',
         href: '/tutors',
         icon: UsersRound,
         active: location.pathname === '/tutors',
       },
       {
-        label: 'Study plan (UC-04)',
+        label: 'Study plan',
         detail: 'Milestones and roadmaps',
         href: '/study-plan',
         icon: BookOpen,
         active: location.pathname === '/study-plan',
       },
       {
-        label: 'Study groups (UC-05)',
+        label: 'Study groups',
         detail: 'Join peer learning',
         href: '/groups',
         icon: UsersRound,
         active: location.pathname === '/groups',
       },
       {
-        label: 'Schedule (UC-03)',
+        label: 'Schedule',
         detail: 'Upcoming sessions',
         href: '/schedule',
         icon: Calendar,
         active: location.pathname === '/schedule',
       },
       {
-        label: 'Billing (UC-08)',
+        label: 'Billing',
         detail: 'VNPay, MoMo, invoices',
         href: '/profile?tab=billing',
         icon: CreditCard,
