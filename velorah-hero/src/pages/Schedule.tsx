@@ -120,7 +120,7 @@ export default function Schedule() {
   const [scheduleNotice, setScheduleNotice] = useState('');
   const [showCustomPanel, setShowCustomPanel] = useState(false);
   
-  const pxPerHour = 90;
+  const pxPerHour = 110;
 
   const visibleDays = useMemo(() => {
     return daysOfWeek.map((d, i) => ({ name: d, index: i }));
@@ -470,13 +470,14 @@ export default function Schedule() {
                     ))}
                  </div>
                ) : (
-                 <div className="flex w-full" style={{ minHeight: `${(endH - startH + 1) * pxPerHour + 40}px` }}>
-                   <div className="w-16 shrink-0 border-r border-white/5 bg-black/40 relative z-10">
+                 <div className="flex w-full" style={{ minHeight: `${(endH - startH + 1) * pxPerHour + 48}px` }}>
+                   {/* Time Axis */}
+                   <div className="w-[72px] shrink-0 border-r border-white/8 bg-black/30 relative z-10">
                     {Array.from({ length: endH - startH + 1 }).map((_, i) => {
                        const hour = startH + i;
                        return (
-                         <div key={hour} className="absolute w-full border-b border-white/[0.02]" style={{ top: i * pxPerHour + 40, height: pxPerHour }}>
-                            <span className="absolute top-2 right-2.5 text-[10px] text-white/20 font-mono">
+                         <div key={hour} className="absolute w-full border-b border-white/[0.04]" style={{ top: i * pxPerHour + 48, height: pxPerHour }}>
+                            <span className="absolute top-2 right-3 text-[11px] text-white/35 font-mono font-medium">
                                {hour.toString().padStart(2, '0')}:00
                             </span>
                          </div>
@@ -484,28 +485,58 @@ export default function Schedule() {
                     })}
                    </div>
 
-                   <div className="flex-1 flex relative">
+                   {/* Day Columns */}
+                   <div className="flex-1 flex relative min-w-[600px]">
+                    {/* Background grid lines */}
                     <div className="absolute inset-0 pointer-events-none">
                        {Array.from({ length: endH - startH + 1 }).map((_, i) => (
-                         <div key={i} className="absolute w-full border-b border-white/[0.02]" style={{ top: i * pxPerHour + 40, height: pxPerHour }} />
+                         <div key={i} className="absolute w-full border-b border-white/[0.03]" style={{ top: i * pxPerHour + 48, height: pxPerHour }} />
                        ))}
                     </div>
 
                     {visibleDays.map(day => (
-                      <div key={day.name} className="flex-1 relative border-r border-white/5 group hover:bg-white/[0.01]">
-                         <div className="sticky top-0 z-20 h-10 border-b border-white/5 bg-[#0a0d16]/90 backdrop-blur-md flex items-center justify-center">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">{day.name}</span>
+                      <div key={day.name} className="flex-1 relative border-r border-white/[0.06] group hover:bg-white/[0.015] transition-colors" style={{ minWidth: '85px' }}>
+                         {/* Day Header */}
+                         <div className="sticky top-0 z-20 h-12 border-b border-white/8 bg-[#0a0d16]/95 backdrop-blur-lg flex items-center justify-center">
+                            <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-white/50">{day.name}</span>
                          </div>
+                         {/* Sessions */}
                          {displaySessions.filter(s => s.dayIndex === day.index).map(session => {
                             const tutor = myTutors.find(t => t.id === session.tutorId);
                             if (!tutor) return null;
                             const tOffset = (session.startHour - startH) * pxPerHour;
                             const tHeight = (session.durationMinutes / 60) * pxPerHour;
+                            const isCancelled = session.status === 'Cancelled';
                             return (
-                              <button key={session.id} onClick={() => handleSlotClick({ ...session, tutor })} className={`absolute inset-x-1 rounded-xl px-3 py-2 border transition-all text-left overflow-hidden group/card shadow-xl ${session.status === 'Cancelled' ? 'bg-red-500/5 border-red-500/20 opacity-60' : `bg-[linear-gradient(135deg,rgba(255,255,255,0.05),transparent)] border-${tutor.color}-400/20 hover:border-${tutor.color}-400/50`}`} style={{ top: tOffset + 42, height: tHeight - 4, zIndex: 50 }}>
-                                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${session.status === 'Cancelled' ? 'bg-red-500' : `bg-${tutor.color}-400`}`} />
-                                 <h5 className="font-serif text-[11px] text-white truncate mb-0.5">{session.title}</h5>
-                                 <p className="text-[9px] text-white/40 uppercase tracking-widest truncate">{tutor.name}</p>
+                              <button
+                                key={session.id}
+                                onClick={() => handleSlotClick({ ...session, tutor })}
+                                className={`absolute inset-x-1.5 rounded-[14px] px-3 py-2.5 border transition-all text-left overflow-hidden cursor-pointer flex flex-col justify-between ${
+                                  isCancelled
+                                    ? 'bg-red-500/[0.06] border-red-500/20 opacity-50 hover:opacity-70'
+                                    : `bg-[linear-gradient(160deg,rgba(255,255,255,0.07),rgba(255,255,255,0.01))] border-${tutor.color}-400/25 hover:border-${tutor.color}-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] hover:-translate-y-[1px]`
+                                }`}
+                                style={{ top: tOffset + 50, height: tHeight - 4, zIndex: 50 }}
+                              >
+                                {/* Color accent bar */}
+                                <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[14px] ${isCancelled ? 'bg-red-500/60' : `bg-${tutor.color}-400`}`} />
+                                {/* Content */}
+                                <div className="pl-1.5 flex-1 min-h-0 overflow-hidden">
+                                  <h5 className={`font-serif text-[12px] leading-tight text-white truncate ${isCancelled ? 'line-through opacity-60' : ''}`}>{session.title}</h5>
+                                  <p className={`text-[10px] mt-0.5 truncate ${isCancelled ? 'text-red-400/50' : `text-${tutor.color}-300/70`} uppercase tracking-wider`}>{tutor.name}</p>
+                                </div>
+                                {/* Time range + badge at bottom */}
+                                <div className="pl-1.5 flex items-center justify-between gap-1 mt-1 shrink-0">
+                                  <span className={`text-[9px] font-mono ${isCancelled ? 'text-red-400/30' : 'text-white/35'}`}>
+                                    {formatTimeSlot(session.startHour)}–{formatTimeSlot(session.startHour + session.durationMinutes / 60)}
+                                  </span>
+                                  {session.status === 'Rescheduled' && (
+                                    <span className="px-1.5 py-0.5 rounded bg-amber-400/10 border border-amber-400/20 text-[7px] font-bold uppercase tracking-wider text-amber-300 shrink-0">RSC</span>
+                                  )}
+                                  {session.delivery === 'Online' && !isCancelled && (
+                                    <Video size={10} className="text-cyan-400/60 shrink-0" />
+                                  )}
+                                </div>
                               </button>
                             )
                          })}
