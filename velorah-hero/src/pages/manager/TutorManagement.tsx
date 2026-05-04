@@ -243,51 +243,79 @@ export default function TutorManagement() {
             <h2 className="mb-6">Tutor Onboarding Funnel</h2>
           </div>
           
-          <div className="relative flex-1 flex items-center justify-center py-4">
-            <div className="w-full max-w-2xl px-6">
-              <div className="relative flex flex-col gap-3">
-                {[
-                  { label: 'Applied', value: 120, color: '#94a3b8', width: '100%' },
-                  { label: 'Pending', value: 45, color: '#f59e0b', width: '65%' },
-                  { label: 'Approved', value: 30, color: '#3b82f6', width: '45%' },
-                  { label: 'Active', value: 25, color: '#10b981', width: '35%' },
-                ].map((step, i, arr) => (
-                  <div key={i} className="relative group">
-                    <div className="flex items-center gap-6">
-                      {/* Stage Label & Value */}
-                      <div className="w-24 text-right shrink-0">
-                        <div className="text-xs font-bold text-slate-500 uppercase tracking-tighter">{step.label}</div>
-                        <div className="text-lg font-black text-slate-900 leading-none">{step.value}</div>
-                      </div>
-                      
-                      {/* The Funnel Bar */}
-                      <div className="relative flex-1 h-12 flex items-center">
-                        <motion.div
-                          initial={{ width: 0, opacity: 0 }}
-                          animate={{ width: step.width, opacity: 1 }}
-                          transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
-                          style={{ backgroundColor: step.color }}
-                          className="h-full rounded-r-2xl rounded-l-md shadow-sm relative overflow-hidden"
-                        >
-                          {/* Glossy overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-50" />
-                          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black/5 to-transparent" />
-                        </motion.div>
-                      </div>
+          <div className="relative flex-1 flex items-center justify-center pt-2 pb-8">
+            <div className="relative w-full max-w-[480px] aspect-[4/3] flex flex-col items-center">
+              <svg viewBox="0 0 400 300" className="w-full h-full drop-shadow-2xl">
+                <defs>
+                  <linearGradient id="grad-applied" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#94a3b8" />
+                    <stop offset="100%" stopColor="#64748b" />
+                  </linearGradient>
+                  <linearGradient id="grad-pending" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#f59e0b" />
+                    <stop offset="100%" stopColor="#d97706" />
+                  </linearGradient>
+                  <linearGradient id="grad-approved" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#2563eb" />
+                  </linearGradient>
+                  <linearGradient id="grad-active" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#059669" />
+                  </linearGradient>
+                </defs>
 
-                      {/* Conversion Indicator */}
-                      {i < arr.length - 1 && (
-                        <div className="absolute left-[120px] bottom-[-14px] z-10 flex items-center gap-2">
-                          <div className="h-4 w-px bg-slate-200" />
-                          <div className="bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full text-[10px] font-black text-slate-500 shadow-sm">
-                            {Math.round((arr[i+1].value / step.value) * 100)}% conv.
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                {/* Applied Stage */}
+                <motion.path
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  animate={{ opacity: 1, pathLength: 1 }}
+                  transition={{ duration: 1 }}
+                  d="M20,10 L380,10 L340,75 L60,75 Z"
+                  fill="url(#grad-applied)"
+                />
+                
+                {/* Pending Stage */}
+                <motion.path
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  animate={{ opacity: 1, pathLength: 1 }}
+                  transition={{ duration: 1, delay: 0.2 }}
+                  d="M65,85 L335,85 L300,150 L100,150 Z"
+                  fill="url(#grad-pending)"
+                />
+
+                {/* Approved Stage */}
+                <motion.path
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  animate={{ opacity: 1, pathLength: 1 }}
+                  transition={{ duration: 1, delay: 0.4 }}
+                  d="M105,160 L295,160 L270,225 L130,225 Z"
+                  fill="url(#grad-approved)"
+                />
+
+                {/* Active Stage */}
+                <motion.path
+                  initial={{ opacity: 0, pathLength: 0 }}
+                  animate={{ opacity: 1, pathLength: 1 }}
+                  transition={{ duration: 1, delay: 0.6 }}
+                  d="M135,235 L265,235 L250,290 L150,290 Z"
+                  fill="url(#grad-active)"
+                />
+
+                {/* Values & Labels */}
+                <g className="font-bold fill-white pointer-events-none">
+                  <text x="200" y="45" textAnchor="middle" className="text-[14px]">120 APPLIED</text>
+                  <text x="200" y="122" textAnchor="middle" className="text-[14px]">45 PENDING</text>
+                  <text x="200" y="197" textAnchor="middle" className="text-[14px]">30 APPROVED</text>
+                  <text x="200" y="268" textAnchor="middle" className="text-[14px]">25 ACTIVE</text>
+                </g>
+
+                {/* Conversion Labels */}
+                <g className="font-black fill-slate-400 text-[10px]">
+                  <text x="350" y="83" textAnchor="start">38% CONV.</text>
+                  <text x="315" y="158" textAnchor="start">67% CONV.</text>
+                  <text x="285" y="233" textAnchor="start">83% CONV.</text>
+                </g>
+              </svg>
             </div>
           </div>
         </div>
