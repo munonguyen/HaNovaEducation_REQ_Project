@@ -14,6 +14,8 @@ import {
   Video,
   ChevronDown,
   MapPin,
+  CalendarOff,
+  Send,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════
@@ -126,6 +128,12 @@ export default function Schedule() {
   const [showCustomPanel, setShowCustomPanel] = useState(false);
   const [showOnlinePanel, setShowOnlinePanel] = useState(false);
   
+  // Leave request state
+  const [leaveSession, setLeaveSession] = useState<SessionWithTutor | null>(null);
+  const [leaveReason, setLeaveReason] = useState('');
+  const [leaveDetail, setLeaveDetail] = useState('');
+  const [leaveSubmitted, setLeaveSubmitted] = useState(false);
+  
   const pxPerHour = 110;
 
   const visibleDays = useMemo(() => {
@@ -180,6 +188,29 @@ export default function Schedule() {
     );
     setSelectedModalSession(null);
   };
+
+  const handleLeaveRequest = (session: SessionWithTutor) => {
+    setSelectedModalSession(null);
+    setLeaveSession(session);
+    setLeaveReason('');
+    setLeaveDetail('');
+    setLeaveSubmitted(false);
+  };
+
+  const submitLeaveRequest = () => {
+    if (!leaveSession || !leaveReason) return;
+    setLeaveSubmitted(true);
+    setScheduleNotice(`Leave request submitted for "${leaveSession.title}" on ${daysOfWeek[leaveSession.dayIndex]}, ${formatSessionRange(leaveSession)}. Reason: ${leaveReason}. Your tutor will be notified.`);
+  };
+
+  const leaveReasons = [
+    'Lý do sức khỏe / Health issue',
+    'Lý do cá nhân / Personal matter',
+    'Trùng lịch thi / Exam conflict',
+    'Công việc đột xuất / Urgent work',
+    'Gia đình có việc / Family emergency',
+    'Khác / Other',
+  ];
 
   return (
     <motion.div 
@@ -614,11 +645,122 @@ export default function Schedule() {
                   </div>
                 )}
 
-                <div className="flex gap-4 pt-4 border-t border-white/5">
-                   <button onClick={() => handleSessionAction('cancel', selectedModalSession)} className="flex-1 py-4 rounded-full border border-white/10 text-white/40 font-bold uppercase tracking-widest text-[10px] hover:bg-white/5">CANCEL</button>
-                   <button onClick={() => handleSessionAction('reschedule', selectedModalSession)} className="flex-1 py-4 rounded-full bg-white text-black font-bold uppercase tracking-widest text-[10px] hover:bg-white/90">RESCHEDULE</button>
+                <div className="flex gap-3 pt-4 border-t border-white/5">
+                   <button onClick={() => handleSessionAction('cancel', selectedModalSession)} className="flex-1 py-3.5 rounded-full border border-white/10 text-white/40 font-bold uppercase tracking-widest text-[10px] hover:bg-white/5">CANCEL</button>
+                   <button onClick={() => handleLeaveRequest(selectedModalSession)} className="flex-1 py-3.5 rounded-full border border-amber-400/25 bg-amber-400/10 text-amber-300 font-bold uppercase tracking-widest text-[10px] hover:bg-amber-400/20 flex items-center justify-center gap-2">
+                     <CalendarOff size={12} /> LEAVE
+                   </button>
+                   <button onClick={() => handleSessionAction('reschedule', selectedModalSession)} className="flex-1 py-3.5 rounded-full bg-white text-black font-bold uppercase tracking-widest text-[10px] hover:bg-white/90">RESCHEDULE</button>
                 </div>
              </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ LEAVE REQUEST MODAL ══ */}
+      <AnimatePresence>
+        {leaveSession && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="relative w-full max-w-md bg-[#0a0d16] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden p-8">
+              <button onClick={() => setLeaveSession(null)} className="absolute top-6 right-6 p-2 rounded-full border border-white/10 hover:bg-white/10 transition-colors text-white/40 hover:text-white"><X size={16} /></button>
+
+              {!leaveSubmitted ? (
+                <>
+                  {/* Header */}
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-11 h-11 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center">
+                      <CalendarOff size={20} className="text-amber-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-serif text-white">Xin nghỉ ca</h3>
+                      <p className="text-xs text-white/40">Request Leave</p>
+                    </div>
+                  </div>
+
+                  {/* Session info */}
+                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 mb-5 text-left">
+                    <h4 className="font-serif text-sm text-white mb-1">{leaveSession.title}</h4>
+                    <p className="text-xs text-white/40">{leaveSession.tutor.name} · {daysOfWeek[leaveSession.dayIndex]} · {formatSessionRange(leaveSession)}</p>
+                    <p className="text-xs text-white/30 mt-1">{leaveSession.delivery === 'Online' ? '📹 Online' : `📍 ${leaveSession.location}`}</p>
+                  </div>
+
+                  {/* Reason selection */}
+                  <div className="mb-4 text-left">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/30 block mb-2">Lý do xin nghỉ *</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {leaveReasons.map(reason => (
+                        <button
+                          key={reason}
+                          type="button"
+                          onClick={() => setLeaveReason(reason)}
+                          className={`py-2.5 px-3 rounded-xl border text-[11px] font-medium text-left transition-all ${
+                            leaveReason === reason
+                              ? 'border-amber-400/40 bg-amber-400/10 text-amber-200'
+                              : 'border-white/8 bg-white/[0.02] text-white/50 hover:border-white/15 hover:text-white/70'
+                          }`}
+                        >
+                          {reason}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Detail text */}
+                  <div className="mb-6 text-left">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/30 block mb-2">Chi tiết bổ sung (tuỳ chọn)</label>
+                    <textarea
+                      value={leaveDetail}
+                      onChange={(e) => setLeaveDetail(e.target.value)}
+                      placeholder="Mô tả thêm lý do nếu cần..."
+                      rows={3}
+                      className="w-full bg-white/[0.03] border border-white/8 rounded-2xl p-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-amber-400/30 resize-none transition-colors"
+                    />
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-3">
+                    <button onClick={() => setLeaveSession(null)} className="flex-1 py-3.5 rounded-full border border-white/10 text-white/40 font-bold uppercase tracking-widest text-[10px] hover:bg-white/5">
+                      Huỷ
+                    </button>
+                    <button
+                      onClick={submitLeaveRequest}
+                      disabled={!leaveReason}
+                      className={`flex-1 py-3.5 rounded-full font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all ${
+                        leaveReason
+                          ? 'bg-amber-400 text-black hover:bg-amber-300'
+                          : 'bg-white/5 text-white/20 cursor-not-allowed'
+                      }`}
+                    >
+                      <Send size={12} /> Gửi yêu cầu
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* Success state */
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-4">
+                  <div className="w-16 h-16 rounded-full bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle2 size={28} className="text-emerald-400" />
+                  </div>
+                  <h3 className="text-xl font-serif text-white mb-2">Đã gửi yêu cầu nghỉ!</h3>
+                  <p className="text-sm text-white/40 mb-4">Leave request submitted successfully</p>
+                  
+                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-left mb-5">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between"><span className="text-white/30">Ca học</span><span className="text-white/80">{leaveSession.title}</span></div>
+                      <div className="flex justify-between"><span className="text-white/30">Thời gian</span><span className="text-white/80">{daysOfWeek[leaveSession.dayIndex]}, {formatSessionRange(leaveSession)}</span></div>
+                      <div className="flex justify-between"><span className="text-white/30">Lý do</span><span className="text-amber-300 font-medium">{leaveReason}</span></div>
+                      {leaveDetail && <div className="pt-2 border-t border-white/5"><span className="text-white/30 text-xs block mb-1">Chi tiết</span><p className="text-white/60 text-xs italic">"{leaveDetail}"</p></div>}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-white/30 mb-5">Tutor sẽ nhận được thông báo trong vòng 5 phút. Bạn có thể theo dõi trạng thái trong phần quản lý lịch.</p>
+
+                  <button onClick={() => setLeaveSession(null)} className="w-full py-3.5 rounded-full bg-white text-black font-bold uppercase tracking-widest text-[10px] hover:bg-white/90">
+                    Đóng
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
