@@ -98,24 +98,53 @@ export default function ProfileQuickMenu() {
   if (authRoutes.includes(location.pathname)) return null;
 
   if (!profile) {
+    const isTutor = location.pathname.startsWith('/tutor');
+    const isManager = location.pathname.startsWith('/manager');
+    const isAdmin = location.pathname.startsWith('/admin');
+    
+    let label = 'Student access';
+    let themeBorder = 'border-cyan-200/30';
+    let themeBg = 'bg-cyan-200/[0.12]';
+    let themeShadow = 'shadow-[0_0_28px_rgba(34,211,238,0.12)]';
+    let themeIconColor = 'text-cyan-100';
+
+    if (isTutor) {
+      label = 'Tutor access';
+      themeBorder = 'border-blue-200/30';
+      themeBg = 'bg-blue-200/[0.12]';
+      themeShadow = 'shadow-[0_0_28px_rgba(59,130,246,0.12)]';
+      themeIconColor = 'text-blue-100';
+    } else if (isManager) {
+      label = 'Manager access';
+      themeBorder = 'border-emerald-200/30';
+      themeBg = 'bg-emerald-200/[0.12]';
+      themeShadow = 'shadow-[0_0_28px_rgba(16,185,129,0.12)]';
+      themeIconColor = 'text-emerald-100';
+    } else if (isAdmin) {
+      label = 'Admin access';
+      themeBorder = 'border-rose-200/30';
+      themeBg = 'bg-rose-200/[0.12]';
+      themeShadow = 'shadow-[0_0_28px_rgba(244,63,94,0.12)]';
+      themeIconColor = 'text-rose-100';
+    }
+
     return (
       <div className="fixed right-4 top-5 z-[1000] sm:right-8 sm:top-7">
         <Link
           to="/signin"
-          className="group relative flex items-center gap-3 overflow-hidden rounded-full border border-cyan-200/30 bg-[linear-gradient(135deg,rgba(6,8,19,0.88),rgba(20,29,55,0.78))] px-2.5 py-2 pr-3 text-white shadow-[0_18px_55px_rgba(0,0,0,0.42),0_0_28px_rgba(34,211,238,0.12)] backdrop-blur-2xl transition hover:-translate-y-0.5 hover:border-cyan-100/50 hover:bg-[#0b1020]/90 hover:shadow-[0_22px_65px_rgba(0,0,0,0.5),0_0_34px_rgba(34,211,238,0.2)]"
+          className={`group relative flex items-center gap-3 overflow-hidden rounded-full border ${themeBorder} bg-[linear-gradient(135deg,rgba(6,8,19,0.88),rgba(20,29,55,0.78))] px-2.5 py-2 pr-3 text-white shadow-[0_18px_55px_rgba(0,0,0,0.42),${themeShadow}] backdrop-blur-2xl transition hover:-translate-y-0.5 hover:bg-[#0b1020]/90`}
           aria-label="Log in to HaNova"
         >
-          <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-cyan-100/55 to-transparent" />
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cyan-100/25 bg-cyan-200/[0.12] text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.18)]">
+          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 ${themeBg} ${themeIconColor}`}>
             <LogIn size={16} />
           </span>
           <span className="min-w-0 text-left">
             <span className="block text-sm font-bold leading-4 text-white">Log in</span>
-            <span className="mt-1 hidden text-[10px] uppercase tracking-[0.18em] text-cyan-100/45 sm:block">
-              Student access
+            <span className={`mt-1 hidden text-[10px] uppercase tracking-[0.18em] ${themeIconColor} opacity-50 sm:block`}>
+              {label}
             </span>
           </span>
-          <ArrowRight size={15} className="text-cyan-100/55 transition group-hover:translate-x-0.5 group-hover:text-cyan-50" />
+          <ArrowRight size={15} className={`${themeIconColor} opacity-50 transition group-hover:translate-x-0.5 group-hover:opacity-100`} />
         </Link>
       </div>
     );
