@@ -92,7 +92,7 @@ export default function Students() {
     >
       <div className="tutor-page-header">
         <div>
-          <span className="tutor-eyebrow"><UsersRound size={16} /> UC-08 students and groups</span>
+          <span className="tutor-eyebrow"><UsersRound size={16} /> Students and groups</span>
           <h1 className="tutor-page-title">Students / Groups</h1>
           <p className="tutor-page-subtitle">
             Keep student progress, lesson history, study plan assignment, notes, and group sessions in one place.

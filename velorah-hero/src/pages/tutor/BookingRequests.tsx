@@ -145,7 +145,7 @@ export default function BookingRequests() {
     >
       <div className="tutor-page-header">
         <div>
-          <span className="tutor-eyebrow"><CalendarCheck size={16} /> UC-03 booking flow</span>
+          <span className="tutor-eyebrow"><CalendarCheck size={16} /> Booking flow</span>
           <h1 className="tutor-page-title">Booking Requests</h1>
           <p className="tutor-page-subtitle">
             Review incoming requests, prevent invalid accepts, and auto-sync confirmed bookings into your schedule.

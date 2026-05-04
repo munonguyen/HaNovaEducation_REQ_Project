@@ -132,7 +132,7 @@ export default function StudyPlans() {
     >
       <div className="tutor-page-header">
         <div>
-          <span className="tutor-eyebrow"><GraduationCap size={16} /> UC-07 study planning</span>
+          <span className="tutor-eyebrow"><GraduationCap size={16} /> Study planning</span>
           <h1 className="tutor-page-title">Study Plans</h1>
           <p className="tutor-page-subtitle">
             Create, edit, and assign structured learning roadmaps with phases, sessions, tasks, and materials.

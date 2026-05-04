@@ -214,7 +214,7 @@ export default function SupportComplaints() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/35 flex items-center gap-2">
-              <LifeBuoy size={12} /> UC-12 Support & Resolution
+              <LifeBuoy size={12} /> Support & Resolution
             </span>
             <h1 className="mt-3 font-serif text-4xl lg:text-5xl text-white">Support Center</h1>
             <p className="mt-4 max-w-xl text-lg text-white/40 leading-relaxed">

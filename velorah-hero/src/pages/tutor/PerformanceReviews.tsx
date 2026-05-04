@@ -78,7 +78,7 @@ export default function PerformanceReviews() {
     >
       <div className="tutor-page-header">
         <div>
-          <span className="tutor-eyebrow"><BarChart3 size={16} /> UC-09 performance review</span>
+          <span className="tutor-eyebrow"><BarChart3 size={16} /> Performance review</span>
           <h1 className="tutor-page-title">Tutor Performance</h1>
           <p className="tutor-page-subtitle">
             Analyze your teaching metrics and review direct feedback from your students to improve quality.

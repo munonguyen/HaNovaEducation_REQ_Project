@@ -144,7 +144,7 @@ export default function MyLessons() {
     >
       <div className="tutor-page-header">
         <div>
-          <span className="tutor-eyebrow"><BookOpenCheck size={16} /> UC-04 and UC-05</span>
+          <span className="tutor-eyebrow"><BookOpenCheck size={16} /> Lesson management</span>
           <h1 className="tutor-page-title">My Lessons</h1>
           <p className="tutor-page-subtitle">
             Manage upcoming, completed, and cancelled sessions with payment state, reschedule rules, and quick notes.
