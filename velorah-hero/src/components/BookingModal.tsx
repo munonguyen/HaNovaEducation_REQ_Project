@@ -434,7 +434,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="flex flex-col px-8 py-8 min-h-full"
+                    className="flex flex-col px-8 py-8 min-h-full pb-24 md:pb-12"
                   >
                     <div className="text-center mb-10">
                       <h4 className="text-2xl font-serif text-white mb-2">Choose your learning plan</h4>
@@ -494,7 +494,7 @@ export default function BookingModal({
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="grid gap-8 px-8 py-8 lg:grid-cols-[1fr_360px] min-h-full"
+                    className="grid gap-8 px-8 py-8 lg:grid-cols-[1fr_360px] min-h-full pb-24 md:pb-12"
                   >
                     {/* LEFT PANEL */}
                     <div className="space-y-8 pr-2">
