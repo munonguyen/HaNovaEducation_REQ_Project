@@ -179,7 +179,12 @@ export default function ProfileQuickMenu() {
     );
   }
 
-  const role = (profile.role?.toLowerCase() || 'student') as keyof typeof ROLE_THEMES;
+  // Detect active workspace role from URL (not user profile) so menu adapts to current workspace
+  const pathRole = location.pathname.startsWith('/tutor') ? 'tutor'
+    : location.pathname.startsWith('/manager') ? 'manager'
+    : location.pathname.startsWith('/admin') ? 'admin'
+    : 'student';
+  const role = pathRole as keyof typeof ROLE_THEMES;
   const theme = ROLE_THEMES[role] || ROLE_THEMES.student;
   const isLight = theme.isLight;
 
