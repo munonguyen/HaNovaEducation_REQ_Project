@@ -300,7 +300,7 @@ export default function ProfileQuickMenu() {
           )}
         </div>
 
-        <div className="p-2 custom-scrollbar max-h-[420px] overflow-y-auto" data-lenis-prevent>
+        <div className="p-2 custom-scrollbar max-h-[60vh] overflow-y-auto overscroll-contain" data-lenis-prevent>
           {actions.map((action) => (
             <Link
               key={`${action.label}-${action.href}`}
